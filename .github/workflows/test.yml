@@ -14,6 +14,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: 'read'
+  issues: 'write' #__This fixed the HttpError: Resource not accessible by integration
+
 jobs:
   test:
     runs-on: ubuntu-latest
