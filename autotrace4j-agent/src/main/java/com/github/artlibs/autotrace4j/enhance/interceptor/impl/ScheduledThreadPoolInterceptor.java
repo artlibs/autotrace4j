@@ -57,6 +57,7 @@ public class ScheduledThreadPoolInterceptor extends Visitor {
 
         @Advice.OnMethodEnter
         public static void intercept(@Advice.Argument(value = 0, readOnly = false, typing = Assigner.Typing.DYNAMIC) RunnableScheduledFuture<?> task) throws Exception {
+            // 检测当前运行环境，如果是jar，就先将ctx包注入到
             try {
                 if (Objects.nonNull(task)) {
                     String traceId = AutoTraceCtx.getTraceId();

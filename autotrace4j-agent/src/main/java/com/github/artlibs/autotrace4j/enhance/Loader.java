@@ -63,9 +63,9 @@ public final class Loader {
     private static List<JarEntry> walkClassFiles() throws IOException {
         List<JarEntry> classFileList = new ArrayList<>(16);
         String basePackage = (Loader.class.getPackage().getName()
-                + ".interceptor.impl").replace('.', File.separatorChar);
+            + ".interceptor.impl").replace('.', File.separatorChar);
         Enumeration<URL> resources = Thread.currentThread()
-                .getContextClassLoader().getResources(basePackage);
+            .getContextClassLoader().getResources(basePackage);
 
         while (resources.hasMoreElements()) {
             URL resource = resources.nextElement();
