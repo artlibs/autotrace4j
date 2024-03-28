@@ -1,7 +1,7 @@
 package com.github.artlibs.autotrace4j;
 
 import com.github.artlibs.autotrace4j.enhance.TraceBuilder;
-import com.github.artlibs.autotrace4j.support.InjectUtils;
+import com.github.artlibs.autotrace4j.support.ClassUtils;
 
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
@@ -42,7 +42,9 @@ public final class AutoTrace4j {
             throw new IllegalArgumentException("请指定业务包名前缀(Agent参数)以指定增强范围; 如：\n" +
                                                    "-javaagent:/dir/to/autotrace4j.jar=com.your-domain.pkg1,com.your-domain.pkg2");
         }
-        TraceBuilder.enhance(packagePrefixes).on(InjectUtils
-                .injectClassToBootStrap(instrument, AutoTrace4j.class));
+        String ctxPackagePrefix = AutoTrace4j.class.getPackage().getName() + ".ctx";
+        TraceBuilder
+            .enhance(packagePrefixes)
+            .on(ClassUtils.injectClassToBootStrap(instrument, ctxPackagePrefix));
     }
 }

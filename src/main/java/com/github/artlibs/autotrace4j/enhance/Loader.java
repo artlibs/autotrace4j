@@ -1,11 +1,14 @@
 package com.github.artlibs.autotrace4j.enhance;
 
+import com.github.artlibs.autotrace4j.AutoTrace4j;
 import com.github.artlibs.autotrace4j.enhance.interceptor.Interceptor;
 import com.github.artlibs.autotrace4j.enhance.interceptor.impl.CallbackInterfaceInterceptor;
+import com.github.artlibs.autotrace4j.support.ClassUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -35,56 +38,25 @@ public final class Loader {
      * @throws IllegalAccessException -
      * @throws InstantiationException -
      */
-    public static List<Interceptor> load() throws IOException, ClassNotFoundException,
-                                                  IllegalAccessException, InstantiationException {
+    public static List<Interceptor> load() throws IOException, URISyntaxException {
         if (Objects.nonNull(interceptorList) && !interceptorList.isEmpty()) {
             return interceptorList;
         }
 
         interceptorList = new ArrayList<>(16);
-        List<JarEntry> classFiles = walkClassFiles();
-        for (JarEntry classFile : classFiles) {
-            String className = classFile.getName();
-            if (className.contains(CallbackInterfaceInterceptor.class.getSimpleName())) {
-                continue;
+
+        ClassUtils.walkClassFiles((path, classCanonicalName) -> {
+            try {
+                Class<?> clazz = Class.forName(classCanonicalName);
+                if (!clazz.getSimpleName().equals("CallbackInterfaceInterceptor") && Interceptor.class.isAssignableFrom(clazz)) {
+                    interceptorList.add((Interceptor) clazz.newInstance());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-            className = className.replace(File.separator, ".").substring(0, className.length() - 6);
-            interceptorList.add((Interceptor)Class.forName(className).newInstance());
-        }
+        }, AutoTrace4j.class.getPackage().getName() + ".enhance.interceptor.impl");
 
         return interceptorList;
     }
 
-    /**
-     * Walk the class files
-     * @return list of JarEntry
-     * @throws IOException -
-     */
-    private static List<JarEntry> walkClassFiles() throws IOException {
-        List<JarEntry> classFileList = new ArrayList<>(16);
-        String basePackage = (Loader.class.getPackage().getName()
-            + ".interceptor.impl").replace('.', File.separatorChar);
-        Enumeration<URL> resources = Thread.currentThread()
-            .getContextClassLoader().getResources(basePackage);
-
-        while (resources.hasMoreElements()) {
-            URL resource = resources.nextElement();
-
-            if (!"jar".equals(resource.getProtocol())) {
-                continue;
-            }
-
-            JarFile jar = ((JarURLConnection)resource.openConnection()).getJarFile();
-            Enumeration<JarEntry> entries = jar.entries();
-            while (entries.hasMoreElements()) {
-                JarEntry entry = entries.nextElement();
-                // xxx/impl/XXX.class
-                String name = entry.getName();
-                if (name.startsWith(basePackage) && name.endsWith(".class") && !name.contains("$")) {
-                    classFileList.add(entry);
-                }
-            }
-        }
-        return classFileList;
-    }
 }

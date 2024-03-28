@@ -15,6 +15,7 @@ import net.bytebuddy.implementation.bind.annotation.Morph;
 import net.bytebuddy.matcher.ElementMatcher;
 import java.io.*;
 import java.lang.instrument.Instrumentation;
+import java.net.URISyntaxException;
 import java.util.*;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 import static net.bytebuddy.matcher.ElementMatchers.nameStartsWith;
@@ -52,7 +53,7 @@ public final class TraceBuilder {
      * @throws ClassNotFoundException -
      */
     public void on(Instrumentation instrument) throws IOException, InstantiationException,
-            IllegalAccessException, ClassNotFoundException {
+                                                      IllegalAccessException, ClassNotFoundException, URISyntaxException {
         AgentBuilder agentBuilder = this.getAgentBuilder();
         for (Interceptor interceptor : Loader.load()) {
             if (Objects.isNull(interceptor.typeMatcher()) || Objects.isNull(interceptor.methodMatcher())) {
@@ -90,13 +91,9 @@ public final class TraceBuilder {
     /**
      * 构建一个 Byte buddy AgentBuilder 来转换增强代码
      * @return Byte buddy AgentBuilder
-     * @throws ClassNotFoundException -
      * @throws IOException -
-     * @throws InstantiationException -
-     * @throws IllegalAccessException -
      */
-    private AgentBuilder getAgentBuilder() throws ClassNotFoundException,
-            IOException, InstantiationException, IllegalAccessException {
+    private AgentBuilder getAgentBuilder() throws IOException, URISyntaxException {
         return new AgentBuilder.Default()
                 .ignore(this.buildIgnore())
                 .ignore(nameStartsWith("com.intellij.rt.")
@@ -141,13 +138,9 @@ public final class TraceBuilder {
     /**
      * 定义要增强时忽略的前缀
      * @return ElementMatcher
-     * @throws ClassNotFoundException -
-     * @throws InstantiationException -
-     * @throws IllegalAccessException -
      * @throws IOException -
      */
-    private ElementMatcher<? super TypeDescription> buildIgnore() throws ClassNotFoundException,
-            InstantiationException, IllegalAccessException, IOException {
+    private ElementMatcher<? super TypeDescription> buildIgnore() throws IOException, URISyntaxException {
         ElementMatcher.Junction<? super TypeDescription> junction = any();
         for (Interceptor interceptor : Loader.load()) {
             junction = junction.and(not(interceptor.typeMatcher()));
