@@ -48,12 +48,8 @@ public final class TraceBuilder {
      * Transform codes on instrument
      * @param instrument Instrumentation
      * @throws IOException -
-     * @throws InstantiationException -
-     * @throws IllegalAccessException -
-     * @throws ClassNotFoundException -
      */
-    public void on(Instrumentation instrument) throws IOException, InstantiationException,
-                                                      IllegalAccessException, ClassNotFoundException, URISyntaxException {
+    public void on(Instrumentation instrument) throws IOException, URISyntaxException {
         AgentBuilder agentBuilder = this.getAgentBuilder();
         for (Interceptor interceptor : Loader.load()) {
             if (Objects.isNull(interceptor.typeMatcher()) || Objects.isNull(interceptor.methodMatcher())) {
@@ -130,7 +126,6 @@ public final class TraceBuilder {
                             .to(enhancerWrapper));
         } catch (Exception e) {
             System.err.println("Failed to transform " + typeDescription.getCanonicalName());
-            e.printStackTrace();
             return builder;
         }
     }
