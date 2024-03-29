@@ -1,7 +1,7 @@
 package com.github.artlibs.autotrace4j.ctx;
 
 /**
- * 功能：带优先级的JDK线程池任务包装类
+ * Priority Task
  *
  * @author Fury
  * @since 2023-01-03

@@ -3,7 +3,7 @@ package com.github.artlibs.autotrace4j.ctx;
 import java.util.Objects;
 
 /**
- * 功能：JDK线程池任务包装器
+ * Thread Pool Task
  *
  * @author Fury
  * @since 2023-01-03

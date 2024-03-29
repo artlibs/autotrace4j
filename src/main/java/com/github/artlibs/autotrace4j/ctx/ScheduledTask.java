@@ -3,7 +3,7 @@ package com.github.artlibs.autotrace4j.ctx;
 import java.util.concurrent.*;
 
 /**
- * 功能：内置JDK线程池的定时任务包装器
+ * Scheduled Task
  *
  * @author Fury
  * @since 2023-01-03

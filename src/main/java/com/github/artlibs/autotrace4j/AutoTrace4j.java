@@ -1,7 +1,7 @@
 package com.github.artlibs.autotrace4j;
 
-import com.github.artlibs.autotrace4j.enhance.TraceBuilder;
-import com.github.artlibs.autotrace4j.support.ClassUtils;
+import com.github.artlibs.autotrace4j.core.TraceBuilder;
+import com.github.artlibs.autotrace4j.utils.ClassUtils;
 
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
@@ -9,7 +9,7 @@ import java.net.URISyntaxException;
 import java.util.Objects;
 
 /**
- * 功能：Trace 入口
+ * Auto Trace entrance
  *
  * @author Fury
  * @since 2023-01-04
@@ -42,8 +42,7 @@ public final class AutoTrace4j {
                     + "-javaagent:/dir/to/autotrace4j.jar=com.your-domain.pkg1,com.your-domain.pkg2");
         }
         String ctxPackagePrefix = AutoTrace4j.class.getPackage().getName() + ".ctx";
-        TraceBuilder
-            .enhance(packagePrefixes)
+        TraceBuilder.enhance(packagePrefixes)
             .on(ClassUtils.injectClassToBootStrap(instrument, ctxPackagePrefix));
     }
 }

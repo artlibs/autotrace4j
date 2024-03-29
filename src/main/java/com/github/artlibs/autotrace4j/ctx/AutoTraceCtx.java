@@ -3,7 +3,7 @@ package com.github.artlibs.autotrace4j.ctx;
 import java.util.UUID;
 
 /**
- * 功能：Trace上下文,包括 SpanId, ParentSpanId, TraceId
+ * Trace context for SpanId, ParentSpanId, TraceId
  *
  * @author Fury
  * @since 2023-01-03
