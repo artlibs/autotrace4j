@@ -1,5 +1,4 @@
-package com.github.artlibs.autotrace4j;
-
+import com.github.artlibs.autotrace4j.AutoTrace4j;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import testing.artlibs.autotrace4j.jdk.ThreadPoolExecutorCase;
 import org.junit.jupiter.api.Assertions;
