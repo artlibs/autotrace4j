@@ -13,32 +13,32 @@ import java.util.UUID;
 public final class AutoTraceCtx {
     private AutoTraceCtx() {}
 
-    /** TraceId，贯穿全链路 */
+    /** TraceId */
     private static final ThreadLocal<String> TRACE_ID_CTX = new ThreadLocal<>();
 
-    /** SpanId，跟踪当前上下文 */
+    /** SpanId */
     private static final ThreadLocal<String> SPAN_ID_CTX = new ThreadLocal<>();
 
-    /** ParentSpanId，上游上下文SpanId，串联上游上下文 */
+    /** ParentSpanId */
     private static final ThreadLocal<String> PARENT_SPAN_ID_CTX = new ThreadLocal<>();
 
-    /** 注入到HTTP header/response的字段名 */
+    /** HTTP header/response */
     public static final String TRACE_HEADER = "traceId";
     public static final String ATO_TRACE_ID = "X-ATO-TRACE-ID";
     public static final String ATO_SPAN_ID = "X-ATO-SPAN-ID";
     public static final String ATO_PARENT_SPAN_ID = "X-ATO-P-SPAN-ID";
 
-    /** 注入到logger日志的字段名 */
+    /** logger field */
     public static final String TRACE_KEY = "autoTraceId";
     public static final String TRACE_KEY_GETTER = "getAutoTraceId";
     public static final String TRACE_KEY_SETTER = "setAutoTraceId";
 
-    /** 注入到logger日志的字段名 */
+    /** logger field */
     public static final String SPAN_KEY = "autoSpanId";
     public static final String SPAN_KEY_GETTER = "getAutoSpanId";
     public static final String SPAN_KEY_SETTER = "setAutoSpanId";
 
-    /** 注入到logger日志的字段名 */
+    /** logger field */
     public static final String PARENT_SPAN_KEY = "autoParentSpanId";
     public static final String PARENT_SPAN_KEY_GETTER = "getAutoParentSpanId";
     public static final String PARENT_SPAN_KEY_SETTER = "setAutoParentSpanId";
@@ -80,9 +80,9 @@ public final class AutoTraceCtx {
     }
 
     public static void removeAll() {
-        TRACE_ID_CTX.remove();
-        SPAN_ID_CTX.remove();
-        PARENT_SPAN_ID_CTX.remove();
+        removeTraceId();
+        removeSpanId();
+        removeParentSpanId();
     }
 
     public static String generate() {

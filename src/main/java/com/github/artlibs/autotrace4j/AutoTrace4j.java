@@ -38,7 +38,7 @@ public final class AutoTrace4j {
     public static void premain(String packagePrefixes, Instrumentation instrument) throws IOException, URISyntaxException {
         if (Objects.isNull(packagePrefixes) || packagePrefixes.trim().isEmpty()) {
             throw new IllegalArgumentException(
-                "请指定业务包名前缀(Agent参数)以指定增强范围; 如：\n"
+                "请指定Java包名前缀(Agent参数)以指定增强范围; 如：\n"
                     + "-javaagent:/dir/to/autotrace4j.jar=com.your-domain.pkg1,com.your-domain.pkg2");
         }
         String ctxPackagePrefix = AutoTrace4j.class.getPackage().getName() + ".ctx";

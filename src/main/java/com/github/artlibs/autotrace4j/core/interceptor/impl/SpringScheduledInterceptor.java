@@ -58,7 +58,7 @@ public class SpringScheduledInterceptor extends AbstractInstanceInterceptor {
             .and(ElementMatchers.not(ElementMatchers.isInterface()))
             .and(ElementMatchers.not(ElementMatchers.nameContains("$")))
             .and(ElementMatchers.not(TypeDescription::isNestedClass))
-            ;//TODO: .and(ElementMatchers.isAnnotatedWith(AutoTrace.class));
+            .and(ElementMatchers.declaresMethod(methodMatcher()));
     }
 
     /**
