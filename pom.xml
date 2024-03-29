@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.artlibs</groupId>
-    <artifactId>autotrace4j-agent</artifactId>
+    <artifactId>autotrace4j</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <url>https://github.com/artlibs/autotrace4j</url>
@@ -24,6 +24,7 @@
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
+    <!-- 遵循最小依赖原则 -->
     <dependencies>
         <dependency>
             <groupId>net.bytebuddy</groupId>
@@ -115,10 +116,6 @@
                                     <pattern>net.bytebuddy</pattern>
                                     <shadedPattern>${buddy.shaded.patten}</shadedPattern>
                                 </relocation>
-<!--                                <relocation>-->
-<!--                                    <pattern>com.github.artlibs.autotrace4j.ctx</pattern>-->
-<!--                                    <shadedPattern>resource/</shadedPattern>-->
-<!--                                </relocation>-->
                             </relocations>
                             <filters>
                                 <filter>

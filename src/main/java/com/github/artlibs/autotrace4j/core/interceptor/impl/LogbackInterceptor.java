@@ -72,7 +72,7 @@ public class LogbackInterceptor extends AbstractInstanceInterceptor {
      * @param message String
      * @return result
      */
-    protected String injectTraceId(String message) {
+    private String injectTraceId(String message) {
         try {
             final boolean newLine = message.endsWith("\n");
 
@@ -80,21 +80,7 @@ public class LogbackInterceptor extends AbstractInstanceInterceptor {
             final boolean jsonFormat = trimMessage.startsWith("{") && trimMessage.endsWith("}");
 
             if (jsonFormat) {
-                if (message.contains(AutoTraceCtx.ATO_TRACE_ID) && message.contains(AutoTraceCtx.getTraceId())) {
-                    return message;
-                }
-
-                String injectedTraceFields = "\"" + AutoTraceCtx.ATO_TRACE_ID + QUOTE_COLON + AutoTraceCtx.getTraceId() + "\",";
-                if (Objects.nonNull(AutoTraceCtx.getSpanId())) {
-                    injectedTraceFields = injectedTraceFields
-                        + "\"" + AutoTraceCtx.ATO_SPAN_ID + QUOTE_COLON + AutoTraceCtx.getSpanId() + "\",";
-                }
-                if (Objects.nonNull(AutoTraceCtx.getParentSpanId())) {
-                    injectedTraceFields = injectedTraceFields
-                        + "\"" + AutoTraceCtx.ATO_PARENT_SPAN_ID + QUOTE_COLON + AutoTraceCtx.getParentSpanId() + "\",";
-                }
-
-                trimMessage = "{" + injectedTraceFields + trimMessage.substring(1);
+                return injectJsonFormat(message, trimMessage, newLine);
             } else {
                 if (message.contains(AutoTraceCtx.getTraceId() + SEPARATOR)) {
                     return message;
@@ -111,10 +97,28 @@ public class LogbackInterceptor extends AbstractInstanceInterceptor {
             }
             return newLine ? trimMessage + "\n" : trimMessage;
         } catch (Exception e) {
-            System.err.println(e.getMessage());
             e.printStackTrace();
         }
 
         return message;
+    }
+
+    private String injectJsonFormat(String message, String trimMessage, boolean newLine) {
+        if (message.contains(AutoTraceCtx.ATO_TRACE_ID) && message.contains(AutoTraceCtx.getTraceId())) {
+            return message;
+        }
+
+        String injectedTraceFields = "\"" + AutoTraceCtx.ATO_TRACE_ID + QUOTE_COLON + AutoTraceCtx.getTraceId() + "\",";
+        if (Objects.nonNull(AutoTraceCtx.getSpanId())) {
+            injectedTraceFields = injectedTraceFields
+                    + "\"" + AutoTraceCtx.ATO_SPAN_ID + QUOTE_COLON + AutoTraceCtx.getSpanId() + "\",";
+        }
+        if (Objects.nonNull(AutoTraceCtx.getParentSpanId())) {
+            injectedTraceFields = injectedTraceFields
+                    + "\"" + AutoTraceCtx.ATO_PARENT_SPAN_ID + QUOTE_COLON + AutoTraceCtx.getParentSpanId() + "\",";
+        }
+        trimMessage = "{" + injectedTraceFields + trimMessage.substring(1);
+
+        return newLine ? trimMessage + "\n" : trimMessage;
     }
 }
