@@ -6,15 +6,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Cache pool
+ * Cache pools
  *
  * @author Fury
  * @since 2024-03-29 10:56
  * <p>
  * All rights Reserved.
  */
-public final class CachePool {
-    private CachePool() {}
+public final class CachePools {
+    private CachePools() {}
 
     private static final Map<String, Field> FIELD_POOL_CACHE = new ConcurrentHashMap<>();
     private static final Map<String, Method> METHOD_POOL_CACHE = new ConcurrentHashMap<>();

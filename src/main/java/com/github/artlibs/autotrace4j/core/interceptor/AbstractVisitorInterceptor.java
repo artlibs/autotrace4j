@@ -10,7 +10,7 @@ import com.github.artlibs.autotrace4j.core.InterceptorType;
  *
  * All rights Reserved.
  */
-public abstract class AbstractVisitor implements Interceptor {
+public abstract class AbstractVisitorInterceptor implements Interceptor {
     /**
      * 指明Visitor类，自己实现Visitor代码
      * @return visitor Class

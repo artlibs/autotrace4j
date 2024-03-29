@@ -1,6 +1,7 @@
 package com.github.artlibs.autotrace4j.core.interceptor.impl;
 
 import com.github.artlibs.autotrace4j.core.TraceBuilder;
+import com.github.artlibs.autotrace4j.core.interceptor.AbstractCallbackInterceptor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;

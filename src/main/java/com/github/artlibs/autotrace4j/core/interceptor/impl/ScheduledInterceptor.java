@@ -1,8 +1,7 @@
 package com.github.artlibs.autotrace4j.core.interceptor.impl;
 
 import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
-import com.github.artlibs.autotrace4j.core.interceptor.AbstractInstance;
-import com.github.artlibs.autotrace4j.core.AutoTrace;
+import com.github.artlibs.autotrace4j.core.interceptor.AbstractInstanceInterceptor;
 import com.github.artlibs.autotrace4j.core.TraceBuilder;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
@@ -18,7 +17,7 @@ import java.lang.reflect.Method;
  *
  * All rights Reserved.
  */
-public class ScheduledInterceptor extends AbstractInstance {
+public class ScheduledInterceptor extends AbstractInstanceInterceptor {
     /**
      * 在原方法刚开始进入时执行
      *
@@ -49,8 +48,7 @@ public class ScheduledInterceptor extends AbstractInstance {
     }
 
     /**
-     * 类型匹配器, 这里要使用一个注解来辅助，避免把其他不需要的类也给代理了
-     *
+     * type matcher
      * @return ElementMatcher
      */
     @Override
@@ -60,7 +58,7 @@ public class ScheduledInterceptor extends AbstractInstance {
             .and(ElementMatchers.not(ElementMatchers.isInterface()))
             .and(ElementMatchers.not(ElementMatchers.nameContains("$")))
             .and(ElementMatchers.not(TypeDescription::isNestedClass))
-            .and(ElementMatchers.isAnnotatedWith(AutoTrace.class));
+            ;//TODO: .and(ElementMatchers.isAnnotatedWith(AutoTrace.class));
     }
 
     /**

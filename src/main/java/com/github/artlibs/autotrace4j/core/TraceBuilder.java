@@ -2,7 +2,9 @@ package com.github.artlibs.autotrace4j.core;
 
 import com.github.artlibs.autotrace4j.AutoTrace4j;
 import com.github.artlibs.autotrace4j.core.interceptor.*;
-import com.github.artlibs.autotrace4j.core.interceptor.impl.AbstractCallbackInterceptor;
+import com.github.artlibs.autotrace4j.core.wrapper.AbstractDelegateWrapper;
+import com.github.artlibs.autotrace4j.core.wrapper.InstanceInterceptorWrapper;
+import com.github.artlibs.autotrace4j.core.wrapper.StaticInterceptorWrapper;
 import com.github.artlibs.autotrace4j.exception.LoadInterceptorException;
 import com.github.artlibs.autotrace4j.utils.ClassUtils;
 import com.github.artlibs.autotrace4j.utils.Constants;
@@ -66,7 +68,7 @@ public final class TraceBuilder {
                 if (InterceptorType.DELEGATE == interceptor.interceptType()) {
                     return this.delegateEnhancer(newBuilder, interceptor, typeDescription);
                 } else if (InterceptorType.VISITOR == interceptor.interceptType()) {
-                    AbstractVisitor visitorEnhancer = (AbstractVisitor) interceptor;
+                    AbstractVisitorInterceptor visitorEnhancer = (AbstractVisitorInterceptor) interceptor;
                     return newBuilder.visit(Advice.to(visitorEnhancer.visitor())
                             .on(isMethod().and(interceptor.methodMatcher())));
                 }
@@ -115,15 +117,15 @@ public final class TraceBuilder {
     private DynamicType.Builder<?> delegateEnhancer(DynamicType.Builder<?> builder, Interceptor interceptor, TypeDescription typeDescription) {
         try {
             AbstractDelegateWrapper<?> enhancerWrapper;
-            if (((AbstractDelegate<?>) interceptor).enhanceStaticMethod()) {
-                enhancerWrapper = StaticInterceptorWrapper.wrap((AbstractStatic) interceptor);
+            if (((AbstractDelegateInterceptor<?>) interceptor).enhanceStaticMethod()) {
+                enhancerWrapper = StaticInterceptorWrapper.wrap((AbstractStaticInterceptor) interceptor);
             } else {
-                enhancerWrapper = InstanceInterceptorWrapper.wrap((AbstractInstance) interceptor);
+                enhancerWrapper = InstanceInterceptorWrapper.wrap((AbstractInstanceInterceptor) interceptor);
             }
 
             return builder.method(isMethod().and(interceptor.methodMatcher()))
                     .intercept(MethodDelegation.withDefaultConfiguration()
-                            .withBinders(Morph.Binder.install(MorphCallable.class))
+                            .withBinders(Morph.Binder.install(Callable.class))
                             .to(enhancerWrapper));
         } catch (Exception e) {
             e.printStackTrace();
@@ -170,8 +172,7 @@ public final class TraceBuilder {
         ClassUtils.walkClassFiles((path, classCanonicalName) -> {
             try {
                 Class<?> clazz = Class.forName(classCanonicalName);
-                if (!clazz.getName().contains(AbstractCallbackInterceptor.class.getSimpleName())
-                        && Interceptor.class.isAssignableFrom(clazz)) {
+                if (Interceptor.class.isAssignableFrom(clazz)) {
                     interceptorList.add((Interceptor) clazz.newInstance());
                 }
             } catch (Exception e) {

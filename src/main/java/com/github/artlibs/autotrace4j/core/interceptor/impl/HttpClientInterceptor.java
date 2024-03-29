@@ -4,7 +4,7 @@ import com.github.artlibs.autotrace4j.ctx.MethodWrapper;
 import com.github.artlibs.autotrace4j.ctx.ReflectUtils;
 import com.github.artlibs.autotrace4j.utils.Constants;
 import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
-import com.github.artlibs.autotrace4j.core.interceptor.AbstractInstance;
+import com.github.artlibs.autotrace4j.core.interceptor.AbstractInstanceInterceptor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
@@ -20,7 +20,7 @@ import java.util.Objects;
  *
  * All rights Reserved.
  */
-public class HttpClientInterceptor extends AbstractInstance {
+public class HttpClientInterceptor extends AbstractInstanceInterceptor {
     /**
      * 在原方法刚开始进入时执行
      *

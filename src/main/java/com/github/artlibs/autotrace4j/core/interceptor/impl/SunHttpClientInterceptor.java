@@ -3,7 +3,7 @@ package com.github.artlibs.autotrace4j.core.interceptor.impl;
 import com.github.artlibs.autotrace4j.ctx.MethodWrapper;
 import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
 import com.github.artlibs.autotrace4j.ctx.ReflectUtils;
-import com.github.artlibs.autotrace4j.core.interceptor.AbstractVisitor;
+import com.github.artlibs.autotrace4j.core.interceptor.AbstractVisitorInterceptor;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
@@ -22,7 +22,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  *
  * All rights Reserved.
  */
-public class SunHttpClientInterceptor extends AbstractVisitor {
+public class SunHttpClientInterceptor extends AbstractVisitorInterceptor {
     private static final String SET_IF_NOT_SET = "setIfNotSet";
     private static final String WRITE_REQUESTS = "writeRequests";
     private static final String POS_CLASS = "sun.net.www.http.PosterOutputStream";

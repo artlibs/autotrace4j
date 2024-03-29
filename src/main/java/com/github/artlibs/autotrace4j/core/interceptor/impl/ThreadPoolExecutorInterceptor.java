@@ -3,7 +3,7 @@ package com.github.artlibs.autotrace4j.core.interceptor.impl;
 import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
 import com.github.artlibs.autotrace4j.ctx.PriorityTask;
 import com.github.artlibs.autotrace4j.ctx.ThreadPoolTask;
-import com.github.artlibs.autotrace4j.core.interceptor.AbstractVisitor;
+import com.github.artlibs.autotrace4j.core.interceptor.AbstractVisitorInterceptor;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
@@ -20,7 +20,7 @@ import java.util.Objects;
  *
  * All rights Reserved.
  */
-public class ThreadPoolExecutorInterceptor extends AbstractVisitor {
+public class ThreadPoolExecutorInterceptor extends AbstractVisitorInterceptor {
     /**
      * 类型匹配器
      *
@@ -69,7 +69,6 @@ public class ThreadPoolExecutorInterceptor extends AbstractVisitor {
                     }
                 }
             } catch (Exception e) {
-                System.err.println(e.getMessage());
                 e.printStackTrace();
             }
         }

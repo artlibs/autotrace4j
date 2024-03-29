@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
  *
  * All rights Reserved.
  */
-public abstract class AbstractInstance extends AbstractDelegate<Object> {
+public abstract class AbstractInstanceInterceptor extends AbstractDelegateInterceptor<Object> {
     /**
      * 是否是增强static方法
      * @return true or false

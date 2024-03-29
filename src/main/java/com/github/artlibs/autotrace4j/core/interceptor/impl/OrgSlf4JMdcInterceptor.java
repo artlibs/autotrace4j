@@ -1,7 +1,7 @@
 package com.github.artlibs.autotrace4j.core.interceptor.impl;
 
 import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
-import com.github.artlibs.autotrace4j.core.interceptor.AbstractStatic;
+import com.github.artlibs.autotrace4j.core.interceptor.AbstractStaticInterceptor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
@@ -20,7 +20,7 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
  *
  * All rights Reserved.
  */
-public class OrgSlf4JMdcInterceptor extends AbstractStatic {
+public class OrgSlf4JMdcInterceptor extends AbstractStaticInterceptor {
 
     /**
      * 在原方法返回前执行

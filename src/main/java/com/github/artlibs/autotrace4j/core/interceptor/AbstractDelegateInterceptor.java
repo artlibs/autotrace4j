@@ -13,7 +13,7 @@ import java.util.Objects;
  *
  * All rights Reserved.
  */
-public abstract class AbstractDelegate<T> implements Interceptor {
+public abstract class AbstractDelegateInterceptor<T> implements Interceptor {
     /**
      * 是否是增强static方法
      * @return true or false
@@ -56,7 +56,7 @@ public abstract class AbstractDelegate<T> implements Interceptor {
 
     @Override
     public boolean equals(Object enhancer) {
-        if (enhancer instanceof AbstractStatic) {
+        if (enhancer instanceof AbstractStaticInterceptor) {
             return Objects.equals(enhancer.hashCode(), this.hashCode());
         }
         return false;

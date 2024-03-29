@@ -1,6 +1,7 @@
-package com.github.artlibs.autotrace4j.core;
+package com.github.artlibs.autotrace4j.core.wrapper;
 
-import com.github.artlibs.autotrace4j.core.interceptor.AbstractStatic;
+import com.github.artlibs.autotrace4j.core.Callable;
+import com.github.artlibs.autotrace4j.core.interceptor.AbstractStaticInterceptor;
 import net.bytebuddy.implementation.bind.annotation.*;
 
 import java.lang.reflect.Method;
@@ -17,14 +18,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * All rights Reserved.
  */
 public class StaticInterceptorWrapper extends AbstractDelegateWrapper<Class<?>> {
-    private static final Map<AbstractStatic, StaticInterceptorWrapper>
+    private static final Map<AbstractStaticInterceptor, StaticInterceptorWrapper>
             Cache = new ConcurrentHashMap<>();
 
-    private StaticInterceptorWrapper(AbstractStatic enhancer) throws Exception {
+    private StaticInterceptorWrapper(AbstractStaticInterceptor enhancer) throws Exception {
         super(enhancer);
     }
 
-    public static StaticInterceptorWrapper wrap(AbstractStatic enhancer) throws Exception {
+    public static StaticInterceptorWrapper wrap(AbstractStaticInterceptor enhancer) throws Exception {
         StaticInterceptorWrapper wrapper = Cache.get(Objects.requireNonNull(enhancer));
         if (Objects.nonNull(wrapper)) {
             return wrapper;
@@ -46,7 +47,7 @@ public class StaticInterceptorWrapper extends AbstractDelegateWrapper<Class<?>> 
      * @throws Exception -
      */
     @RuntimeType
-    public Object intercept(@Origin Class<?> clazz, @Morph MorphCallable callable
+    public Object intercept(@Origin Class<?> clazz, @Morph Callable callable
             , @AllArguments Object[] allArgs, @Origin Method originMethod) throws Exception {
         return this.enhance(clazz, callable, allArgs, originMethod);
     }

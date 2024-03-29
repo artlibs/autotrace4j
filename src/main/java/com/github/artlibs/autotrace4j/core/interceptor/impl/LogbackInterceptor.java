@@ -1,7 +1,7 @@
 package com.github.artlibs.autotrace4j.core.interceptor.impl;
 
 import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
-import com.github.artlibs.autotrace4j.core.interceptor.AbstractInstance;
+import com.github.artlibs.autotrace4j.core.interceptor.AbstractInstanceInterceptor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
@@ -20,7 +20,7 @@ import static net.bytebuddy.matcher.ElementMatchers.named;
  *
  * All rights Reserved.
  */
-public class LogbackInterceptor extends AbstractInstance {
+public class LogbackInterceptor extends AbstractInstanceInterceptor {
     private static final String SEPARATOR = " - ";
     private static final String QUOTE_COLON = "\":\"";
     private static final String LAYOUT_WRAPPING_ENCODER

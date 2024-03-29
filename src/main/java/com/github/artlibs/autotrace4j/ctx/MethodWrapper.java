@@ -27,11 +27,11 @@ public class MethodWrapper {
         Class<?> clazz = obj instanceof Class<?> ? (Class<?>)obj : obj.getClass();
         try {
             final String key = clazz.getName() + "." + methodName;
-            wrapper.method = CachePool.getMethodCache(key);
+            wrapper.method = CachePools.getMethodCache(key);
             if (Objects.isNull(wrapper.method)) {
                 wrapper.method = clazz.getMethod(methodName, parameterTypes);
                 wrapper.method.setAccessible(true);
-                CachePool.setMethodCache(key, wrapper.method);
+                CachePools.setMethodCache(key, wrapper.method);
             }
         } catch (Exception e) {
             e.printStackTrace();

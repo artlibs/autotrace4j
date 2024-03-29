@@ -1,7 +1,7 @@
 package com.github.artlibs.autotrace4j.core.interceptor.impl;
 
 import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
-import com.github.artlibs.autotrace4j.core.interceptor.AbstractInstance;
+import com.github.artlibs.autotrace4j.core.interceptor.AbstractInstanceInterceptor;
 import com.github.artlibs.autotrace4j.ctx.ReflectUtils;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
@@ -20,7 +20,7 @@ import java.util.Objects;
  *
  * All rights Reserved.
  */
-public class RocketMqProducerInterceptor extends AbstractInstance {
+public class RocketMqProducerInterceptor extends AbstractInstanceInterceptor {
     /**
      * 在原方法刚开始进入时执行
      *

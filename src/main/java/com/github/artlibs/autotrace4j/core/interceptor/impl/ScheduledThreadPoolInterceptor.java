@@ -1,6 +1,6 @@
 package com.github.artlibs.autotrace4j.core.interceptor.impl;
 
-import com.github.artlibs.autotrace4j.core.interceptor.AbstractVisitor;
+import com.github.artlibs.autotrace4j.core.interceptor.AbstractVisitorInterceptor;
 import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
 import com.github.artlibs.autotrace4j.ctx.ScheduledTask;
 import net.bytebuddy.asm.Advice;
@@ -20,7 +20,7 @@ import java.util.concurrent.RunnableScheduledFuture;
  *
  * All rights Reserved.
  */
-public class ScheduledThreadPoolInterceptor extends AbstractVisitor {
+public class ScheduledThreadPoolInterceptor extends AbstractVisitorInterceptor {
     /**
      * 类型匹配器
      *

@@ -3,7 +3,7 @@ package com.github.artlibs.autotrace4j.core.interceptor.impl;
 import com.github.artlibs.autotrace4j.ctx.ReflectUtils;
 import com.github.artlibs.autotrace4j.utils.Constants;
 import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
-import com.github.artlibs.autotrace4j.core.interceptor.AbstractInstance;
+import com.github.artlibs.autotrace4j.core.interceptor.AbstractInstanceInterceptor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
@@ -22,7 +22,7 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
  *
  * All rights Reserved.
  */
-public class HttpServletInterceptor extends AbstractInstance {
+public class HttpServletInterceptor extends AbstractInstanceInterceptor {
     /**
      * 在原方法刚开始进入时执行
      *
