@@ -1,6 +1,6 @@
 package testing.artlibs.autotrace4j.jdk;
 
-import com.github.artlibs.autotrace4j.utils.TraceUtils;
+import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
 
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -23,19 +23,18 @@ public class ThreadPoolExecutorCase {
         return new ThreadPoolExecutorCase(service);
     }
 
-    public boolean run() throws Exception {
-        final String expectTraceId = "expect-trace-id";
+    public boolean run(String expectedTraceId) throws Exception {
         final Long unexpectThreadId = Thread.currentThread().getId();
 
-        TraceUtils.setTraceId(expectTraceId);
+        AutoTraceCtx.setTraceId(expectedTraceId);
         Wrap wrap = service.submit(() -> new Wrap(
                 Thread.currentThread().getId(),
-                TraceUtils.getTraceId())
+                AutoTraceCtx.getTraceId())
         ).get();
 
         return Objects.nonNull(wrap) &&
-         expectTraceId.equals(wrap.getTraceId()) &&
-         !unexpectThreadId.equals(wrap.getThreadId());
+                expectedTraceId.equals(wrap.getTraceId()) &&
+                !unexpectThreadId.equals(wrap.getThreadId());
     }
 
     static class Wrap {

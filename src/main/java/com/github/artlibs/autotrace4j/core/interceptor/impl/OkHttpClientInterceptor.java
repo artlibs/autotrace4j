@@ -38,9 +38,6 @@ public class OkHttpClientInterceptor extends AbstractInstanceInterceptor {
             namesAndValues.add(AutoTraceCtx.ATO_TRACE_ID);
             namesAndValues.add(traceId);
 
-            namesAndValues.add(AutoTraceCtx.TRACE_HEADER);
-            namesAndValues.add(traceId);
-
             final String spanId = AutoTraceCtx.getSpanId();
             if (Objects.nonNull(spanId)) {
                 namesAndValues.add(AutoTraceCtx.ATO_SPAN_ID);

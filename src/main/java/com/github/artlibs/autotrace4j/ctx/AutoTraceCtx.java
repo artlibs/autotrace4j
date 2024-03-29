@@ -23,10 +23,9 @@ public final class AutoTraceCtx {
     private static final ThreadLocal<String> PARENT_SPAN_ID_CTX = new ThreadLocal<>();
 
     /** HTTP header/response */
-    public static final String TRACE_HEADER = "traceId";
-    public static final String ATO_TRACE_ID = "X-ATO-TRACE-ID";
-    public static final String ATO_SPAN_ID = "X-ATO-SPAN-ID";
-    public static final String ATO_PARENT_SPAN_ID = "X-ATO-P-SPAN-ID";
+    public static final String ATO_TRACE_ID = "X-Ato-Trace-Id";
+    public static final String ATO_SPAN_ID = "X-Ato-Span-Id";
+    public static final String ATO_PARENT_SPAN_ID = "X-Ato-P-Span-ID";
 
     /** logger field */
     public static final String TRACE_KEY = "autoTraceId";

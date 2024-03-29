@@ -24,8 +24,8 @@
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
-    <!-- 遵循最小依赖原则 -->
     <dependencies>
+        <!-- 遵循最小依赖原则 -->
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
@@ -38,6 +38,8 @@
             <version>${bytebuddy.version}</version>
             <scope>compile</scope>
         </dependency>
+
+        <!-- testing support -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -48,6 +50,27 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit-jupiter-engine.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>2.0.32</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- for interceptor testing -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.9.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.14</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

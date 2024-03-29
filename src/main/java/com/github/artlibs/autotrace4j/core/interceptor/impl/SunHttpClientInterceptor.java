@@ -81,7 +81,6 @@ public class SunHttpClientInterceptor extends AbstractVisitorInterceptor {
                     MethodWrapper methodWrapper = ReflectUtils.getMethodWrapper(msgHeader
                         , SET_IF_NOT_SET, String.class, String.class);
 
-                    methodWrapper.invoke(AutoTraceCtx.TRACE_HEADER, traceId);
                     methodWrapper.invoke(AutoTraceCtx.ATO_TRACE_ID, traceId);
 
                     final String spanId = AutoTraceCtx.getSpanId();

@@ -37,7 +37,6 @@ public class HttpClientInterceptor extends AbstractInstanceInterceptor {
                 , Constants.SET_HEADER, String.class, String.class);
 
             // adapt to shop & big data
-            methodWrapper.invoke(AutoTraceCtx.TRACE_HEADER, traceId);
             methodWrapper.invoke(AutoTraceCtx.ATO_TRACE_ID, traceId);
 
             final String spanId = AutoTraceCtx.getSpanId();
