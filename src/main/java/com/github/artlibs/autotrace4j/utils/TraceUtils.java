@@ -5,7 +5,7 @@ import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
 import java.util.UUID;
 
 /**
- * 功能：TraceUtils 工具类
+ * TraceUtils
  *
  * @author Fury
  * @since 2023-01-05
@@ -22,7 +22,7 @@ public final class TraceUtils {
         try {
             AutoTraceCtx.setTraceId(traceId);
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -36,7 +36,7 @@ public final class TraceUtils {
         } catch (Exception ignore) {
             // NO Sonar
         }
-        return generate();
+        return "NO-TRACE-ID";
     }
 
     /**

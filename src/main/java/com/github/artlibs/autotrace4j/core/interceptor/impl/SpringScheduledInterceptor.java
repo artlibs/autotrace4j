@@ -17,7 +17,7 @@ import java.lang.reflect.Method;
  *
  * All rights Reserved.
  */
-public class ScheduledInterceptor extends AbstractInstanceInterceptor {
+public class SpringScheduledInterceptor extends AbstractInstanceInterceptor {
     /**
      * 在原方法刚开始进入时执行
      *
