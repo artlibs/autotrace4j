@@ -13,7 +13,7 @@
 
 ​	只依赖ByteBuddy，且增加的增强代码只是往Thread Local当中写入字符串或读出字符串，没有做额外事项，不会增加性能开销。
 
-## 开始使用
+## Startup
 
 ​	`autotrace4j`的使用非常简单，只需从[release](https://github.com/artlibs/autotrace4j/releases)中下载最新的agent jar包，在启动脚本中以agent方式运行：
 
@@ -21,35 +21,59 @@
 $ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-domain.biz2.pkg2 -jar YourJar.jar  # 省略其他无关参数
 ```
 
-## 我们增强了什么
+#### 关于`org.slf4j.MDC`
 
-### 1、
+可通过slf4j的MDC获取当前上下文的TraceID：
 
+-   当通过 `MDC.get("X-Ato-Span-Id")`时返回当前上下文的 `SpanId`
+-   当通过 `MDC.get("X-Ato-P-Span-Id")`时返回当前上下文的 `ParentSpanId`
+-   当通过 `MDC.get("X-Ato-Trace-Id")`时返回当前上下文的 `TraceId`
 
+## Supported Context
 
+### 1、Thread Pool
 
+​	基于如下包作为基础的线程池均支持自动Trace跟踪:
 
+-   `java.util.concurrent.ThreadPoolExecutor`
+-   `java.util.concurrent.ScheduledThreadPoolExecutor`
 
+### 2、Http Client
 
+​	基于如下几个Client的HTTP请求客户端在发送请求时都会自动将当前上下文的TraceId设置到请求头：
 
+-   OkHttp3：`com.squareup.okhttp3:okhttp`
+-   JDK Http Client：`jdk:sun.net.www.http.HttpClient`
+-   ApacheHttpClient：`org.apache.httpcomponents:httpclient`
 
+### 3、Http Servlet
 
+​	我们支持了HTTP Filter和HTTP Servlet来从请求头当中接收TraceId并设置到当前上下文：
 
+-   `javax.servlet.Filter`
+-   `javax.servlet.http.HttpServlet`
 
+### 4、MessageQunue
 
+​	目前支持阿里云ONS和RocketMQ在生产和消费时带上TraceId：
 
+-   RocektMQ：`Producer` & `Consumer`
+-   Aliyun ONS：`Producer` & `Consumer`
+-   Kafka：comming soon....
 
+### 5、Scheduled Task
 
+​	已支持XXL Job和Spring的Scheduled定时任务在产生时生成TraceId：
 
+-   XxlJob Handler：`com.xxl.job.core.handler.IJobHandler`
+-   Spring Schedule Task：`org.springframework.scheduling.annotation.Scheduled`
 
+### 6、Logging
 
+​	目前支持在logback中输出日志时注入trace id进行输出：
 
+-   logback：`ch.qos.logback:logback-core`
 
+## Contribute
 
-
-
-
-
-
-
-
+欢迎贡献你的代码，一起完善`autotrace4j`库！
