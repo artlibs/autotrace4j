@@ -5,7 +5,6 @@ import com.github.artlibs.autotrace4j.support.TraceUtils;
 
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * ThreadPoolExecutor Test

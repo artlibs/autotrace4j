@@ -6,8 +6,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * 功能：系统工具
+ *
+ * @author suopovate
+ * @since 2024/03/25
+ * <p>
+ * All rights Reserved.
+ */
 public class SystemUtils {
-    private SystemUtils(){}
+    private SystemUtils() {}
 
     public static String getSysTempDir() {
         return System.getProperty("java.io.tmpdir");

@@ -6,7 +6,7 @@ import com.github.artlibs.autotrace4j.support.ClassUtils;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.Objects;
 
 /**
  * 功能：Trace 入口
@@ -25,8 +25,7 @@ public final class AutoTrace4j {
      * @param packagePrefixes - 增强包前缀,多个以英文逗号分隔
      * @param instrument      Instrumentation
      */
-    public static void agentmain(String packagePrefixes, Instrumentation instrument)
-            throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, URISyntaxException {
+    public static void agentmain(String packagePrefixes, Instrumentation instrument) throws IOException, URISyntaxException {
         premain(packagePrefixes, instrument);
     }
 
@@ -36,11 +35,11 @@ public final class AutoTrace4j {
      * @param packagePrefixes - 增强包前缀,多个以英文逗号分隔
      * @param instrument      Instrumentation
      */
-    public static void premain(String packagePrefixes, Instrumentation instrument)
-            throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, URISyntaxException {
+    public static void premain(String packagePrefixes, Instrumentation instrument) throws IOException, URISyntaxException {
         if (Objects.isNull(packagePrefixes) || packagePrefixes.trim().isEmpty()) {
-            throw new IllegalArgumentException("请指定业务包名前缀(Agent参数)以指定增强范围; 如：\n" +
-                                                   "-javaagent:/dir/to/autotrace4j.jar=com.your-domain.pkg1,com.your-domain.pkg2");
+            throw new IllegalArgumentException(
+                "请指定业务包名前缀(Agent参数)以指定增强范围; 如：\n"
+                    + "-javaagent:/dir/to/autotrace4j.jar=com.your-domain.pkg1,com.your-domain.pkg2");
         }
         String ctxPackagePrefix = AutoTrace4j.class.getPackage().getName() + ".ctx";
         TraceBuilder

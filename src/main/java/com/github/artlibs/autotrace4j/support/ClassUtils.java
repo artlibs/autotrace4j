@@ -15,17 +15,23 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 /**
- * 类相关util
+ * 功能：类utils
  *
  * @author suopovate
+ * @since 2024/03/25
+ * <p>
+ * All rights Reserved.
  */
 public class ClassUtils {
 
     /**
-     * @param instrumentation
-     * @param packagePrefix
-     * @throws IOException
-     * @throws URISyntaxException
+     * 注入指定包名下的class到bootstrap
+     *
+     * @param instrumentation instrumentation对象
+     * @param packagePrefix   包前缀
+     * @return {@link Instrumentation}
+     * @throws IOException        IOException
+     * @throws URISyntaxException URISyntaxException
      */
     public static Instrumentation injectClassToBootStrap(
         Instrumentation instrumentation,
@@ -49,6 +55,14 @@ public class ClassUtils {
         return instrumentation;
     }
 
+    /**
+     * walk 类文件
+     *
+     * @param walker        处理所有被找到的class
+     * @param packagePrefix 包前缀
+     * @throws IOException        IOException
+     * @throws URISyntaxException URISyntaxException
+     */
     public static void walkClassFiles(
         BiConsumer<Path, String> walker,
         String packagePrefix
@@ -75,6 +89,13 @@ public class ClassUtils {
         }
     }
 
+    /**
+     * 生成规范名称
+     *
+     * @param packagePrefixes 包前缀
+     * @param classFileName   类文件名
+     * @return {@link String}
+     */
     private static String buildCanonicalName(String packagePrefixes, String classFileName) {
         return packagePrefixes + "." + classFileName.replace(".class", "");
     }

@@ -1,7 +1,5 @@
 package artlibs.test.unit.support;
 
-import java.util.concurrent.ExecutionException;
-
 /**
  * Case
  *
