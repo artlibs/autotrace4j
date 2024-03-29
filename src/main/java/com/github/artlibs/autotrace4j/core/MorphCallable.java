@@ -8,7 +8,7 @@ package com.github.artlibs.autotrace4j.core;
  *
  * All rights Reserved.
  */
-public interface Callable {
+public interface MorphCallable {
     /**
      * the original method call
      * @param args 方法参数表

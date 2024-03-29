@@ -1,6 +1,6 @@
 package com.github.artlibs.autotrace4j.core.interceptor.impl;
 
-import com.github.artlibs.autotrace4j.core.TraceBuilder;
+import com.github.artlibs.autotrace4j.core.TraceAgentBuilder;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
@@ -23,6 +23,6 @@ public class OnsMqSendCallbackInterceptor extends RocketMqSendCallbackIntercepto
     public ElementMatcher<? super TypeDescription> typeMatcher() {
         return ElementMatchers.hasSuperType(ElementMatchers
                 .named("com.aliyun.openservices.ons.api.SendCallback"))
-                .and(TraceBuilder.getPackagePrefixesJunction());
+                .and(TraceAgentBuilder.getInterceptScopeJunction());
     }
 }

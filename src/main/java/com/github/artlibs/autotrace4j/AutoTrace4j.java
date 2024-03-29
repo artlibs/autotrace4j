@@ -1,6 +1,6 @@
 package com.github.artlibs.autotrace4j;
 
-import com.github.artlibs.autotrace4j.core.TraceBuilder;
+import com.github.artlibs.autotrace4j.core.TraceAgentBuilder;
 import com.github.artlibs.autotrace4j.utils.ClassUtils;
 
 import java.io.IOException;
@@ -42,7 +42,7 @@ public final class AutoTrace4j {
                     + "-javaagent:/dir/to/autotrace4j.jar=com.your-domain.pkg1,com.your-domain.pkg2");
         }
         String ctxPackagePrefix = AutoTrace4j.class.getPackage().getName() + ".ctx";
-        TraceBuilder.enhance(packagePrefixes)
+        TraceAgentBuilder.intercept(packagePrefixes)
             .on(ClassUtils.injectClassToBootStrap(instrument, ctxPackagePrefix));
     }
 }

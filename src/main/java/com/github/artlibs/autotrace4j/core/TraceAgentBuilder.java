@@ -30,20 +30,20 @@ import static net.bytebuddy.matcher.ElementMatchers.nameStartsWith;
  *
  * All rights Reserved.
  */
-public final class TraceBuilder {
-    private TraceBuilder(){}
+public final class TraceAgentBuilder {
+    private TraceAgentBuilder(){}
 
     private static List<Interceptor> interceptorList = null;
-    private static ElementMatcher.Junction<TypeDescription> packagePrefixesJunction;
+    private static ElementMatcher.Junction<TypeDescription> interceptScopeJunction;
 
     /**
      * 构建一个 TraceBuilder 实例
-     * @param enhancePackagePrefixes 待增强的packagePrefixes
+     * @param packagePrefixes -
      * @return TraceBuilder
      */
-    public static TraceBuilder enhance(String enhancePackagePrefixes) {
-        processPackagePrefix(enhancePackagePrefixes);
-        return new TraceBuilder();
+    public static TraceAgentBuilder intercept(String packagePrefixes) {
+        interceptPackagePrefixes(packagePrefixes);
+        return new TraceAgentBuilder();
     }
 
     /**
@@ -65,26 +65,27 @@ public final class TraceBuilder {
                     newBuilder = builder;
                 }
 
-                if (InterceptorType.DELEGATE == interceptor.interceptType()) {
-                    return this.delegateEnhancer(newBuilder, interceptor, typeDescription);
-                } else if (InterceptorType.VISITOR == interceptor.interceptType()) {
-                    AbstractVisitorInterceptor visitorEnhancer = (AbstractVisitorInterceptor) interceptor;
-                    return newBuilder.visit(Advice.to(visitorEnhancer.visitor())
-                            .on(isMethod().and(interceptor.methodMatcher())));
+                switch (interceptor.interceptType()) {
+                    case VISITOR:
+                        AbstractVisitorInterceptor visitorEnhancer = (AbstractVisitorInterceptor) interceptor;
+                        return newBuilder.visit(Advice.to(visitorEnhancer.visitor())
+                                .on(isMethod().and(interceptor.methodMatcher())));
+                    case DELEGATE:
+                        return this.delegateInterceptor(newBuilder, interceptor);
+                    default:
+                        return newBuilder;
                 }
-
-                return newBuilder;
             });
         }
         agentBuilder.installOn(instrument);
     }
 
     /**
-     * Get packagePrefixes Junction
+     * Get Intercept Scope Junction
      * @return packagePrefixes Junction
      */
-    public static ElementMatcher.Junction<TypeDescription> getPackagePrefixesJunction() {
-        return packagePrefixesJunction;
+    public static ElementMatcher.Junction<TypeDescription> getInterceptScopeJunction() {
+        return interceptScopeJunction;
     }
 
     /**
@@ -111,22 +112,21 @@ public final class TraceBuilder {
      * 代理增强方式
      * @param builder DynamicType.Builder
      * @param interceptor Enhancer 增强器实现
-     * @param typeDescription 待增强类的TypeDescription
      * @return DynamicType.Builder
      */
-    private DynamicType.Builder<?> delegateEnhancer(DynamicType.Builder<?> builder, Interceptor interceptor, TypeDescription typeDescription) {
+    private DynamicType.Builder<?> delegateInterceptor(DynamicType.Builder<?> builder, Interceptor interceptor) {
         try {
-            AbstractDelegateWrapper<?> enhancerWrapper;
+            AbstractDelegateWrapper<?> wrapper;
             if (((AbstractDelegateInterceptor<?>) interceptor).enhanceStaticMethod()) {
-                enhancerWrapper = StaticInterceptorWrapper.wrap((AbstractStaticInterceptor) interceptor);
+                wrapper = StaticInterceptorWrapper.wrap((AbstractStaticInterceptor) interceptor);
             } else {
-                enhancerWrapper = InstanceInterceptorWrapper.wrap((AbstractInstanceInterceptor) interceptor);
+                wrapper = InstanceInterceptorWrapper.wrap((AbstractInstanceInterceptor) interceptor);
             }
 
             return builder.method(isMethod().and(interceptor.methodMatcher()))
                     .intercept(MethodDelegation.withDefaultConfiguration()
-                            .withBinders(Morph.Binder.install(Callable.class))
-                            .to(enhancerWrapper));
+                            .withBinders(Morph.Binder.install(MorphCallable.class))
+                            .to(wrapper));
         } catch (Exception e) {
             e.printStackTrace();
             return builder;
@@ -151,14 +151,14 @@ public final class TraceBuilder {
      * build packagePrefixes Junction
      * @param packagePrefixes 增强包前缀
      */
-    private static void processPackagePrefix(String packagePrefixes) {
+    private static void interceptPackagePrefixes(String packagePrefixes) {
         for (String prefix : packagePrefixes.split(Constants.COMMA)) {
-            if (Objects.isNull(packagePrefixesJunction)) {
-                packagePrefixesJunction = nameStartsWith(prefix);
+            if (Objects.isNull(interceptScopeJunction)) {
+                interceptScopeJunction = nameStartsWith(prefix);
                 continue;
             }
 
-            packagePrefixesJunction = packagePrefixesJunction
+            interceptScopeJunction = interceptScopeJunction
                     .or(nameStartsWith(prefix));
         }
     }

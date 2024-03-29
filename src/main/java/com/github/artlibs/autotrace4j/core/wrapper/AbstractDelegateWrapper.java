@@ -1,6 +1,6 @@
 package com.github.artlibs.autotrace4j.core.wrapper;
 
-import com.github.artlibs.autotrace4j.core.Callable;
+import com.github.artlibs.autotrace4j.core.MorphCallable;
 import com.github.artlibs.autotrace4j.core.interceptor.AbstractDelegateInterceptor;
 
 import java.lang.reflect.Method;
@@ -30,7 +30,7 @@ public abstract class AbstractDelegateWrapper<T> {
      * @return method execute result
      * @throws Exception -
      */
-    protected Object enhance(T classOrThis, Callable callable, Object[] allArgs, Method originMethod) throws Exception {
+    protected Object enhance(T classOrThis, MorphCallable callable, Object[] allArgs, Method originMethod) throws Exception {
         try {
             interceptor.beforeMethod(classOrThis, allArgs, originMethod);
         } catch (Exception e) {

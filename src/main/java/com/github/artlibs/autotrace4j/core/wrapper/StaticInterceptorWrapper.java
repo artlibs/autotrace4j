@@ -1,6 +1,6 @@
 package com.github.artlibs.autotrace4j.core.wrapper;
 
-import com.github.artlibs.autotrace4j.core.Callable;
+import com.github.artlibs.autotrace4j.core.MorphCallable;
 import com.github.artlibs.autotrace4j.core.interceptor.AbstractStaticInterceptor;
 import net.bytebuddy.implementation.bind.annotation.*;
 
@@ -47,7 +47,7 @@ public class StaticInterceptorWrapper extends AbstractDelegateWrapper<Class<?>> 
      * @throws Exception -
      */
     @RuntimeType
-    public Object intercept(@Origin Class<?> clazz, @Morph Callable callable
+    public Object intercept(@Origin Class<?> clazz, @Morph MorphCallable callable
             , @AllArguments Object[] allArgs, @Origin Method originMethod) throws Exception {
         return this.enhance(clazz, callable, allArgs, originMethod);
     }
