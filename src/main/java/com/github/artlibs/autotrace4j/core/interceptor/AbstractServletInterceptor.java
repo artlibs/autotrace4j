@@ -27,14 +27,22 @@ public abstract class AbstractServletInterceptor extends AbstractInstanceInterce
      */
     @Override
     public void beforeMethod(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
-        Class<?> httpServletReqClazz = Class.forName("javax.servlet.http.HttpServletRequest");
-        Class<?> httpServletRespClazz = Class.forName("javax.servlet.http.HttpServletResponse");
-        Class<?> argServletReqClazz = allArgs[0].getClass();
-        Class<?> argServletRespClazz = allArgs[0].getClass();
-        // request must be HttpServletRequest or subclass
-        if (httpServletReqClazz.isAssignableFrom(argServletReqClazz)
-            && httpServletRespClazz.isAssignableFrom(argServletRespClazz)
-        ) {
+        Class<?> httpReqClazz, httpRespClazz;
+        try {
+            httpReqClazz = Class.forName(
+                "javax.servlet.http.HttpServletRequest", false, AbstractServletInterceptor.class.getClassLoader()
+            );
+            httpRespClazz = Class.forName(
+                "javax.servlet.http.HttpServletResponse", false, AbstractServletInterceptor.class.getClassLoader()
+            );
+        } catch (ClassNotFoundException e) {
+            // warning that we can't intercept the servlet
+            return;
+        }
+        Class<?> argServletReqClazz = allArgs[0].getClass(), argServletRespClazz = allArgs[1].getClass();
+        boolean isHttp = httpReqClazz.isAssignableFrom(argServletReqClazz) && httpRespClazz.isAssignableFrom(argServletRespClazz);
+        // just intercept http request
+        if (isHttp) {
             // first we take it from the req attributes
             String traceId = ReflectUtils
                 .getMethodWrapper(allArgs[0], Constants.GET_ATTRIBUTE, Object.class)
@@ -100,10 +108,9 @@ public abstract class AbstractServletInterceptor extends AbstractInstanceInterce
      * @param result       方法执行结果
      * @param originMethod 原方法
      * @return Object - result
-     * @throws Exception -
      */
     @Override
-    public Object afterMethod(Object thiz, Object[] allArgs, Object result, Method originMethod) throws Exception {
+    public Object afterMethod(Object thiz, Object[] allArgs, Object result, Method originMethod) {
         return result;
     }
 
