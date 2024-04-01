@@ -7,6 +7,7 @@ import net.bytebuddy.agent.ByteBuddyAgent;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -93,12 +94,14 @@ public class AutoTrace4jTest {
 
         // 02.When
         Response response = client.newCall(request).execute();
-        System.out.println("OkHttp out: " + JSON.toJSONString(response));
-        String actualTraceId = extractTraceIdFromHeader(
-                Objects.requireNonNull(response.body()).string());
+        boolean success = response.isSuccessful();
+        ResponseBody body = response.body();
+        String resp = Objects.requireNonNull(body).string();
+        System.out.println("OkHttp out: " + resp);
+        String actualTraceId = extractTraceIdFromHeader(resp);
 
         // 03.Verify
-        Assertions.assertTrue(response.isSuccessful());
+        Assertions.assertTrue(success);
         Assertions.assertEquals(expectedTraceId, actualTraceId);
     }
 
