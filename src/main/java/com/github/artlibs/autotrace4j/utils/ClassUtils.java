@@ -13,6 +13,7 @@ import java.nio.file.*;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 /**
@@ -24,7 +25,7 @@ import java.util.function.BiConsumer;
  * All rights Reserved.
  */
 public class ClassUtils {
-    private ClassUtils(){}
+    private ClassUtils() {}
 
     /**
      * 注入指定包名下的class到bootstrap
@@ -72,19 +73,26 @@ public class ClassUtils {
         while (classesEnumeration.hasMoreElements()) {
             URL packageDirUrl = classesEnumeration.nextElement();
             Path packagePath;
-            if (packageDirUrl.getProtocol().equals("jar")) {
-                try(FileSystem fileSystem = FileSystems.newFileSystem(packageDirUrl.toURI(), new HashMap<>())) {
+            FileSystem zipFileSystem = null;
+            try {
+                if (packageDirUrl.getProtocol().equals("jar")) {
+                    zipFileSystem = FileSystems.newFileSystem(packageDirUrl.toURI(), new HashMap<>());
                     String uriStr = packageDirUrl.toURI().toString();
-                    packagePath = fileSystem.getPath(uriStr.substring(uriStr.indexOf("!") + 1));
+                    packagePath = zipFileSystem.getPath(uriStr.substring(uriStr.indexOf("!") + 1));
+                } else {
+                    packagePath = Paths.get(packageDirUrl.toURI());
                 }
-            } else {
-                packagePath = Paths.get(packageDirUrl.toURI());
-            }
-            try (DirectoryStream<Path> paths = Files.newDirectoryStream(packagePath, "*.class")) {
-                for (Path path : paths) {
-                    walker.accept(path, buildCanonicalName(packagePrefix, path.getFileName().toString()));
+                try (DirectoryStream<Path> paths = Files.newDirectoryStream(packagePath, "*.class")) {
+                    for (Path path : paths) {
+                        walker.accept(path, buildCanonicalName(packagePrefix, path.getFileName().toString()));
+                    }
+                }
+            } finally {
+                if (Objects.nonNull(zipFileSystem)) {
+                    zipFileSystem.close();
                 }
             }
+
         }
     }
 
