@@ -74,6 +74,7 @@ public class AutoTrace4jTest {
             response.append(inputLine);
         }
         in.close();
+        System.out.println("SunHttp out: " + response);
         String actualTraceId = extractTraceIdFromHeader(response.toString());
 
         // 03.Verify
@@ -92,6 +93,7 @@ public class AutoTrace4jTest {
 
         // 02.When
         Response response = client.newCall(request).execute();
+        System.out.println("OkHttp out: " + JSON.toJSONString(response));
         String actualTraceId = extractTraceIdFromHeader(
                 Objects.requireNonNull(response.body()).string());
 
@@ -110,6 +112,7 @@ public class AutoTrace4jTest {
         // 02.When
         CloseableHttpResponse respObj = httpClient.execute(httpGet);
         String response = EntityUtils.toString(respObj.getEntity());
+        System.out.println("ApacheHttp out: " + response);
         String actualTraceId = extractTraceIdFromHeader(response);
 
         // 03.Verify
