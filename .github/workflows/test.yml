@@ -25,8 +25,7 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '8'
-      - name: Set up Maven
-        uses: xlui/action-maven-cli@jdk8
+          cache: maven
       - name: Test with Maven
         run: mvn -B test --file pom.xml
 
