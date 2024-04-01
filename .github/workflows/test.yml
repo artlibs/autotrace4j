@@ -16,7 +16,10 @@ on:
 
 jobs:
   test:
-    runs-on: windows-latest  # windows-latest macos-latest ubuntu-latest
+    strategy:
+      matrix:
+        os: [ macos-latest, ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
