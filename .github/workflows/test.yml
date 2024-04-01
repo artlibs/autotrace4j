@@ -16,15 +16,17 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Set up JDK 8
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
+          distribution: 'adopt'
           java-version: '8'
-          distribution: 'temurin'
-          cache: maven
+      - name: Set up Maven
+        uses: xlui/action-maven-cli@jdk8
       - name: Test with Maven
         run: mvn -B test --file pom.xml
 

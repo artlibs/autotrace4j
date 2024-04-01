@@ -15,6 +15,7 @@ import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.bind.annotation.Morph;
 import net.bytebuddy.matcher.ElementMatcher;
+
 import java.io.*;
 import java.lang.instrument.Instrumentation;
 import java.net.URISyntaxException;
@@ -59,7 +60,7 @@ public final class TraceAgentBuilder {
             }
 
             agentBuilder = agentBuilder.type(interceptor.typeMatcher())
-                    .transform((builder, typeDescription, classLoader, module) -> {
+                    .transform((builder, typeDescription, classLoader, javaModule, protectionDomain) -> {
                 DynamicType.Builder<?> newBuilder = interceptor.transformType(builder, typeDescription, classLoader);
                 if (Objects.isNull(newBuilder)) {
                     newBuilder = builder;
