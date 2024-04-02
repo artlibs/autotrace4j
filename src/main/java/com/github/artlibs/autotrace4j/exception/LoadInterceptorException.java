@@ -4,7 +4,7 @@ package com.github.artlibs.autotrace4j.exception;
  * Load Interceptor Exception
  *
  * @author Fury
- * @since 2024-03-29 10:16
+ * @since 2024-03-30
  * <p>
  * All rights Reserved.
  */

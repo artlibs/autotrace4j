@@ -2,7 +2,7 @@ package com.github.artlibs.autotrace4j;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
-import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
+import com.github.artlibs.autotrace4j.context.AutoTraceCtx;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

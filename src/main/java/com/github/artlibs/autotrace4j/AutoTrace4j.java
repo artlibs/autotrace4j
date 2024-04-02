@@ -1,7 +1,7 @@
 package com.github.artlibs.autotrace4j;
 
-import com.github.artlibs.autotrace4j.core.Transformer;
-import com.github.artlibs.autotrace4j.utils.ClassUtils;
+import com.github.artlibs.autotrace4j.interceptor.Transformer;
+import com.github.artlibs.autotrace4j.support.ClassUtils;
 
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
@@ -12,7 +12,7 @@ import java.util.Objects;
  * Auto Trace for Java
  *
  * @author Fury
- * @since 2023-01-04
+ * @since 2024-03-30
  * <p>
  * All rights Reserved.
  */
@@ -42,7 +42,7 @@ public final class AutoTrace4j {
                         " to determine the enhancement scope; such as：\n"
                     + "-javaagent:/dir/to/autotrace4j.jar=com.your-domain.pkg1,com.your-domain.pkg2");
         }
-        String ctxPackagePrefix = AutoTrace4j.class.getPackage().getName() + ".ctx";
+        String ctxPackagePrefix = AutoTrace4j.class.getPackage().getName() + ".context";
         Transformer.intercept(enhancePackages)
             .on(ClassUtils.injectClassToBootStrap(instrument, ctxPackagePrefix));
     }

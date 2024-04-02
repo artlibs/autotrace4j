@@ -25,7 +25,7 @@
     </properties>
 
     <dependencies>
-        <!-- 遵循最小依赖原则 -->
+        <!-- minimal dependencies -->
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
@@ -108,7 +108,7 @@
                 <version>${maven-shade.version}</version>
                 <executions>
                     <execution>
-                        <!-- 加上 id 标签解决错误 Cannot find 'resource' in
+                        <!-- <id> fix: Cannot find 'resource' in
                         class org.apache.maven.plugins.shade.resource.ManifestResourceTransformer -->
                         <id>shade-bytebuddy</id>
                         <phase>package</phase>

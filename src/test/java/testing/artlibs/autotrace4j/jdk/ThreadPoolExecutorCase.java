@@ -1,6 +1,6 @@
 package testing.artlibs.autotrace4j.jdk;
 
-import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
+import com.github.artlibs.autotrace4j.context.AutoTraceCtx;
 
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
