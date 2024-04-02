@@ -3,6 +3,7 @@ package com.github.artlibs.autotrace4j;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.github.artlibs.autotrace4j.context.AutoTraceCtx;
+import com.github.artlibs.testcase.Const;
 import com.github.artlibs.testcase.TpeCase;
 import com.github.artlibs.testcase.Tuple;
 import net.bytebuddy.agent.ByteBuddyAgent;
@@ -18,6 +19,7 @@ import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.slf4j.MDC;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -32,6 +34,7 @@ import java.util.concurrent.Executors;
 public class RunTests {
     private final String expectedTraceId = "expected-trace-id";
     private final String expectedSpanId = "expected-span-id";
+    private final String expectedParentSpanId = "expected-p-span-id";
     private final String httpBinOrgUrl = "https://httpbin.org/get";
 
     @BeforeAll
@@ -39,6 +42,24 @@ public class RunTests {
         System.out.println("====== beforeAll ======");
         AutoTrace4j.premain("com.github.artlibs.testcase"
                 , ByteBuddyAgent.install());
+    }
+
+    @Test
+    void testSlf4jMDC() {
+        // 01.Prepare
+        AutoTraceCtx.setTraceId(expectedTraceId);
+        AutoTraceCtx.setSpanId(expectedSpanId);
+        AutoTraceCtx.setParentSpanId(expectedParentSpanId);
+
+        // 02.When
+        String realTraceId = MDC.get(Const.ATO_TRACE_ID);
+        String realSpanId = MDC.get(Const.ATO_SPAN_ID);
+        String realParentSpanId = MDC.get(Const.ATO_PARENT_SPAN_ID);
+
+        // 03.Verify
+        Assertions.assertEquals(expectedTraceId, realTraceId);
+        Assertions.assertEquals(expectedSpanId, realSpanId);
+        Assertions.assertEquals(expectedParentSpanId, realParentSpanId);
     }
 
     @Test
@@ -53,7 +74,7 @@ public class RunTests {
         boolean stp = TpeCase.newCase(scheduledThreadPoolExecutor)
                 .run(expectedTraceId, expectedSpanId);
 
-        // 02.Verify
+        // 03.Verify
         Assertions.assertTrue(tpe);
         Assertions.assertTrue(stp);
     }
@@ -135,8 +156,8 @@ public class RunTests {
             headerMap.put(key.toLowerCase(), headerObj.getString(key));
         }
         return new Tuple(
-                headerMap.get(AutoTraceCtx.ATO_TRACE_ID.toLowerCase()),
-                headerMap.get(AutoTraceCtx.ATO_SPAN_ID.toLowerCase())
+                headerMap.get(Const.ATO_TRACE_ID.toLowerCase()),
+                headerMap.get(Const.ATO_SPAN_ID.toLowerCase())
         );
     }
 }
