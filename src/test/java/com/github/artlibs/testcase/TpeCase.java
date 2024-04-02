@@ -5,6 +5,14 @@ import com.github.artlibs.autotrace4j.context.AutoTraceCtx;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
+/**
+ * TPE
+ *
+ * @author Fury
+ * @since 2024-03-30
+ * <p>
+ * All rights Reserved.
+ */
 public class TpeCase {
     private final ExecutorService service;
     private TpeCase(ExecutorService service){

@@ -1,14 +1,15 @@
 package com.github.artlibs.autotrace4j.interceptor.impl;
 
+import com.github.artlibs.autotrace4j.context.AutoTraceCtx;
 import com.github.artlibs.autotrace4j.interceptor.Transformer;
 import com.github.artlibs.autotrace4j.interceptor.base.AbstractInstanceInterceptor;
-import com.github.artlibs.autotrace4j.context.AutoTraceCtx;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatchers;
 
 import java.lang.reflect.Method;
+
+import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
  * Xxl Job Handler Interceptor
@@ -42,9 +43,15 @@ public class XxlJobHandlerInterceptor extends AbstractInstanceInterceptor {
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return ElementMatchers.hasSuperClass(ElementMatchers
-                .named("com.xxl.job.core.handler.IJobHandler"))
-                .and(Transformer.getInterceptScopeJunction());
+        return Transformer.getInterceptScopeJunction()
+                .and(hasSuperClass(named("com.xxl.job.core.handler.IJobHandler")))
+                    // remove since xxl-job v2.2.0
+//                .or(isAnnotatedWith(named("com.xxl.job.core.handler.annotation.JobHandler")))
+//                .or(not(isAnnotation()).and(not(isInterface()))
+//                        .and(not(nameContains("$")))
+//                        .and(declaresMethod(isAnnotatedWith(
+//                        named("com.xxl.job.core.handler.annotation.XxlJob")))))
+                ;
     }
 
     /**
@@ -52,7 +59,10 @@ public class XxlJobHandlerInterceptor extends AbstractInstanceInterceptor {
      */
     @Override
     public ElementMatcher<? super MethodDescription> methodMatcher() {
-        return ElementMatchers.named("execute").and(ElementMatchers
-                .takesArgument(0, String.class));
+        return isPublic()  // add since xxl-job v2.3.0
+                .and(named("execute").and(takesNoArguments()).and(returns(void.class)))
+                // remove since xxl-job v2.3.0
+                .or(named("execute").and(takesArgument(0, String.class)))
+                ;
     }
 }

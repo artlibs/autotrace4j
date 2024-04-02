@@ -6,6 +6,7 @@ import com.github.artlibs.autotrace4j.context.AutoTraceCtx;
 import com.github.artlibs.testcase.Const;
 import com.github.artlibs.testcase.TpeCase;
 import com.github.artlibs.testcase.Tuple;
+import com.github.artlibs.testcase.XxlJobCase;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -31,7 +32,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class RunTests {
+public class TestCases {
     private final String expectedTraceId = "expected-trace-id";
     private final String expectedSpanId = "expected-span-id";
     private final String expectedParentSpanId = "expected-p-span-id";
@@ -42,6 +43,23 @@ public class RunTests {
         System.out.println("====== beforeAll ======");
         AutoTrace4j.premain("com.github.artlibs.testcase"
                 , ByteBuddyAgent.install());
+    }
+
+    @Test
+    void testXXLJobHandler() throws Exception {
+        // 01.Prepare
+        XxlJobCase c = new XxlJobCase();
+
+        // 02.When
+        //c.execute();
+        c.execute("v");
+        Tuple tuple = c.getInjected();
+
+        // 03.Verify
+        // value1: trace id, value2: span id, value3: parent span id
+        Assertions.assertNull(tuple.getValue3());
+        Assertions.assertNotNull(tuple.getValue2());
+        Assertions.assertNotNull(tuple.getValue1());
     }
 
     @Test
