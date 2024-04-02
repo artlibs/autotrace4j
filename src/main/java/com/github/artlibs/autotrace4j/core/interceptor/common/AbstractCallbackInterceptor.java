@@ -1,5 +1,6 @@
-package com.github.artlibs.autotrace4j.core.interceptor;
+package com.github.artlibs.autotrace4j.core.interceptor.common;
 
+import com.github.artlibs.autotrace4j.core.interceptor.base.AbstractInstanceInterceptor;
 import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
 import com.github.artlibs.autotrace4j.ctx.ReflectUtils;
 import net.bytebuddy.asm.Advice;
@@ -8,6 +9,8 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.matcher.ElementMatchers;
+import net.bytebuddy.utility.JavaModule;
+
 import java.lang.reflect.Method;
 import java.util.Objects;
 
@@ -21,15 +24,10 @@ import java.util.Objects;
  */
 public abstract class AbstractCallbackInterceptor extends AbstractInstanceInterceptor {
     /**
-     * 在原方法刚开始进入时执行
-     *
-     * @param thiz         增强的对象实例
-     * @param allArgs      原方法的参数表
-     * @param originMethod 原方法
-     * @throws Exception -
+     * {@inheritDoc}
      */
     @Override
-    public void beforeMethod(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
+    public void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
         String traceId = ReflectUtils.getFieldValue(thiz, AutoTraceCtx.TRACE_KEY);
         if (Objects.nonNull(traceId)) {
             AutoTraceCtx.setTraceId(traceId);
@@ -47,26 +45,23 @@ public abstract class AbstractCallbackInterceptor extends AbstractInstanceInterc
     }
 
     /**
-     * 类型转换，如增加字段、方法等
-     * @param builder origin DynamicType.Builder
-     * @param typeDescription TypeDescription
-     * @param classLoader ClassLoader
-     * @return new DynamicType.Builder
+     * {@inheritDoc}
      */
     @Override
-    public DynamicType.Builder<?> transformType(DynamicType.Builder<?> builder
-            , TypeDescription typeDescription, ClassLoader classLoader) {
-        return builder.defineField(AutoTraceCtx.TRACE_KEY, String.class, Visibility.PRIVATE)
+    public DynamicType.Builder<?> doTypeTransform(DynamicType.Builder<?> builder
+            , TypeDescription typeDescription, JavaModule module, ClassLoader classLoader) {
+        return builder  // add field
+            .defineField(AutoTraceCtx.TRACE_KEY, String.class, Visibility.PRIVATE)
             .defineField(AutoTraceCtx.SPAN_KEY, String.class, Visibility.PRIVATE)
             .defineField(AutoTraceCtx.PARENT_SPAN_KEY, String.class, Visibility.PRIVATE)
-
+                        // add getter
             .defineMethod(AutoTraceCtx.TRACE_KEY_GETTER, String.class, Visibility.PUBLIC)
                 .intercept(FieldAccessor.ofField(AutoTraceCtx.TRACE_KEY))
             .defineMethod(AutoTraceCtx.SPAN_KEY_GETTER, String.class, Visibility.PUBLIC)
                 .intercept(FieldAccessor.ofField(AutoTraceCtx.SPAN_KEY))
             .defineMethod(AutoTraceCtx.PARENT_SPAN_KEY_GETTER, String.class, Visibility.PUBLIC)
                 .intercept(FieldAccessor.ofField(AutoTraceCtx.PARENT_SPAN_KEY))
-
+                        // add setter
             .defineMethod(AutoTraceCtx.TRACE_KEY_SETTER, void.class, Visibility.PUBLIC)
                 .withParameters(String.class)
                 .intercept(FieldAccessor.ofField(AutoTraceCtx.TRACE_KEY))
@@ -76,28 +71,24 @@ public abstract class AbstractCallbackInterceptor extends AbstractInstanceInterc
             .defineMethod(AutoTraceCtx.PARENT_SPAN_KEY_SETTER, void.class, Visibility.PUBLIC)
                 .withParameters(String.class)
                 .intercept(FieldAccessor.ofField(AutoTraceCtx.PARENT_SPAN_KEY))
-
             // intercept constructor, any constructor
                 .constructor(ElementMatchers.any())
-                .intercept(Advice.to(CallbackConstructor.class));
+                .intercept(Advice.to(this.getClass()));
     }
 
-    public static class CallbackConstructor {
-        private CallbackConstructor() {}
-
-        @Advice.OnMethodExit
-        public static void intercept(
-            @Advice.FieldValue(value = AutoTraceCtx.TRACE_KEY, readOnly = false) String traceId,
-            @Advice.FieldValue(value = AutoTraceCtx.SPAN_KEY, readOnly = false) String spanId,
-            @Advice.FieldValue(value = AutoTraceCtx.PARENT_SPAN_KEY, readOnly = false) String parentSpanId
-        ) {
-            try {
-                traceId = AutoTraceCtx.getTraceId();
-                spanId = AutoTraceCtx.getSpanId();
-                parentSpanId = AutoTraceCtx.getParentSpanId();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    @Advice.OnMethodExit
+    public static void adviceOnMethodExit(
+        @Advice.FieldValue(value = AutoTraceCtx.TRACE_KEY, readOnly = false) String traceId,
+        @Advice.FieldValue(value = AutoTraceCtx.SPAN_KEY, readOnly = false) String spanId,
+        @Advice.FieldValue(value = AutoTraceCtx.PARENT_SPAN_KEY, readOnly = false) String parentSpanId
+    ) {
+        try {
+            // setup defined field on method exit
+            traceId = AutoTraceCtx.getTraceId();
+            spanId = AutoTraceCtx.getSpanId();
+            parentSpanId = AutoTraceCtx.getParentSpanId();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

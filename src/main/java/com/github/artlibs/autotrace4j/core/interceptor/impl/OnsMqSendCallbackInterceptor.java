@@ -1,6 +1,6 @@
 package com.github.artlibs.autotrace4j.core.interceptor.impl;
 
-import com.github.artlibs.autotrace4j.core.InterceptorBuilder;
+import com.github.artlibs.autotrace4j.core.Transformer;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
@@ -15,14 +15,12 @@ import net.bytebuddy.matcher.ElementMatchers;
  */
 public class OnsMqSendCallbackInterceptor extends RocketMqSendCallbackInterceptor {
     /**
-     * 类型匹配器
-     *
-     * @return ElementMatcher
+     * {@inheritDoc}
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
         return ElementMatchers.hasSuperType(ElementMatchers
                 .named("com.aliyun.openservices.ons.api.SendCallback"))
-                .and(InterceptorBuilder.getInterceptScopeJunction());
+                .and(Transformer.getInterceptScopeJunction());
     }
 }

@@ -1,10 +1,14 @@
 package com.github.artlibs.autotrace4j.core.interceptor;
 
-import com.github.artlibs.autotrace4j.core.InterceptorType;
+import com.github.artlibs.autotrace4j.core.MorphType;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.matcher.ElementMatcher;
+import net.bytebuddy.utility.JavaModule;
+
+import java.lang.reflect.Method;
+
 
 /**
  * Interceptor
@@ -14,34 +18,86 @@ import net.bytebuddy.matcher.ElementMatcher;
  *
  * All rights Reserved.
  */
-public interface Interceptor {
+public interface Interceptor<T> {
     /**
-     * 增强方式，VISITOR 或者 方法代理
-     * @return EnhanceType
+     * visitor mode or not
+     * @return true if visitor mode else method delegation
      */
-    InterceptorType interceptType();
+    boolean isVisitorMode();
 
     /**
-     * 类型匹配器
+     * type matcher
      * @return ElementMatcher
      */
     ElementMatcher<? super TypeDescription> typeMatcher();
 
     /**
-     * 方法匹配器
+     * method matcher
      * @return ElementMatcher
      */
     ElementMatcher<? super MethodDescription> methodMatcher();
 
     /**
-     * 类型转换，如增加字段、方法等
+     * enhance on method enter
+     * @param obj thiz or class
+     * @param allArgs argument list
+     * @param originMethod original method
+     * @throws Exception -
+     */
+    void onMethodEnter(T obj, Object[] allArgs, Method originMethod) throws Exception;
+
+    /**
+     * enhance on method exit
+     * @param obj thiz or class
+     * @param allArgs argument list
+     * @param result method result
+     * @param originMethod original method
+     * @return Object - result
+     * @throws Exception -
+     */
+    default Object onMethodExit(T obj, Object[] allArgs, Object result, Method originMethod) throws Exception {
+        return result;
+    }
+
+    /**
+     * do type transform
      * @param builder origin DynamicType.Builder
      * @param typeDescription TypeDescription
      * @param classLoader ClassLoader
+     * @param module JavaModule
      * @return new DynamicType.Builder
      */
-    default DynamicType.Builder<?> transformType(DynamicType.Builder<?> builder
-            , TypeDescription typeDescription, ClassLoader classLoader) {
+    default DynamicType.Builder<?> doTypeTransform(DynamicType.Builder<?> builder
+            , TypeDescription typeDescription, JavaModule module, ClassLoader classLoader) {
         return builder;
+    }
+
+    /**
+     * do intercept
+     * @param obj class or thiz
+     * @param callable callable
+     * @param allArgs argument list
+     * @param method original method
+     * @return result
+     */
+    default Object doIntercept(T obj, MorphType callable, Object[] allArgs, Method method) {
+        try {
+            this.onMethodEnter(obj, allArgs, method);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Object result = null;
+        try {
+            result = callable.call(allArgs);
+        } finally {
+            try {
+                result = this.onMethodExit(obj, allArgs, result, method);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return result;
     }
 }

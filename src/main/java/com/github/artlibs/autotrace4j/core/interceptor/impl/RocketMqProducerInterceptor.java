@@ -1,7 +1,7 @@
 package com.github.artlibs.autotrace4j.core.interceptor.impl;
 
+import com.github.artlibs.autotrace4j.core.interceptor.base.AbstractInstanceInterceptor;
 import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
-import com.github.artlibs.autotrace4j.core.interceptor.AbstractInstanceInterceptor;
 import com.github.artlibs.autotrace4j.ctx.ReflectUtils;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * RocketMq Producer
+ * RocketMq Producer Interceptor
  *
  * @author Fury
  * @since 2023-01-04
@@ -22,15 +22,10 @@ import java.util.Objects;
  */
 public class RocketMqProducerInterceptor extends AbstractInstanceInterceptor {
     /**
-     * 在原方法刚开始进入时执行
-     *
-     * @param thiz         增强的对象实例
-     * @param allArgs      原方法的参数表
-     * @param originMethod 原方法
-     * @throws Exception -
+     * {@inheritDoc}
      */
     @Override
-    public void beforeMethod(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
+    public void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
         Map<String, String> properties = ReflectUtils.getFieldValue(allArgs[0], "properties");
         if (Objects.nonNull(properties)) {
             String spanId = properties.get(AutoTraceCtx.SPAN_KEY);
@@ -51,9 +46,7 @@ public class RocketMqProducerInterceptor extends AbstractInstanceInterceptor {
     }
 
     /**
-     * 类型匹配器
-     *
-     * @return ElementMatcher
+     * {@inheritDoc}
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
@@ -62,9 +55,7 @@ public class RocketMqProducerInterceptor extends AbstractInstanceInterceptor {
     }
 
     /**
-     * 方法匹配器
-     *
-     * @return ElementMatcher
+     * {@inheritDoc}
      */
     @Override
     public ElementMatcher<? super MethodDescription> methodMatcher() {

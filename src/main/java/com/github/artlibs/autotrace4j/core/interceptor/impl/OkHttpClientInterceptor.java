@@ -1,12 +1,13 @@
 package com.github.artlibs.autotrace4j.core.interceptor.impl;
 
+import com.github.artlibs.autotrace4j.core.interceptor.base.AbstractInstanceInterceptor;
 import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
-import com.github.artlibs.autotrace4j.core.interceptor.AbstractInstanceInterceptor;
 import com.github.artlibs.autotrace4j.ctx.ReflectUtils;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
+
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
@@ -21,14 +22,10 @@ import java.util.Objects;
  */
 public class OkHttpClientInterceptor extends AbstractInstanceInterceptor {
     /**
-     * 在原方法刚开始进入时执行
-     * @param thiz 增强的对象实例
-     * @param allArgs 原方法的参数表
-     * @param originMethod 原方法
-     * @throws Exception -
+     * {@inheritDoc}
      */
     @Override
-    public void beforeMethod(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
+    public void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) {
         final String traceId = AutoTraceCtx.getTraceId();
         if (Objects.isNull(traceId) || Objects.isNull(thiz)) {
             return;
@@ -48,9 +45,7 @@ public class OkHttpClientInterceptor extends AbstractInstanceInterceptor {
 
 
     /**
-     * 类型匹配器
-     *
-     * @return ElementMatcher
+     * {@inheritDoc}
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
@@ -58,9 +53,7 @@ public class OkHttpClientInterceptor extends AbstractInstanceInterceptor {
     }
 
     /**
-     * okhttp3.Request.Builder.build()
-     *
-     * @return ElementMatcher
+     * {@inheritDoc}
      */
     @Override
     public ElementMatcher<? super MethodDescription> methodMatcher() {

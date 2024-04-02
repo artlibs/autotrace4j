@@ -1,5 +1,6 @@
-package com.github.artlibs.autotrace4j.core.interceptor;
+package com.github.artlibs.autotrace4j.core.interceptor.common;
 
+import com.github.artlibs.autotrace4j.core.interceptor.base.AbstractInstanceInterceptor;
 import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
 import com.github.artlibs.autotrace4j.ctx.ReflectUtils;
 import com.github.artlibs.autotrace4j.utils.Constants;
@@ -18,15 +19,10 @@ import java.util.Objects;
 public abstract class AbstractServletInterceptor extends AbstractInstanceInterceptor {
 
     /**
-     * 在原方法刚开始进入时执行
-     *
-     * @param thiz         增强的对象实例
-     * @param allArgs      原方法的参数表
-     * @param originMethod 原方法
-     * @throws Exception -
+     * {@inheritDoc}
      */
     @Override
-    public void beforeMethod(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
+    public void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
         Class<?> httpReqClazz, httpRespClazz;
         try {
             httpReqClazz = Class.forName(
@@ -98,20 +94,6 @@ public abstract class AbstractServletInterceptor extends AbstractInstanceInterce
                 }
             }
         }
-    }
-
-    /**
-     * 在原方法返回前执行
-     *
-     * @param thiz         增强的对象实例
-     * @param allArgs      原方法的参数表
-     * @param result       方法执行结果
-     * @param originMethod 原方法
-     * @return Object - result
-     */
-    @Override
-    public Object afterMethod(Object thiz, Object[] allArgs, Object result, Method originMethod) {
-        return result;
     }
 
 }

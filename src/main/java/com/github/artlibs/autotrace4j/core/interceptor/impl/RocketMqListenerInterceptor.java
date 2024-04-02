@@ -1,7 +1,7 @@
 package com.github.artlibs.autotrace4j.core.interceptor.impl;
 
+import com.github.artlibs.autotrace4j.core.interceptor.base.AbstractInstanceInterceptor;
 import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
-import com.github.artlibs.autotrace4j.core.interceptor.AbstractInstanceInterceptor;
 import com.github.artlibs.autotrace4j.ctx.MethodWrapper;
 import com.github.artlibs.autotrace4j.ctx.ReflectUtils;
 import net.bytebuddy.description.method.MethodDescription;
@@ -13,7 +13,7 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 
 /**
- * RocketMq Listener
+ * RocketMq Listener Interceptor
  *
  * @author Fury
  * @since 2023-01-04
@@ -24,22 +24,16 @@ public class RocketMqListenerInterceptor extends AbstractInstanceInterceptor {
     private static final String GUP = "getUserProperty";
 
     /**
-     * 在原方法刚开始进入时执行
-     *
-     * @param thiz         增强的对象实例
-     * @param allArgs      原方法的参数表
-     * @param originMethod 原方法
-     * @throws Exception -
+     * {@inheritDoc}
      */
     @Override
-    public void beforeMethod(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
+    public void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
         MethodWrapper methodWrapper = ReflectUtils.getMethodWrapper(allArgs[0], GUP, String.class);
 
         String traceId = methodWrapper.invoke(AutoTraceCtx.TRACE_KEY);
         String parentSpanId = methodWrapper.invoke(AutoTraceCtx.SPAN_KEY);
 
         if (Objects.isNull(traceId)) {
-            // 如果MQ消费时没有trace id, 生成一个
             traceId = AutoTraceCtx.generate();
         }
         AutoTraceCtx.setTraceId(traceId);
@@ -48,9 +42,7 @@ public class RocketMqListenerInterceptor extends AbstractInstanceInterceptor {
     }
 
     /**
-     * 类型匹配器
-     *
-     * @return ElementMatcher
+     * {@inheritDoc}
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
@@ -58,9 +50,7 @@ public class RocketMqListenerInterceptor extends AbstractInstanceInterceptor {
     }
 
     /**
-     * 方法匹配器
-     *
-     * @return ElementMatcher
+     * {@inheritDoc}
      */
     @Override
     public ElementMatcher<? super MethodDescription> methodMatcher() {

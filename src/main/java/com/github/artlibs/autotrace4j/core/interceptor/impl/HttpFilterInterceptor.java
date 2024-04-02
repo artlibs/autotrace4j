@@ -1,6 +1,6 @@
 package com.github.artlibs.autotrace4j.core.interceptor.impl;
 
-import com.github.artlibs.autotrace4j.core.interceptor.AbstractServletInterceptor;
+import com.github.artlibs.autotrace4j.core.interceptor.common.AbstractServletInterceptor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
@@ -8,7 +8,7 @@ import net.bytebuddy.matcher.ElementMatcher;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
- * 功能：Filter增强
+ * HTTP Filter Interceptor
  *
  * @author suopovate
  * @since 2024/03/25
@@ -18,9 +18,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
 public class HttpFilterInterceptor extends AbstractServletInterceptor {
 
     /**
-     * 类型匹配器
-     *
-     * @return ElementMatcher
+     * {@inheritDoc}
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
@@ -28,11 +26,7 @@ public class HttpFilterInterceptor extends AbstractServletInterceptor {
     }
 
     /**
-     * 方法匹配器
-     * 匹配所有的Filter接口的实现类
-     * <p>
-     *
-     * @return ElementMatcher
+     * {@inheritDoc}
      */
     @Override
     public ElementMatcher<? super MethodDescription> methodMatcher() {

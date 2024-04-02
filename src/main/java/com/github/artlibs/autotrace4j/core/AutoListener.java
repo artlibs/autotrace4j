@@ -7,7 +7,7 @@ import net.bytebuddy.utility.JavaModule;
 
 
 /**
- * Auto Listener
+ * Transform Listener
  *
  * @author Fury
  * @since 2023-01-04
@@ -34,7 +34,8 @@ public class AutoListener implements AgentBuilder.Listener {
 
     @Override
     public void onError(String typeName, ClassLoader classLoader, JavaModule module, boolean loaded, Throwable throwable) {
-        System.err.println("TypeName: " + typeName + "\nloaded: " + loaded);
+        System.err.println("TypeName: " + typeName + "\nclassLoader: " + classLoader
+                + "\nmodule: " + module + "\nthrowable: " + throwable);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.github.artlibs.autotrace4j.core.interceptor.impl;
 
-import com.github.artlibs.autotrace4j.core.interceptor.AbstractServletInterceptor;
+import com.github.artlibs.autotrace4j.core.interceptor.common.AbstractServletInterceptor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
@@ -19,9 +19,7 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 public class HttpServletInterceptor extends AbstractServletInterceptor {
 
     /**
-     * 类型匹配器
-     *
-     * @return ElementMatcher
+     * {@inheritDoc}
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
@@ -29,9 +27,7 @@ public class HttpServletInterceptor extends AbstractServletInterceptor {
     }
 
     /**
-     * 方法匹配器
-     *
-     * @return ElementMatcher
+     * {@inheritDoc}
      */
     @Override
     public ElementMatcher<? super MethodDescription> methodMatcher() {

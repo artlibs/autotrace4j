@@ -1,6 +1,6 @@
 package com.github.artlibs.autotrace4j;
 
-import com.github.artlibs.autotrace4j.core.InterceptorBuilder;
+import com.github.artlibs.autotrace4j.core.Transformer;
 import com.github.artlibs.autotrace4j.utils.ClassUtils;
 
 import java.io.IOException;
@@ -38,12 +38,12 @@ public final class AutoTrace4j {
     public static void premain(String enhancePackages, Instrumentation instrument) throws IOException, URISyntaxException {
         if (Objects.isNull(enhancePackages) || enhancePackages.trim().isEmpty()) {
             throw new IllegalArgumentException(
-                "Please specify the Java package name prefix (Agent parameter) to determine " +
-                        "the enhancement scope; such as：\n"
+                "Please specify the Java package name prefix (Agent parameter)" +
+                        " to determine the enhancement scope; such as：\n"
                     + "-javaagent:/dir/to/autotrace4j.jar=com.your-domain.pkg1,com.your-domain.pkg2");
         }
         String ctxPackagePrefix = AutoTrace4j.class.getPackage().getName() + ".ctx";
-        InterceptorBuilder.intercept(enhancePackages)
+        Transformer.intercept(enhancePackages)
             .on(ClassUtils.injectClassToBootStrap(instrument, ctxPackagePrefix));
     }
 }
