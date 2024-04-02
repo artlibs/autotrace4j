@@ -1,9 +1,9 @@
 package com.github.artlibs.autotrace4j.interceptor.impl;
 
-import com.github.artlibs.autotrace4j.interceptor.base.AbstractVisitorInterceptor;
 import com.github.artlibs.autotrace4j.context.AutoTraceCtx;
 import com.github.artlibs.autotrace4j.context.MethodWrapper;
 import com.github.artlibs.autotrace4j.context.ReflectUtils;
+import com.github.artlibs.autotrace4j.interceptor.base.AbstractVisitorInterceptor;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
@@ -66,7 +66,6 @@ public class SunHttpClientInterceptor extends AbstractVisitorInterceptor {
             if (Objects.nonNull(traceId)) {
                 MethodWrapper methodWrapper = ReflectUtils.getMethodWrapper(msgHeader
                     , SET_IF_NOT_SET, String.class, String.class);
-
                 methodWrapper.invoke(AutoTraceCtx.ATO_TRACE_ID, traceId);
 
                 final String spanId = AutoTraceCtx.getSpanId();
