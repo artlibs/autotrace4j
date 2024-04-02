@@ -37,7 +37,7 @@ public class RunTests {
     @BeforeAll
     public static void beforeAll() throws Exception {
         System.out.println("====== beforeAll ======");
-        AutoTrace4j.premain("testing.artlibs.autotrace4j"
+        AutoTrace4j.premain("com.github.artlibs.testcase"
                 , ByteBuddyAgent.install());
     }
 
