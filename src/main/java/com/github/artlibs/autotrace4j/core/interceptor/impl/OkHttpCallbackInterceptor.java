@@ -1,6 +1,6 @@
 package com.github.artlibs.autotrace4j.core.interceptor.impl;
 
-import com.github.artlibs.autotrace4j.core.TraceAgentBuilder;
+import com.github.artlibs.autotrace4j.core.InterceptorBuilder;
 import com.github.artlibs.autotrace4j.core.interceptor.AbstractCallbackInterceptor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
@@ -25,7 +25,7 @@ public class OkHttpCallbackInterceptor extends AbstractCallbackInterceptor {
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
         return ElementMatchers.hasSuperType(ElementMatchers.named("okhttp3.Callback"))
-                .and(TraceAgentBuilder.getInterceptScopeJunction());
+                .and(InterceptorBuilder.getInterceptScopeJunction());
     }
 
     /**

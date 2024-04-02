@@ -31,20 +31,20 @@ import static net.bytebuddy.matcher.ElementMatchers.nameStartsWith;
  *
  * All rights Reserved.
  */
-public final class TraceAgentBuilder {
-    private TraceAgentBuilder(){}
+public final class InterceptorBuilder {
+    private InterceptorBuilder(){}
 
     private static List<Interceptor> interceptorList = null;
     private static ElementMatcher.Junction<TypeDescription> interceptScopeJunction;
 
     /**
-     * 构建一个 TraceBuilder 实例
-     * @param packagePrefixes -
+     * build an InterceptorBuilder
+     * @param enhancePackages -
      * @return TraceBuilder
      */
-    public static TraceAgentBuilder intercept(String packagePrefixes) {
-        interceptPackagePrefixes(packagePrefixes);
-        return new TraceAgentBuilder();
+    public static InterceptorBuilder intercept(String enhancePackages) {
+        interceptPackages(enhancePackages);
+        return new InterceptorBuilder();
     }
 
     /**
@@ -53,7 +53,19 @@ public final class TraceAgentBuilder {
      * @throws IOException -
      */
     public void on(Instrumentation instrument) throws IOException, URISyntaxException {
-        AgentBuilder agentBuilder = this.getAgentBuilder();
+        AgentBuilder agentBuilder = new AgentBuilder.Default()
+                .ignore(this.buildIgnore())
+                .ignore(nameStartsWith("com.intellij.rt.")
+                        .or(nameStartsWith("jdk.jfr."))
+                        .or(nameStartsWith("com.alibaba.csp."))
+                        .or(nameStartsWith("org.apache.skywalking."))
+                        .or(nameStartsWith("com.navercorp.pinpoint."))
+                        .or(nameStartsWith(AutoTrace4j.class.getPackage().getName()))
+                        .or(nameStartsWith("org.springframework.boot.devtools"))
+                        .or(nameStartsWith("org.springframework.cloud.sleuth."))
+                        .or(isAnnotatedWith(named("org.springframework.boot.autoconfigure.SpringBootApplication"))))
+                .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
+                .with(new AutoListener());
         for (Interceptor interceptor : loadInterceptor()) {
             if (Objects.isNull(interceptor.typeMatcher()) || Objects.isNull(interceptor.methodMatcher())) {
                 continue;
@@ -87,26 +99,6 @@ public final class TraceAgentBuilder {
      */
     public static ElementMatcher.Junction<TypeDescription> getInterceptScopeJunction() {
         return interceptScopeJunction;
-    }
-
-    /**
-     * 构建一个 Byte buddy AgentBuilder 来转换增强代码
-     * @return Byte buddy AgentBuilder
-     * @throws IOException -
-     */
-    private AgentBuilder getAgentBuilder() throws IOException, URISyntaxException {
-        return new AgentBuilder.Default()
-                .ignore(this.buildIgnore())
-                .ignore(nameStartsWith("com.intellij.rt.")
-                            .or(nameStartsWith("jdk.jfr."))
-                            .or(nameStartsWith("com.alibaba.csp."))
-                            .or(nameStartsWith("org.apache.skywalking."))
-                            .or(nameStartsWith("com.navercorp.pinpoint."))
-                            .or(nameStartsWith(AutoTrace4j.class.getPackage().getName()))
-                            .or(nameStartsWith("org.springframework.boot.devtools"))
-                            .or(nameStartsWith("org.springframework.cloud.sleuth."))
-                            .or(isAnnotatedWith(named("org.springframework.boot.autoconfigure.SpringBootApplication"))))
-                .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION).with(new AutoListener());
     }
 
     /**
@@ -152,7 +144,7 @@ public final class TraceAgentBuilder {
      * build packagePrefixes Junction
      * @param packagePrefixes 增强包前缀
      */
-    private static void interceptPackagePrefixes(String packagePrefixes) {
+    private static void interceptPackages(String packagePrefixes) {
         for (String prefix : packagePrefixes.split(Constants.COMMA)) {
             if (Objects.isNull(interceptScopeJunction)) {
                 interceptScopeJunction = nameStartsWith(prefix);

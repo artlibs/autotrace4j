@@ -1,6 +1,6 @@
 package com.github.artlibs.autotrace4j.core.interceptor.impl;
 
-import com.github.artlibs.autotrace4j.core.TraceAgentBuilder;
+import com.github.artlibs.autotrace4j.core.InterceptorBuilder;
 import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
 import com.github.artlibs.autotrace4j.core.interceptor.AbstractInstanceInterceptor;
 import net.bytebuddy.description.method.MethodDescription;
@@ -56,7 +56,7 @@ public class XxlJobHandlerInterceptor extends AbstractInstanceInterceptor {
     public ElementMatcher<? super TypeDescription> typeMatcher() {
         return ElementMatchers.hasSuperClass(ElementMatchers
                 .named("com.xxl.job.core.handler.IJobHandler"))
-                .and(TraceAgentBuilder.getInterceptScopeJunction());
+                .and(InterceptorBuilder.getInterceptScopeJunction());
     }
 
     /**

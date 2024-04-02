@@ -2,7 +2,7 @@ package com.github.artlibs.autotrace4j.core.interceptor.impl;
 
 import com.github.artlibs.autotrace4j.ctx.AutoTraceCtx;
 import com.github.artlibs.autotrace4j.core.interceptor.AbstractInstanceInterceptor;
-import com.github.artlibs.autotrace4j.core.TraceAgentBuilder;
+import com.github.artlibs.autotrace4j.core.InterceptorBuilder;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
@@ -53,7 +53,7 @@ public class SpringScheduledInterceptor extends AbstractInstanceInterceptor {
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return TraceAgentBuilder.getInterceptScopeJunction()
+        return InterceptorBuilder.getInterceptScopeJunction()
             .and(ElementMatchers.not(ElementMatchers.isAnnotation()))
             .and(ElementMatchers.not(ElementMatchers.isInterface()))
             .and(ElementMatchers.not(ElementMatchers.nameContains("$")))

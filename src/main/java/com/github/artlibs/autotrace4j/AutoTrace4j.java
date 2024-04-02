@@ -1,6 +1,6 @@
 package com.github.artlibs.autotrace4j;
 
-import com.github.artlibs.autotrace4j.core.TraceAgentBuilder;
+import com.github.artlibs.autotrace4j.core.InterceptorBuilder;
 import com.github.artlibs.autotrace4j.utils.ClassUtils;
 
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.net.URISyntaxException;
 import java.util.Objects;
 
 /**
- * Auto Trace entrance
+ * Auto Trace for Java
  *
  * @author Fury
  * @since 2023-01-04
@@ -20,29 +20,30 @@ public final class AutoTrace4j {
     private AutoTrace4j() {}
 
     /**
-     * Java Attach 执行入口
+     * Java Attach agentmain
      *
-     * @param packagePrefixes - 增强包前缀,多个以英文逗号分隔
+     * @param enhancePackages enhance packages
      * @param instrument      Instrumentation
      */
-    public static void agentmain(String packagePrefixes, Instrumentation instrument) throws IOException, URISyntaxException {
-        premain(packagePrefixes, instrument);
+    public static void agentmain(String enhancePackages, Instrumentation instrument) throws IOException, URISyntaxException {
+        premain(enhancePackages, instrument);
     }
 
     /**
-     * Java Agent 方式执行入口
+     * Java Agent premain
      *
-     * @param packagePrefixes - 增强包前缀,多个以英文逗号分隔
+     * @param enhancePackages enhance packages
      * @param instrument      Instrumentation
      */
-    public static void premain(String packagePrefixes, Instrumentation instrument) throws IOException, URISyntaxException {
-        if (Objects.isNull(packagePrefixes) || packagePrefixes.trim().isEmpty()) {
+    public static void premain(String enhancePackages, Instrumentation instrument) throws IOException, URISyntaxException {
+        if (Objects.isNull(enhancePackages) || enhancePackages.trim().isEmpty()) {
             throw new IllegalArgumentException(
-                "请指定Java包名前缀(Agent参数)以指定增强范围; 如：\n"
+                "Please specify the Java package name prefix (Agent parameter) to determine " +
+                        "the enhancement scope; such as：\n"
                     + "-javaagent:/dir/to/autotrace4j.jar=com.your-domain.pkg1,com.your-domain.pkg2");
         }
         String ctxPackagePrefix = AutoTrace4j.class.getPackage().getName() + ".ctx";
-        TraceAgentBuilder.intercept(packagePrefixes)
+        InterceptorBuilder.intercept(enhancePackages)
             .on(ClassUtils.injectClassToBootStrap(instrument, ctxPackagePrefix));
     }
 }
