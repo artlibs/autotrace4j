@@ -28,7 +28,8 @@ public class SystemUtils {
      * @return the absolute path of injectDir
      */
     private static String getClassInjectTempDirPath(String injectDir) {
-        return getSysTempDir() + Constants.INJECT_DIR_ROOT + File.separator + injectDir;
+        return getSysTempDir() + File.separator +
+                Constants.INJECT_DIR_ROOT + File.separator + injectDir;
     }
 
     /**
