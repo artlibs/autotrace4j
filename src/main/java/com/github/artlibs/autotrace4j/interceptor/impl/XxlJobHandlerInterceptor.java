@@ -43,15 +43,9 @@ public class XxlJobHandlerInterceptor extends AbstractInstanceInterceptor {
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return Transformer.getInterceptScopeJunction()
-                .and(hasSuperClass(named("com.xxl.job.core.handler.IJobHandler")))
-                    // remove since xxl-job v2.2.0
-//                .or(isAnnotatedWith(named("com.xxl.job.core.handler.annotation.JobHandler")))
-//                .or(not(isAnnotation()).and(not(isInterface()))
-//                        .and(not(nameContains("$")))
-//                        .and(declaresMethod(isAnnotatedWith(
-//                        named("com.xxl.job.core.handler.annotation.XxlJob")))))
-                ;
+        return Transformer.getInterceptScopeJunction().and(
+                hasSuperClass(named("com.xxl.job.core.handler.IJobHandler"))
+        );
     }
 
     /**
@@ -59,10 +53,7 @@ public class XxlJobHandlerInterceptor extends AbstractInstanceInterceptor {
      */
     @Override
     public ElementMatcher<? super MethodDescription> methodMatcher() {
-        return isPublic()  // add since xxl-job v2.3.0
-                .and(named("execute").and(takesNoArguments()).and(returns(void.class)))
-                // remove since xxl-job v2.3.0
-                .or(named("execute").and(takesArgument(0, String.class)))
-                ;
+        return named("execute").and(takesArgument(0, String.class));
     }
+
 }

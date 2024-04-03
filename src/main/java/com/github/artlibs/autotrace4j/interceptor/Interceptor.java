@@ -43,7 +43,9 @@ public interface Interceptor<T> {
      * @param originMethod original method
      * @throws Exception -
      */
-    void onMethodEnter(T obj, Object[] allArgs, Method originMethod) throws Exception;
+    default void onMethodEnter(T obj, Object[] allArgs, Method originMethod) throws Exception {
+        // NO Sonar
+    }
 
     /**
      * enhance on method exit
@@ -74,24 +76,26 @@ public interface Interceptor<T> {
     /**
      * do intercept
      * @param obj class or thiz
-     * @param callable callable
-     * @param allArgs argument list
+     * @param zuper morph super
+     * @param args argument list
      * @param method original method
      * @return result
      */
-    default Object doIntercept(T obj, MorphType callable, Object[] allArgs, Method method) {
+    default Object doIntercept(T obj, MorphCall zuper, Object[] args, Method method) {
         try {
-            this.onMethodEnter(obj, allArgs, method);
+            this.onMethodEnter(obj, args, method);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         Object result = null;
         try {
-            result = callable.call(allArgs);
+            result = zuper.call(args);
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             try {
-                result = this.onMethodExit(obj, allArgs, result, method);
+                result = this.onMethodExit(obj, args, result, method);
             } catch (Exception e) {
                 e.printStackTrace();
             }

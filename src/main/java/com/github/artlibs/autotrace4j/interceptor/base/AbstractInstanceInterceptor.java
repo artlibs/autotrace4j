@@ -1,7 +1,7 @@
 package com.github.artlibs.autotrace4j.interceptor.base;
 
-import com.github.artlibs.autotrace4j.interceptor.MorphType;
 import com.github.artlibs.autotrace4j.interceptor.Interceptor;
+import com.github.artlibs.autotrace4j.interceptor.MorphCall;
 import net.bytebuddy.implementation.bind.annotation.*;
 
 import java.lang.reflect.Method;
@@ -40,9 +40,9 @@ public abstract class AbstractInstanceInterceptor implements Interceptor<Object>
     }
 
     @RuntimeType
-    public Object intercept(@This Object thiz, @Morph MorphType callable
-            , @AllArguments Object[] allArgs, @Origin Method originMethod) {
-        return this.doIntercept(thiz, callable, allArgs, originMethod);
+    public Object intercept(@This Object thiz, @Morph MorphCall zuper
+            , @AllArguments Object[] args, @Origin Method originMethod) {
+        return this.doIntercept(thiz, zuper, args, originMethod);
     }
 
     @Override

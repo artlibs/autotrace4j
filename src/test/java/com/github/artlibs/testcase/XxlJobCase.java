@@ -17,7 +17,6 @@ public class XxlJobCase extends IJobHandler {
 
     // add since xxl-job v2.3.0
     @Override
-    //public void execute() throws Exception {
     public ReturnT<String> execute(String p) throws Exception {
         injected = new Tuple(
                 AutoTraceCtx.getTraceId(),

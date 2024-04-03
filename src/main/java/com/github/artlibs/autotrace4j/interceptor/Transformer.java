@@ -1,8 +1,8 @@
 package com.github.artlibs.autotrace4j.interceptor;
 
 import com.github.artlibs.autotrace4j.AutoTrace4j;
-import com.github.artlibs.autotrace4j.interceptor.base.AbstractVisitorInterceptor;
 import com.github.artlibs.autotrace4j.exception.LoadInterceptorException;
+import com.github.artlibs.autotrace4j.interceptor.base.AbstractVisitorInterceptor;
 import com.github.artlibs.autotrace4j.support.ClassUtils;
 import com.github.artlibs.autotrace4j.support.Constants;
 import net.bytebuddy.agent.builder.AgentBuilder;
@@ -57,16 +57,19 @@ public final class Transformer {
         for (Interceptor<?> interceptor : loadInterceptor()) {
             agentBuilder = agentBuilder.type(interceptor.typeMatcher()).transform(
                     (builder, typeDescription, classLoader, javaModule, protectionDomain) -> {
-                DynamicType.Builder<?> newBuilder = interceptor.doTypeTransform(
-                        builder, typeDescription, javaModule, classLoader);
+                DynamicType.Builder<?> newBuilder = interceptor
+                        .doTypeTransform(builder, typeDescription, javaModule, classLoader);
+                if (Objects.isNull(newBuilder)) {
+                    newBuilder = builder;
+                }
                 if (interceptor.isVisitorMode()) {
                     AbstractVisitorInterceptor visitor = (AbstractVisitorInterceptor) interceptor;
                     return newBuilder.visit(Advice.to(visitor.getClass())
                             .on(isMethod().and(interceptor.methodMatcher())));
                 }
-                return builder.method(isMethod().and(interceptor.methodMatcher()))
+                return newBuilder.method(isMethod().and(interceptor.methodMatcher()))
                         .intercept(MethodDelegation.withDefaultConfiguration()
-                                .withBinders(Morph.Binder.install(MorphType.class))
+                                .withBinders(Morph.Binder.install(MorphCall.class))
                                 .to(interceptor));
 
             });

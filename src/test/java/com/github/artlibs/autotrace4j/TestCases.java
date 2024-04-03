@@ -19,6 +19,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 
@@ -45,13 +46,17 @@ public class TestCases {
                 , ByteBuddyAgent.install());
     }
 
+    @BeforeEach
+    public void beforeEach() {
+        AutoTraceCtx.removeAll();
+    }
+
     @Test
     void testXXLJobHandler() throws Exception {
         // 01.Prepare
         XxlJobCase c = new XxlJobCase();
 
         // 02.When
-        //c.execute();
         c.execute("v");
         Tuple tuple = c.getInjected();
 
@@ -128,6 +133,7 @@ public class TestCases {
     void testOkHttpClient() throws Exception {
         // 01.Prepare
         AutoTraceCtx.setTraceId(expectedTraceId);
+        AutoTraceCtx.setSpanId(expectedSpanId);
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(httpBinOrgUrl).build();
