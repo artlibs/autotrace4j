@@ -44,8 +44,12 @@ public class TestCases {
     @BeforeAll
     public static void beforeAll() throws Exception {
         System.out.println("====== beforeAll ======");
-        AutoTrace4j.premain("com.github.artlibs.testcase"
-                , ByteBuddyAgent.install());
+        try {
+            AutoTrace4j.premain("com.github.artlibs.testcase"
+                    , ByteBuddyAgent.install());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @BeforeEach
