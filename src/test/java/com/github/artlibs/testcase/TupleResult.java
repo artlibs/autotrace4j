@@ -8,22 +8,29 @@ package com.github.artlibs.testcase;
  * <p>
  * All rights Reserved.
  */
-public class Tuple {
+public class TupleResult {
     private Object value1;
     private Object value2;
     private Object value3;
     private Object value4;
     private Object value5;
 
-    public Tuple(){}
-    public Tuple(Object value1, Object value2){
+    public TupleResult(){}
+    public TupleResult(Object value1, Object value2){
         this.value1 = value1;
         this.value2 = value2;
     }
-    public Tuple(Object value1, Object value2, Object value3){
+    public TupleResult(Object value1, Object value2, Object value3){
         this.value1 = value1;
         this.value2 = value2;
         this.value3 = value3;
+    }
+
+    public TupleResult(Object value1, Object value2, Object value3, Object value4){
+        this.value1 = value1;
+        this.value2 = value2;
+        this.value3 = value3;
+        this.value4 = value4;
     }
 
     public Object getValue1() {

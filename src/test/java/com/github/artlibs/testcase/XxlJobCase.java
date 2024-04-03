@@ -1,8 +1,8 @@
 package com.github.artlibs.testcase;
 
-import com.github.artlibs.autotrace4j.context.AutoTraceCtx;
 import com.xxl.job.core.biz.model.ReturnT;
-import com.xxl.job.core.handler.IJobHandler;
+import com.xxl.job.core.handler.ForTestHandler;
+import com.xxl.job.core.handler.annotation.XxlJob;
 
 /**
  * XxlJobCase
@@ -12,22 +12,95 @@ import com.xxl.job.core.handler.IJobHandler;
  * <p>
  * All rights Reserved.
  */
-public class XxlJobCase extends IJobHandler {
-    private Tuple injected = null;
+public class XxlJobCase {
+    //@JobHandler(value = "mySchedule")
+    public static class BeforeV212 extends ForTestHandler implements XxlJobCaseRunner,Injected {
+        // before v2.1.2, there is no @XxlJob, should have @JobHandler
 
-    // add since xxl-job v2.3.0
-    @Override
-    public ReturnT<String> execute(String p) throws Exception {
-        injected = new Tuple(
-                AutoTraceCtx.getTraceId(),
-                AutoTraceCtx.getSpanId(),
-                AutoTraceCtx.getParentSpanId()
-        );
-        return ReturnT.SUCCESS;
+        @Override
+        public ReturnT<String> execute(String param){
+            graspInjected();
+            return ReturnT.SUCCESS;
+        }
+
+        @Override
+        public void trigger() {
+            this.execute("args");
+        }
     }
 
-    public Tuple getInjected() {
-        return injected;
+    //@JobHandler(value = "mySchedule")
+    public static class AfterV212Case1 extends ForTestHandler implements XxlJobCaseRunner,Injected {
+        // after v2.1.2, there is @XxlJob, should have @JobHandler
+        @Override
+        public ReturnT<String> execute(String param) {
+            graspInjected();
+            return ReturnT.SUCCESS;
+        }
+
+        @Override
+        public void trigger() {
+            this.execute("args");
+        }
     }
 
+    //@JobHandler(value = "mySchedule")
+    public static class AfterV212Case2 extends ForTestHandler implements XxlJobCaseRunner,Injected {
+        // after v2.1.2, there is @XxlJob, should have @JobHandler
+        @Override
+        @XxlJob(value = "mySchedule")
+        public ReturnT<String> execute(String param) {
+            graspInjected();
+            return ReturnT.SUCCESS;
+        }
+
+        @Override
+        public void trigger() {
+            this.execute("args");
+        }
+    }
+
+    public static class AfterV212Case3 implements XxlJobCaseRunner,Injected {
+        // after v2.1.2, there is @XxlJob
+        @XxlJob(value = "mySchedule")
+        public void myScheduleTask() {
+            graspInjected();
+        }
+
+        @Override
+        public void trigger() {
+            this.myScheduleTask();
+        }
+    }
+
+    public static class AfterV230Case1 extends ForTestHandler implements XxlJobCaseRunner,Injected {
+        // add since v2.3.0
+        @Override
+        public void execute() {
+            graspInjected();
+        }
+
+        @Override
+        public void trigger() {
+            this.execute();
+        }
+    }
+
+    public static class AfterV230Case2 extends ForTestHandler implements XxlJobCaseRunner,Injected {
+        // add since v2.3.0
+        @Override
+        @XxlJob(value = "mySchedule")
+        public void execute() {
+            graspInjected();
+        }
+
+        @Override
+        public void trigger() {
+            this.execute();
+        }
+    }
+
+    public interface XxlJobCaseRunner {
+        void trigger();
+    }
 }

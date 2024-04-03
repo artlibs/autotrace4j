@@ -11,24 +11,26 @@ import net.bytebuddy.matcher.ElementMatcher;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
- * Spring Task @Scheduled Interceptor
+ * Xxl Job Interceptor
  *
  * @author Fury
  * @since 2024-03-30
  *
  * All rights Reserved.
  */
-public class SpringScheduledInterceptor extends AbstractVisitorInterceptor {
+public class XxlJobScheduleTaskInterceptor extends AbstractVisitorInterceptor {
     /**
      * {@inheritDoc}
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
         return Transformer.getInterceptScopeJunction()
-            .and(not(isAnnotation()))
-            .and(not(isInterface()))
-            .and(not(nameContains("$")))
-            .and(declaresMethod(methodMatcher()));
+        .and(hasSuperClass(named("com.xxl.job.core.handler.IJobHandler"))
+                // Or has functions annotated with @XxlJob
+                .or(declaresMethod(isAnnotatedWith(
+                    named(("com.xxl.job.core.handler.annotation.XxlJob"))))
+                )
+        );
     }
 
     /**
@@ -36,13 +38,15 @@ public class SpringScheduledInterceptor extends AbstractVisitorInterceptor {
      */
     @Override
     public ElementMatcher<? super MethodDescription> methodMatcher() {
-        return isAnnotatedWith(named("org.springframework.scheduling.annotation.Scheduled"));
+        return isAnnotatedWith(named("com.xxl.job.core.handler.annotation.XxlJob"))
+                .or(named("execute").and(takesNoArguments()))
+                .or(named("execute").and(takesArgument(0, String.class)));
     }
 
     @Advice.OnMethodEnter
     public static void adviceOnMethodEnter() {
-        AutoTraceCtx.setSpanId(AutoTraceCtx.generate());
         AutoTraceCtx.setTraceId(AutoTraceCtx.generate());
+        AutoTraceCtx.setSpanId(AutoTraceCtx.generate());
         // There will be no parent span as this is a startup context
         AutoTraceCtx.setParentSpanId(null);
     }
