@@ -5,7 +5,7 @@ import com.xxl.job.core.handler.ForTestHandler;
 import com.xxl.job.core.handler.annotation.XxlJob;
 
 /**
- * XxlJobCase
+ * XxlJobCase, we copy the related class and not ref the xxl-job pom
  *
  * @author Fury
  * @since 2024-03-30

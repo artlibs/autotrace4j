@@ -147,7 +147,7 @@ public class TestCases {
     }
 
     @Test
-    void testSunHttpClient() throws Exception {
+    void testHttpURLConnection() throws Exception {
         // 01.Prepare
         URL url = new URL(httpBinOrgUrl);
 
