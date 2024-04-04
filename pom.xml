@@ -20,7 +20,6 @@
         <maven-shade.version>3.3.0</maven-shade.version>
         <exec-maven.version>1.6.0</exec-maven.version>
         <maven-compiler.version>3.12.0</maven-compiler.version>
-        <compiler-source.version>8</compiler-source.version>
         <compiler-release.version>8</compiler-release.version>
     </properties>
 
@@ -114,7 +113,6 @@
                 <version>${maven-compiler.version}</version>
                 <configuration>
                     <!-- Why Java 21 https://www.oracle.com/hk/java/technologies/java-se-support-roadmap.html -->
-                    <source>${compiler-source.version}</source>
                     <release>${compiler-release.version}</release>
                     <encoding>${file.encoding}</encoding>
                 </configuration>

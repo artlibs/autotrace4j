@@ -7,6 +7,7 @@ import net.bytebuddy.dynamic.loading.ClassInjector;
 import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
+import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.*;
@@ -32,11 +33,10 @@ public class ClassUtils {
      *
      * @param instrumentation instrumentation对象
      * @param packagePrefix   包前缀
-     * @return {@link Instrumentation}
      * @throws IOException        IOException
      * @throws URISyntaxException URISyntaxException
      */
-    public static Instrumentation injectClassToBootStrap(
+    public static void injectClassToBootStrap(
         Instrumentation instrumentation, String packagePrefix
     ) throws IOException, URISyntaxException {
         Map<String, byte[]> classes = new HashMap<>();
@@ -52,7 +52,6 @@ public class ClassUtils {
         ClassInjector
             .UsingInstrumentation.of(classInjectTempDir, ClassInjector.UsingInstrumentation.Target.BOOTSTRAP, instrumentation)
             .injectRaw(classes);
-        return instrumentation;
     }
 
     /**
@@ -104,6 +103,29 @@ public class ClassUtils {
      */
     private static String buildCanonicalName(String packagePrefixes, String classFileName) {
         return packagePrefixes + "." + classFileName.replace(".class", "");
+    }
+
+    /**
+     * find the method from class or super class
+     *
+     * @param clazz          clazz
+     * @param methodName     methodName
+     * @param parameterTypes parameterTypes
+     * @return {@link Method} or null if not found
+     */
+    public static Method getMethod(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
+        Method m = null;
+        while (clazz != null) {
+            try {
+                m = clazz.getDeclaredMethod(methodName, parameterTypes);
+                break;
+            } catch (NoSuchMethodException ignored) {}
+            clazz = clazz.getSuperclass();
+        }
+        if (m != null) {
+            m.setAccessible(true);
+        }
+        return m;
     }
 
 }
