@@ -21,6 +21,7 @@ import static com.github.artlibs.autotrace4j.support.JavaModuleUtils.*;
  * All rights Reserved.
  */
 public final class AutoTrace4j {
+    private AutoTrace4j(){}
 
     /**
      * Java Attach agentmain
