@@ -48,7 +48,7 @@ public final class AutoTrace4j {
         }
         String ctxPackagePrefix = AutoTrace4j.class.getPackage().getName() + ".context";
         ClassUtils.injectClassToBootStrap(instrument, ctxPackagePrefix);
-        //note: this method must be called after injectClassToBootStrap, don't move it before
+        //note: this method must be called after injectClassToBootStrap, don't move it forward
         compatibleJavaModule(ctxPackagePrefix);
         // do intercept
         Transformer.intercept(enhancePackages).on(instrument);
