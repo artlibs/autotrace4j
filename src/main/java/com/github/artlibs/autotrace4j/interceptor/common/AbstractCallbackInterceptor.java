@@ -1,8 +1,8 @@
 package com.github.artlibs.autotrace4j.interceptor.common;
 
-import com.github.artlibs.autotrace4j.interceptor.base.AbstractInstanceInterceptor;
 import com.github.artlibs.autotrace4j.context.AutoTraceCtx;
 import com.github.artlibs.autotrace4j.context.ReflectUtils;
+import com.github.artlibs.autotrace4j.interceptor.base.AbstractInstanceInterceptor;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.modifier.Visibility;
 import net.bytebuddy.description.type.TypeDescription;
@@ -44,6 +44,16 @@ public abstract class AbstractCallbackInterceptor extends AbstractInstanceInterc
         }
     }
 
+    @Override
+    public Object onMethodExit(Object thiz, Object[] allArgs, Object result, Method originMethod) throws Exception {
+        try {
+            AutoTraceCtx.removeAll();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -73,7 +83,7 @@ public abstract class AbstractCallbackInterceptor extends AbstractInstanceInterc
                 .intercept(FieldAccessor.ofField(AutoTraceCtx.PARENT_SPAN_KEY))
             // intercept constructor, any constructor
                 .constructor(ElementMatchers.any())
-                .intercept(Advice.to(this.getClass()));
+                .intercept(Advice.to(AbstractCallbackInterceptor.class));
     }
 
     @Advice.OnMethodExit
