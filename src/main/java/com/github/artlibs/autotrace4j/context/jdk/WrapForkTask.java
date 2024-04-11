@@ -10,9 +10,9 @@ import java.util.concurrent.ForkJoinTask;
 /**
  * Fork Join Task
  * <p>
- * WrapForkTask is actually half a proxy object of ForkJoinTask,
- * because some methods of ForkJoinTask are called in the WrapForkTask
- * instance rather than in the Raw ForkJoinTask instance.
+ * WrapForkTask is actually half a proxy object of the raw ForkJoinTask<V>
+ * object, because some methods of ForkJoinTask<V> are called in the
+ * WrapForkTask instance rather than in the Raw ForkJoinTask<V> instance.
  *
  * @author Fury
  * @since 2024-03-30
