@@ -58,6 +58,10 @@ public class SunHttpClientInterceptor extends AbstractVisitorInterceptor {
             );
     }
 
+    /**
+     * advice on method enter: set http header
+     * @param msgHeader http message header
+     */
     @Advice.OnMethodEnter
     public static void adviceOnMethodEnter(@Advice.Argument(value = 0, readOnly = false
             , typing = Assigner.Typing.DYNAMIC) Object msgHeader) {

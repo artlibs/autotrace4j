@@ -40,6 +40,10 @@ public class ScheduledThreadPoolInterceptor extends AbstractVisitorInterceptor {
                 .and(ElementMatchers.takesArgument(0, RunnableScheduledFuture.class));
     }
 
+    /**
+     * advice on method enter
+     * @param task the raw runnable task
+     */
     @Advice.OnMethodEnter
     public static void adviceOnMethodEnter(@Advice.Argument(value = 0, readOnly = false
             , typing = Assigner.Typing.DYNAMIC) RunnableScheduledFuture<?> task) {

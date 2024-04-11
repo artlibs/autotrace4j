@@ -39,6 +39,9 @@ public class SpringScheduledInterceptor extends AbstractVisitorInterceptor {
         return isAnnotatedWith(named("org.springframework.scheduling.annotation.Scheduled"));
     }
 
+    /**
+     * advice on method enter: set trace id
+     */
     @Advice.OnMethodEnter
     public static void adviceOnMethodEnter() {
         AutoTraceCtx.setSpanId(AutoTraceCtx.generate());
@@ -47,6 +50,9 @@ public class SpringScheduledInterceptor extends AbstractVisitorInterceptor {
         AutoTraceCtx.setParentSpanId(null);
     }
 
+    /**
+     * advice on method exit: remove trace id
+     */
     @Advice.OnMethodExit
     public static void adviceOnMethodExit() {
         AutoTraceCtx.removeAll();

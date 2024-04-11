@@ -43,6 +43,9 @@ public class XxlJobScheduleTaskInterceptor extends AbstractVisitorInterceptor {
                 .or(named("execute").and(takesArgument(0, String.class)));
     }
 
+    /**
+     * advice on method enter: set context
+     */
     @Advice.OnMethodEnter
     public static void adviceOnMethodEnter() {
         AutoTraceCtx.setTraceId(AutoTraceCtx.generate());
@@ -51,6 +54,9 @@ public class XxlJobScheduleTaskInterceptor extends AbstractVisitorInterceptor {
         AutoTraceCtx.setParentSpanId(null);
     }
 
+    /**
+     * advice on method exist: remove context
+     */
     @Advice.OnMethodExit
     public static void adviceOnMethodExit() {
         AutoTraceCtx.removeAll();

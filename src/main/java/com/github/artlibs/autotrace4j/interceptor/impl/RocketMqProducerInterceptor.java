@@ -1,8 +1,8 @@
 package com.github.artlibs.autotrace4j.interceptor.impl;
 
-import com.github.artlibs.autotrace4j.interceptor.base.AbstractInstanceInterceptor;
 import com.github.artlibs.autotrace4j.context.AutoTraceCtx;
 import com.github.artlibs.autotrace4j.context.ReflectUtils;
+import com.github.artlibs.autotrace4j.interceptor.base.AbstractInstanceInterceptor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
@@ -50,8 +50,7 @@ public class RocketMqProducerInterceptor extends AbstractInstanceInterceptor {
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return ElementMatchers.named("org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl").or(ElementMatchers
-                .named("com.aliyun.openservices.shade.com.alibaba.rocketmq.client.impl.producer.DefaultMQProducerImpl"));
+        return ElementMatchers.named("org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl");
     }
 
     /**
