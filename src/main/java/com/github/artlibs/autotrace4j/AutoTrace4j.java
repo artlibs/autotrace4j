@@ -78,7 +78,7 @@ public final class AutoTrace4j {
         // we need found the unnamed module by ModuleLocator
         JavaModuleUtils.openJavaBaseModuleForAnotherModule(
                 agentNecessaryJavaBasePackages,
-                getOwnModule(ctxPackagePrefix + ".ModuleLocator")
+                getOwnModule(ctxPackagePrefix + ".jdk.ModuleLocator")
         );
     }
 
