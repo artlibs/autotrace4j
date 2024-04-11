@@ -37,7 +37,7 @@ public class ForkJoinPoolInterceptor extends AbstractVisitorInterceptor {
      */
     @Override
     public ElementMatcher<? super MethodDescription> methodMatcher() {
-        return named("externalPush").and(takesArgument(0
+        return named("externalSubmit").and(takesArgument(0
                 , hasSuperClass(named("java.util.concurrent.ForkJoinTask"))));
     }
 
