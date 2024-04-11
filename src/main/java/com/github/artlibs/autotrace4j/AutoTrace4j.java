@@ -10,7 +10,8 @@ import java.lang.instrument.Instrumentation;
 import java.net.URISyntaxException;
 import java.util.Objects;
 
-import static com.github.artlibs.autotrace4j.support.JavaModuleUtils.*;
+import static com.github.artlibs.autotrace4j.support.JavaModuleUtils.getOwnModule;
+import static com.github.artlibs.autotrace4j.support.JavaModuleUtils.notJavaModule;
 
 /**
  * Auto Trace for Java
@@ -58,10 +59,17 @@ public final class AutoTrace4j {
         if (notJavaModule()) {
             return;
         }
+
+        final String[] agentNecessaryJavaBasePackages = {
+                "sun.net.www.protocol.http",
+                "sun.net.www",
+                "jdk.internal.loader",
+        };
+
         // java9+: open the system module to us
         JavaModuleUtils.openJavaBaseModuleForAnotherModule(
-            AGENT_NECESSARY_JAVA_BASE_PKGS,
-            JavaModule.ofType(JavaModuleUtils.MethodLockSupport.class)
+                agentNecessaryJavaBasePackages,
+                JavaModule.ofType(JavaModuleUtils.MethodLockSupport.class)
         );
         // java9+: remove the package - module mapping to avoid double context package's class
         // note: this method need the privilege of 'jdk.internal.loader' package
@@ -69,8 +77,8 @@ public final class AutoTrace4j {
         // java9+: open the system module to bootstrap's unnamed module
         // we need found the unnamed module by ModuleLocator
         JavaModuleUtils.openJavaBaseModuleForAnotherModule(
-            AGENT_NECESSARY_JAVA_BASE_PKGS,
-            getOwnModule(ctxPackagePrefix + ".ModuleLocator")
+                agentNecessaryJavaBasePackages,
+                getOwnModule(ctxPackagePrefix + ".ModuleLocator")
         );
     }
 

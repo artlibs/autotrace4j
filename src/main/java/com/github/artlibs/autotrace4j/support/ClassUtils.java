@@ -25,7 +25,7 @@ import java.util.function.BiConsumer;
  * <p>
  * All rights Reserved.
  */
-public class ClassUtils {
+public final class ClassUtils {
     private ClassUtils() {}
 
     /**

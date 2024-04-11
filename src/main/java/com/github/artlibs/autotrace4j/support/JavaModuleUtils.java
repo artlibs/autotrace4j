@@ -1,5 +1,6 @@
 package com.github.artlibs.autotrace4j.support;
 
+import com.github.artlibs.autotrace4j.exception.UnlockMethodException;
 import net.bytebuddy.utility.JavaModule;
 
 import java.lang.reflect.Field;
@@ -14,49 +15,44 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>
  * All rights Reserved.
  */
-public class JavaModuleUtils {
-
+public final class JavaModuleUtils {
     private JavaModuleUtils() {}
 
-    public static final String[] AGENT_NECESSARY_JAVA_BASE_PKGS = {
-        "sun.net.www.protocol.http",
-        "sun.net.www",
-        "jdk.internal.loader",
-        };
-
-    public static Class<?> MODULE_CLASS;
-
+    private static Class<?> moduleClass;
     static {
         try {
-            MODULE_CLASS = Class.forName("java.lang.Module");
+            moduleClass = Class.forName("java.lang.Module");
         } catch (ClassNotFoundException e) {
-            MODULE_CLASS = null; //jdk8-;
+            // jdk8-
+            moduleClass = null;
         }
     }
 
     public static boolean notJavaModule() {
-        return MODULE_CLASS == null;
+        return moduleClass == null;
     }
 
-    public static void openJavaBaseModuleForAnotherModule(String[] allPkgs, JavaModule anotherModule) {
+    public static void openJavaBaseModuleForAnotherModule(String[] packages, JavaModule anotherModule) {
         if (anotherModule == null) {
             return;
         }
-        openJavaBaseModuleForAnotherModule(allPkgs, anotherModule.unwrap());
+        openJavaBaseModuleForAnotherModule(packages, anotherModule.unwrap());
     }
 
-    public static void openJavaBaseModuleForAnotherModule(String[] allPkgs, Object anotherModule) {
+    public static void openJavaBaseModuleForAnotherModule(String[] packages, Object anotherModule) {
         if (notJavaModule() || anotherModule == null) {
             return;
         }
         try {
-            Method implAddOpensMethod = MODULE_CLASS.getDeclaredMethod("implAddOpens", String.class, MODULE_CLASS);
+            Method implAddOpensMethod = moduleClass.getDeclaredMethod("implAddOpens", String.class, moduleClass);
             // unlock method
             unlockMethod(implAddOpensMethod);
-            for (String pkg : allPkgs) {
+            for (String pkg : packages) {
                 implAddOpensMethod.invoke(getJdkBaseModule(), pkg, anotherModule);
             }
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+            // NO Sonar
+        }
     }
 
     private static void unlockMethod(Method implAddOpensMethod) {
@@ -78,7 +74,7 @@ public class JavaModuleUtils {
             );
             putBooleanVolatileMethod.invoke(unsafe, implAddOpensMethod, objectFieldOffset, true);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new UnlockMethodException(e);
         }
     }
 
@@ -100,7 +96,9 @@ public class JavaModuleUtils {
             for (String pkg : pkgs) {
                 packageToModule.remove(pkg);
             }
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+            // NO Sonar
+        }
 
     }
 

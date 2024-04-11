@@ -14,7 +14,7 @@ import java.nio.file.Paths;
  * <p>
  * All rights Reserved.
  */
-public class SystemUtils {
+public final class SystemUtils {
     private SystemUtils() {}
 
     public static String getSysTempDir() {
