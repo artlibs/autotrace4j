@@ -2,6 +2,7 @@ package com.github.artlibs.autotrace4j.interceptor;
 
 import com.github.artlibs.autotrace4j.AutoTrace4j;
 import com.github.artlibs.autotrace4j.exception.LoadInterceptorException;
+import com.github.artlibs.autotrace4j.interceptor.base.AbstractDelegateInterceptor;
 import com.github.artlibs.autotrace4j.interceptor.base.AbstractVisitorInterceptor;
 import com.github.artlibs.autotrace4j.support.ClassUtils;
 import com.github.artlibs.autotrace4j.support.Constants;
@@ -33,7 +34,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
 public final class Transformer {
     private Transformer(){}
 
-    private static List<Interceptor<?>> interceptorList = null;
+    private static List<Interceptor> interceptorList = null;
     private static ElementMatcher.Junction<TypeDescription> interceptScopeJunction;
 
     /**
@@ -54,18 +55,21 @@ public final class Transformer {
     public void on(Instrumentation instrument) throws IOException, URISyntaxException {
         AgentBuilder agentBuilder = this.newAgentBuilderWithIgnore(new AutoListener()
         );
-        for (Interceptor<?> interceptor : loadInterceptor()) {
+        for (Interceptor interceptor : loadInterceptor()) {
             agentBuilder = agentBuilder.type(interceptor.typeMatcher()).transform(
                     (builder, typeDescription, classLoader, javaModule, protectionDomain) -> {
-                DynamicType.Builder<?> newBuilder = interceptor
+                        // for jdk class, using asm visitor mode to intercept
+                if (interceptor.isVisitorMode()) {
+                    AbstractVisitorInterceptor visitor = (AbstractVisitorInterceptor) interceptor;
+                    return builder.visit(Advice.to(visitor.getClass())
+                            .on(isMethod().and(interceptor.methodMatcher())));
+                }
+                        // for other class, using method delegate mode to intercept
+                        // this mode supports to add fields to the target object class.
+                DynamicType.Builder<?> newBuilder = ((AbstractDelegateInterceptor<?>)interceptor)
                         .doTypeTransform(builder, typeDescription, javaModule, classLoader);
                 if (Objects.isNull(newBuilder)) {
                     newBuilder = builder;
-                }
-                if (interceptor.isVisitorMode()) {
-                    AbstractVisitorInterceptor visitor = (AbstractVisitorInterceptor) interceptor;
-                    return newBuilder.visit(Advice.to(visitor.getClass())
-                            .on(isMethod().and(interceptor.methodMatcher())));
                 }
                 return newBuilder.method(isMethod().and(interceptor.methodMatcher()))
                         .intercept(MethodDelegation.withDefaultConfiguration()
@@ -126,7 +130,7 @@ public final class Transformer {
      * @throws IOException -
      * @throws URISyntaxException -
      */
-    private static List<Interceptor<?>> loadInterceptor() throws IOException, URISyntaxException {
+    private static List<Interceptor> loadInterceptor() throws IOException, URISyntaxException {
         if (Objects.nonNull(interceptorList) && !interceptorList.isEmpty()) {
             return interceptorList;
         }
@@ -135,7 +139,7 @@ public final class Transformer {
             try {
                 Class<?> clazz = Class.forName(classCanonicalName);
                 if (Interceptor.class.isAssignableFrom(clazz)) {
-                    interceptorList.add((Interceptor<?>) clazz.newInstance());
+                    interceptorList.add((Interceptor) clazz.newInstance());
                 }
             } catch (Exception e) {
                 throw new LoadInterceptorException(e);

@@ -1,6 +1,5 @@
 package com.github.artlibs.autotrace4j.interceptor.base;
 
-import com.github.artlibs.autotrace4j.interceptor.Interceptor;
 import com.github.artlibs.autotrace4j.interceptor.MorphCall;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Morph;
@@ -18,30 +17,15 @@ import java.util.Objects;
  *
  * All rights Reserved.
  */
-public abstract class AbstractStaticInterceptor implements Interceptor<Class<?>> {
+public abstract class AbstractStaticInterceptor extends AbstractDelegateInterceptor<Class<?>> {
     /**
-     * {@inheritDoc}
+     *
+     * @param clazz the class object
+     * @param zuper the original object
+     * @param args argument list
+     * @param originMethod original method
+     * @return result
      */
-    public boolean isVisitorMode() {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onMethodEnter(Class<?> clazz, Object[] allArgs, Method originMethod) throws Exception {
-        // NO Sonar
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object onMethodExit(Class<?> clazz, Object[] allArgs, Object result, Method originMethod) throws Exception {
-        return result;
-    }
-
     @RuntimeType
     public Object intercept(@Origin Class<?> clazz, @Morph MorphCall zuper
             , @AllArguments Object[] args, @Origin Method originMethod) {
@@ -50,7 +34,7 @@ public abstract class AbstractStaticInterceptor implements Interceptor<Class<?>>
 
     @Override
     public int hashCode() {
-        return super.hashCode() + methodMatcher().hashCode() + typeMatcher().hashCode();
+        return super.hashCode();
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.github.artlibs.autotrace4j.interceptor.base;
 
-import com.github.artlibs.autotrace4j.interceptor.Interceptor;
 import com.github.artlibs.autotrace4j.interceptor.MorphCall;
 import net.bytebuddy.implementation.bind.annotation.*;
 
@@ -14,31 +13,15 @@ import java.lang.reflect.Method;
  *
  * All rights Reserved.
  */
-public abstract class AbstractInstanceInterceptor implements Interceptor<Object> {
+public abstract class AbstractInstanceInterceptor extends AbstractDelegateInterceptor<Object> {
     /**
-     * {@inheritDoc}
+     *
+     * @param thiz the object
+     * @param zuper the original object
+     * @param args argument list
+     * @param originMethod original method
+     * @return result
      */
-    @Override
-    public boolean isVisitorMode() {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
-        // NO Sonar
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object onMethodExit(Object thiz, Object[] allArgs, Object result, Method originMethod) throws Exception {
-        return result;
-    }
-
     @RuntimeType
     public Object intercept(@This Object thiz, @Morph MorphCall zuper
             , @AllArguments Object[] args, @Origin Method originMethod) {
@@ -47,7 +30,7 @@ public abstract class AbstractInstanceInterceptor implements Interceptor<Object>
 
     @Override
     public int hashCode() {
-        return super.hashCode() + methodMatcher().hashCode() + typeMatcher().hashCode();
+        return super.hashCode();
     }
 
     @Override
