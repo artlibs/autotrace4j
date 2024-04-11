@@ -1,9 +1,9 @@
 package com.github.artlibs.autotrace4j.interceptor.impl;
 
-import com.github.artlibs.autotrace4j.interceptor.base.AbstractVisitorInterceptor;
 import com.github.artlibs.autotrace4j.context.AutoTraceCtx;
-import com.github.artlibs.autotrace4j.context.PriorityTask;
-import com.github.artlibs.autotrace4j.context.ThreadPoolTask;
+import com.github.artlibs.autotrace4j.context.jdk.PriorityTask;
+import com.github.artlibs.autotrace4j.context.jdk.ThreadPoolTask;
+import com.github.artlibs.autotrace4j.interceptor.base.AbstractVisitorInterceptor;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;

@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 
 /**
- * Method Wrapper
+ * Method Wrapper for avoiding NPE.
  *
  * @author Fury
  * @since 2024-03-30

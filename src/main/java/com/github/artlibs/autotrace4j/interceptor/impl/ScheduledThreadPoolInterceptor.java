@@ -1,8 +1,8 @@
 package com.github.artlibs.autotrace4j.interceptor.impl;
 
-import com.github.artlibs.autotrace4j.interceptor.base.AbstractVisitorInterceptor;
 import com.github.artlibs.autotrace4j.context.AutoTraceCtx;
-import com.github.artlibs.autotrace4j.context.ScheduledTask;
+import com.github.artlibs.autotrace4j.context.jdk.ScheduledTask;
+import com.github.artlibs.autotrace4j.interceptor.base.AbstractVisitorInterceptor;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;

@@ -42,9 +42,9 @@ public final class AutoTrace4j {
     public static void premain(String enhancePackages, Instrumentation instrument) throws IOException, URISyntaxException {
         if (Objects.isNull(enhancePackages) || enhancePackages.trim().isEmpty()) {
             throw new IllegalArgumentException(
-                "Please specify the Java package name prefix (Agent parameter)" +
+                "Please specify your java package name prefix (Agent parameter)" +
                     " to determine the enhancement scope; such as：\n"
-                    + "-javaagent:/dir/to/autotrace4j.jar=com.your-domain.pkg1,com.your-domain.pkg2");
+                    + "-javaagent:/dir/to/autotrace4j.jar=com.your-domain1.pkg1,com.your-domain2.pkg2");
         }
         String ctxPackagePrefix = AutoTrace4j.class.getPackage().getName() + ".context";
         ClassUtils.injectClassToBootStrap(instrument, ctxPackagePrefix);

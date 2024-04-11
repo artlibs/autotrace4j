@@ -1,4 +1,6 @@
-package com.github.artlibs.autotrace4j.context;
+package com.github.artlibs.autotrace4j.context.jdk;
+
+import com.github.artlibs.autotrace4j.context.AutoTraceCtx;
 
 import java.util.Objects;
 
@@ -23,10 +25,10 @@ public class ThreadPoolTask implements Runnable {
     }
 
     /**
-     * 把 trace id 和 当前上下文的spanId下传
+     * transfer the spanId and traceId to the next context
      * @param rawTask The original runnable task
-     * @param traceId Trace id for binding to this task
-     * @param spanId 当前上下文的spanId，传递到下游作为下游的parent span id
+     * @param traceId traceId for binding to this task
+     * @param spanId current context spanId，as the parent span id of the next context
      */
     public ThreadPoolTask(Runnable rawTask, String traceId, String spanId) {
         this.spanId = spanId;
