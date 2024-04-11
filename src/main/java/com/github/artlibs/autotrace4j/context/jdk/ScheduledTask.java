@@ -57,4 +57,14 @@ public class ScheduledTask<T> extends ThreadPoolTask implements RunnableSchedule
     public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
         return this.rawTask.get(timeout, unit);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this.rawTask.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.rawTask.hashCode();
+    }
 }

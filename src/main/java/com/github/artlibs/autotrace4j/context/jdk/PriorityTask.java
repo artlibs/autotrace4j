@@ -22,4 +22,14 @@ public class PriorityTask extends ThreadPoolTask implements Comparable<PriorityT
     public int compareTo(PriorityTask task) {
         return this.getComparableRawTask().compareTo((PriorityTask)task.getComparableRawTask());
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this.getRawTask().equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getRawTask().hashCode();
+    }
 }

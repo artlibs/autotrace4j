@@ -29,6 +29,7 @@ import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 
 import static com.github.artlibs.testcase.XxlJobCase.*;
 
@@ -62,6 +63,23 @@ public class TestCases {
     @AfterEach
     public void afterEach() {
         AutoTraceCtx.removeAll();
+    }
+
+    @Test
+    void testForkJoinPool() {
+        // 01.Prepare
+        ForkJoinPool pool = new ForkJoinPool();
+
+
+        // 02.When
+        pool.execute(() -> {
+
+        });
+        pool.submit(() -> {
+
+        });
+
+        // 03.Verify
     }
 
     @Test

@@ -1,54 +1,60 @@
 package com.github.artlibs.autotrace4j.context.jdk;
 
 import com.github.artlibs.autotrace4j.context.AutoTraceCtx;
+import com.github.artlibs.autotrace4j.context.MethodWrapper;
+import com.github.artlibs.autotrace4j.context.ReflectUtils;
 
 import java.util.Objects;
+import java.util.concurrent.ForkJoinTask;
 
 /**
- * Thread Pool Task
+ * Fork Join Task
+ * <p>
+ * WrapForkTask is actually half a proxy object of ForkJoinTask,
+ * because some methods of ForkJoinTask are called in the WrapForkTask
+ * instance rather than in the Raw ForkJoinTask instance.
  *
  * @author Fury
  * @since 2024-03-30
  *
  * All rights Reserved.
  */
-public class ThreadPoolTask implements Runnable {
+public class WrapForkTask<V> extends ForkJoinTask<V> {
     private String spanId;
     private String traceId;
-    private Runnable rawTask;
+    private ForkJoinTask<V> rawTask;
     private long callerThreadId;
 
-    private ThreadPoolTask() {}
+    private WrapForkTask(){}
 
-    public Runnable getRawTask() {
-        return this.rawTask;
-    }
-
-    /**
-     * transfer the spanId and traceId to the next context
-     * @param rawTask The original runnable task
-     * @param traceId traceId for binding to this task
-     * @param spanId current context spanId，as the parent span id of the next context
-     */
-    public ThreadPoolTask(Runnable rawTask, String traceId, String spanId) {
-        this.spanId = spanId;
+    public WrapForkTask(ForkJoinTask<V> task, String traceId, String spanId) {
+        this.rawTask = task;
         this.traceId = traceId;
-        this.rawTask = rawTask;
+        this.spanId = spanId;
         this.callerThreadId = Thread.currentThread().getId();
     }
 
-    /**
-     * @see Thread#run()
-     */
     @Override
-    public void run() {
+    public V getRawResult() {
+        return this.rawTask.getRawResult();
+    }
+
+    @Override
+    protected void setRawResult(V value) {
+        ReflectUtils.getMethodWrapper(this.rawTask
+                , "setRawResult", Object.class).invoke(value);
+    }
+
+
+    @Override
+    protected boolean exec() {
         if (Objects.isNull(this.rawTask)) {
-            return;
+            return true;
         }
 
+        MethodWrapper mw = ReflectUtils.getMethodWrapper(this.rawTask, "exec");
         if (this.callerThreadId == Thread.currentThread().getId()) {
-            this.rawTask.run();
-            return;
+            return mw.invoke();
         }
 
         try {
@@ -62,7 +68,7 @@ public class ThreadPoolTask implements Runnable {
                 AutoTraceCtx.setParentSpanId(spanId);
             }
 
-            this.rawTask.run();
+            return mw.invoke();
         } finally {
             AutoTraceCtx.removeAll();
         }
