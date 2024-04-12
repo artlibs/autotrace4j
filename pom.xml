@@ -21,6 +21,7 @@
         <exec-maven.version>1.6.0</exec-maven.version>
         <maven-compiler.version>3.12.0</maven-compiler.version>
         <compiler-release.version>8</compiler-release.version>
+        <test-case-package>com.github.artlibs.testcase</test-case-package>
     </properties>
 
     <dependencies>
@@ -183,7 +184,10 @@
                 <!-- https://stackoverflow.com/questions/51382356/maven-does-not-run-beforeeach-methods-while-running -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version>
+                <version>3.2.5</version>
+                <configuration>
+                    <argLine>-javaagent:${project.build.directory}/${build.finalName}.jar=${test-case-package}</argLine>
+                </configuration>
             </plugin>
         </plugins>
     </build>

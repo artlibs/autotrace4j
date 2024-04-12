@@ -1,8 +1,11 @@
-.PHONY: test build
+.PHONY: prepackage test build
 
-test:
-	@mvn clean test --file pom.xml
-	#@mvn -X clean test --file pom.xml
 
-build:
+prepackage:
+	@mvn clean package -DskipTests=true
+
+test: prepackage
+	@mvn test --file pom.xml
+
+build: prepackage test
 	@mvn clean package -D maven.test.skip=false

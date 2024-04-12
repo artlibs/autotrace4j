@@ -34,6 +34,7 @@ import java.util.concurrent.ForkJoinPool;
 import static com.github.artlibs.testcase.XxlJobCase.*;
 
 public class TestCases {
+
     private final String initTraceId = "init-trace-id";
     private final String initSpanId = "init-span-id";
     private final String initParentSpanId = "init-p-span-id";
@@ -43,13 +44,15 @@ public class TestCases {
     private static final String ATO_PARENT_SPAN_ID = "X-Ato-P-Span-ID";
 
     @BeforeAll
-    public static void beforeAll() throws Exception {
+    public static void beforeAll() {
         System.out.println("====== beforeAll ======");
-        try {
-            AutoTrace4j.premain("com.github.artlibs.testcase"
-                    , ByteBuddyAgent.install());
-        } catch (Exception e) {
-            e.printStackTrace();
+        // when debug on local,you should open this argument,like this: -DinstallAgent=true
+        if (Boolean.parseBoolean(System.getProperty("installAgent"))){
+            try {
+                AutoTrace4j.premain("com.github.artlibs.testcase", ByteBuddyAgent.install());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
