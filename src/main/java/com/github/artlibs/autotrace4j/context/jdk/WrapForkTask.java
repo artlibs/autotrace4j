@@ -25,13 +25,19 @@ public class WrapForkTask<V> extends ForkJoinTask<V> {
     private ForkJoinTask<V> rawTask;
     private long callerThreadId;
 
-    private WrapForkTask(){}
+    protected WrapForkTask(){
+        super();
+    }
 
     public WrapForkTask(ForkJoinTask<V> task, String traceId, String spanId) {
         this.rawTask = task;
         this.traceId = traceId;
         this.spanId = spanId;
         this.callerThreadId = Thread.currentThread().getId();
+    }
+
+    protected ForkJoinTask<V> getRawTask() {
+        return this.rawTask;
     }
 
     @Override
@@ -45,6 +51,12 @@ public class WrapForkTask<V> extends ForkJoinTask<V> {
                 , "setRawResult", Object.class).invoke(value);
     }
 
+    @Override
+    public boolean cancel(boolean mayInterruptIfRunning) {
+        return ReflectUtils.getMethodWrapper(this.rawTask
+                , "cancel", boolean.class)
+                .invoke(mayInterruptIfRunning);
+    }
 
     @Override
     protected boolean exec() {

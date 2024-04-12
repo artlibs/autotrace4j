@@ -2,6 +2,7 @@ package com.github.artlibs.autotrace4j.interceptor.impl.jdk;
 
 import com.github.artlibs.autotrace4j.context.AutoTraceCtx;
 import com.github.artlibs.autotrace4j.context.jdk.WrapForkTask;
+import com.github.artlibs.autotrace4j.context.jdk.WrapRfForkTask;
 import com.github.artlibs.autotrace4j.interceptor.base.AbstractVisitorInterceptor;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.method.MethodDescription;
@@ -11,6 +12,7 @@ import net.bytebuddy.matcher.ElementMatcher;
 
 import java.util.Objects;
 import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.RunnableFuture;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
@@ -37,7 +39,8 @@ public class ForkJoinPoolInterceptor extends AbstractVisitorInterceptor {
      */
     @Override
     public ElementMatcher<? super MethodDescription> methodMatcher() {
-        return named("externalSubmit").and(takesArgument(0
+        // for 1.8 is externalPush
+        return named("externalPush").and(takesArgument(0
                 , hasSuperClass(named("java.util.concurrent.ForkJoinTask"))));
     }
 
@@ -48,7 +51,11 @@ public class ForkJoinPoolInterceptor extends AbstractVisitorInterceptor {
             if (Objects.nonNull(task)) {
                 String traceId = AutoTraceCtx.getTraceId();
                 if (Objects.nonNull(traceId)) {
-                    task = new WrapForkTask<>(task, traceId, AutoTraceCtx.getSpanId());
+                    if (task instanceof RunnableFuture) {
+                        task = new WrapRfForkTask<>(task, traceId, AutoTraceCtx.getSpanId());
+                    } else {
+                        task = new WrapForkTask<>(task, traceId, AutoTraceCtx.getSpanId());
+                    }
                 }
             }
         } catch (Exception e) {
