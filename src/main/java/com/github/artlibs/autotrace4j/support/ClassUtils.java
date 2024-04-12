@@ -85,9 +85,11 @@ public final class ClassUtils {
                 Files.walkFileTree(packagePath, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        String replaced = file.toString().replace("/", ".");
-                        String classCanonicalName = replaced.substring(replaced.indexOf(packagePrefix)).replaceAll(".class", "");
-                        walker.accept(file, classCanonicalName);
+                        if (file.getFileName().endsWith(".class")){
+                            String replaced = file.toString().replace("/", ".");
+                            String classCanonicalName = replaced.substring(replaced.indexOf(packagePrefix)).replaceAll(".class", "");
+                            walker.accept(file, classCanonicalName);
+                        }
                         return FileVisitResult.CONTINUE;
                     }
                 });
