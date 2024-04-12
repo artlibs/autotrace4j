@@ -81,9 +81,16 @@ public final class ClassUtils {
                 } else {
                     packagePath = Paths.get(packageDirUrl.toURI());
                 }
-                try (DirectoryStream<Path> paths = Files.newDirectoryStream(packagePath, "*.class")) {
+                try (DirectoryStream<Path> paths = Files.newDirectoryStream(packagePath)) {
                     for (Path path : paths) {
-                        walker.accept(path, buildCanonicalName(packagePrefix, path.getFileName().toString()));
+                        if (Files.isDirectory(path)) {
+                            walkClassFiles(walker, packagePrefix + "." + path.getFileName().toString());
+                            continue;
+                        }
+                        if (path.getFileSystem().getPathMatcher("glob:*.class")
+                                .matches(path.getFileName())) {
+                            walker.accept(path, buildCanonicalName(packagePrefix, path.getFileName().toString()));
+                        }
                     }
                 }
             } finally {
