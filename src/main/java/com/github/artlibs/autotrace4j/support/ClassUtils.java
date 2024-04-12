@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -81,18 +82,15 @@ public final class ClassUtils {
                 } else {
                     packagePath = Paths.get(packageDirUrl.toURI());
                 }
-                try (DirectoryStream<Path> paths = Files.newDirectoryStream(packagePath)) {
-                    for (Path path : paths) {
-                        if (Files.isDirectory(path)) {
-                            walkClassFiles(walker, packagePrefix + "." + path.getFileName().toString());
-                            continue;
-                        }
-                        if (path.getFileSystem().getPathMatcher("glob:*.class")
-                                .matches(path.getFileName())) {
-                            walker.accept(path, buildCanonicalName(packagePrefix, path.getFileName().toString()));
-                        }
+                Files.walkFileTree(packagePath, new SimpleFileVisitor<>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                        String replaced = file.toString().replace("/", ".");
+                        String classCanonicalName = replaced.substring(replaced.indexOf(packagePrefix)).replaceAll(".class", "");
+                        walker.accept(file, classCanonicalName);
+                        return FileVisitResult.CONTINUE;
                     }
-                }
+                });
             } finally {
                 if (Objects.nonNull(zipFileSystem)) {
                     zipFileSystem.close();
