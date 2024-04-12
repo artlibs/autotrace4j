@@ -82,7 +82,7 @@ public final class ClassUtils {
                 } else {
                     packagePath = Paths.get(packageDirUrl.toURI());
                 }
-                Files.walkFileTree(packagePath, new SimpleFileVisitor<>() {
+                Files.walkFileTree(packagePath, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         String replaced = file.toString().replace("/", ".");
