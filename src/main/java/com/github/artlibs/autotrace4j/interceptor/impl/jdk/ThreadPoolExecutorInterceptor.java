@@ -1,35 +1,34 @@
-package com.github.artlibs.autotrace4j.interceptor.impl;
+package com.github.artlibs.autotrace4j.interceptor.impl.jdk;
 
 import com.github.artlibs.autotrace4j.context.AutoTraceCtx;
-import com.github.artlibs.autotrace4j.context.jdk.WrapForkTask;
+import com.github.artlibs.autotrace4j.context.jdk.PriorityTask;
+import com.github.artlibs.autotrace4j.context.jdk.ThreadPoolTask;
 import com.github.artlibs.autotrace4j.interceptor.base.AbstractVisitorInterceptor;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.matcher.ElementMatcher;
+import net.bytebuddy.matcher.ElementMatchers;
 
 import java.util.Objects;
-import java.util.concurrent.ForkJoinTask;
-
-import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
- * ForkJoinPool Interceptor
+ * ThreadPoolExecutor Interceptor
  *
  * @author Fury
  * @since 2024-03-30
  *
  * All rights Reserved.
  */
-public class ForkJoinPoolInterceptor extends AbstractVisitorInterceptor {
+public class ThreadPoolExecutorInterceptor extends AbstractVisitorInterceptor {
 
     /**
      * {@inheritDoc}
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return is(java.util.concurrent.ForkJoinPool.class);
+        return ElementMatchers.is(java.util.concurrent.ThreadPoolExecutor.class);
     }
 
     /**
@@ -37,18 +36,22 @@ public class ForkJoinPoolInterceptor extends AbstractVisitorInterceptor {
      */
     @Override
     public ElementMatcher<? super MethodDescription> methodMatcher() {
-        return named("externalSubmit").and(takesArgument(0
-                , hasSuperClass(named("java.util.concurrent.ForkJoinTask"))));
+        return ElementMatchers.named("execute")
+                .and(ElementMatchers.takesArgument(0, Runnable.class));
     }
 
     @Advice.OnMethodEnter
     public static void adviceOnMethodEnter(@Advice.Argument(value = 0, readOnly = false
-            , typing = Assigner.Typing.DYNAMIC) ForkJoinTask<?> task) throws Exception {
+            , typing = Assigner.Typing.DYNAMIC) Runnable task) throws Exception {
         try {
             if (Objects.nonNull(task)) {
                 String traceId = AutoTraceCtx.getTraceId();
-                if (Objects.nonNull(traceId)) {
-                    task = new WrapForkTask<>(task, traceId, AutoTraceCtx.getSpanId());
+                if (Objects.nonNull(traceId) && !(task instanceof ThreadPoolTask)) {
+                    if (task instanceof Comparable) {
+                        task = new PriorityTask(task, traceId, AutoTraceCtx.getSpanId());
+                    } else {
+                        task = new ThreadPoolTask(task, traceId, AutoTraceCtx.getSpanId());
+                    }
                 }
             }
         } catch (Exception e) {

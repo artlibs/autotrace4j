@@ -1,4 +1,4 @@
-package com.github.artlibs.autotrace4j.interceptor.impl;
+package com.github.artlibs.autotrace4j.interceptor.impl.jdk;
 
 import com.github.artlibs.autotrace4j.context.AutoTraceCtx;
 import com.github.artlibs.autotrace4j.context.jdk.ScheduledTask;
