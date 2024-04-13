@@ -1,7 +1,7 @@
 package com.github.artlibs.autotrace4j.interceptor.impl;
 
 import com.github.artlibs.autotrace4j.interceptor.Transformer;
-import com.github.artlibs.autotrace4j.interceptor.common.AbstractCallbackInterceptor;
+import com.github.artlibs.autotrace4j.interceptor.common.AbstractCallbackInstanceInterceptor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
@@ -15,7 +15,8 @@ import net.bytebuddy.matcher.ElementMatchers;
  *
  * All rights Reserved.
  */
-public class RocketMqSendCallbackInterceptor extends AbstractCallbackInterceptor {
+public class RocketMqSendCallbackInterceptor extends AbstractCallbackInstanceInterceptor {
+
     /**
      * {@inheritDoc}
      */
@@ -33,4 +34,5 @@ public class RocketMqSendCallbackInterceptor extends AbstractCallbackInterceptor
     public ElementMatcher<? super MethodDescription> methodMatcher() {
         return ElementMatchers.named("onSuccess").or(ElementMatchers.named("onException"));
     }
+
 }

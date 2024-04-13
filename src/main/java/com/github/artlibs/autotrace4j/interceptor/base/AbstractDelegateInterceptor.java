@@ -21,7 +21,7 @@ public abstract class AbstractDelegateInterceptor<T> implements Interceptor {
      * {@inheritDoc}
      */
     @Override
-    public boolean isVisitorMode() {
+    final public boolean isVisitorMode() {
         return false;
     }
 

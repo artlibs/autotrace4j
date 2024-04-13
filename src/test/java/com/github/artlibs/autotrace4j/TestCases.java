@@ -22,14 +22,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.github.artlibs.testcase.XxlJobCase.*;
 
@@ -69,20 +64,57 @@ public class TestCases {
     }
 
     @Test
-    void testForkJoinPool() {
+    void testForkJoinPool() throws InterruptedException, ExecutionException {
         // 01.Prepare
-        ForkJoinPool pool = new ForkJoinPool();
-
-
+        List<TupleResult> results = new ArrayList<>();
+        final String mainThreadId = String.valueOf(Thread.currentThread().getId());
         // 02.When
-        pool.execute(() -> {
+        ForkJoinPool pool = ForkJoinPool.commonPool();
 
-        });
-        pool.submit(() -> {
+        // execute case
+        CountDownLatch latch = new CountDownLatch(1);
+        AtomicReference<TupleResult> resultOfExecute = new AtomicReference<>();
+        pool.execute(
+            () -> {
+                resultOfExecute.set(new TupleResult(
+                    AutoTraceCtx.getTraceId(),
+                    AutoTraceCtx.getSpanId(),
+                    AutoTraceCtx.getParentSpanId(),
+                    String.valueOf(Thread.currentThread().getId())
+                ));
+                latch.countDown();
+            }
+        );
+        latch.await();
+        Assertions.assertNotNull(resultOfExecute.get());
+        results.add(resultOfExecute.get());
 
-        });
+        // submit case
+        ForkJoinTask<TupleResult> taskOfSubmit = pool.submit(
+            () -> new TupleResult(
+                AutoTraceCtx.getTraceId(),
+                AutoTraceCtx.getSpanId(),
+                AutoTraceCtx.getParentSpanId(),
+                String.valueOf(Thread.currentThread().getId())
+            )
+        );
+        TupleResult resultOfSubmit = taskOfSubmit.get();
+        Assertions.assertNotNull(resultOfSubmit);
+        results.add(resultOfSubmit);
 
         // 03.Verify
+        results.forEach(result -> {
+            // expected that the traceId is the same
+            Assertions.assertEquals(initTraceId, result.getValue1());
+            // expected that the spanId is not null and to be a new one
+            Assertions.assertNotNull(result.getValue2());
+            Assertions.assertEquals(initSpanId, result.getValue2());
+            // expected that the spanId is equals to the parent span id
+            Assertions.assertNotNull(result.getValue3());
+            Assertions.assertEquals(initParentSpanId, result.getValue3());
+            // expected that run in the different thread context
+            Assertions.assertNotEquals(mainThreadId, result.getValue3());
+        });
     }
 
     @Test

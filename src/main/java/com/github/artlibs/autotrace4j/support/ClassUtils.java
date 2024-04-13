@@ -48,7 +48,7 @@ public final class ClassUtils {
             } catch (IOException e) {
                 throw new WalkClassFileException(e);
             }
-        }, packagePrefix);
+        }, packagePrefix, true);
         File classInjectTempDir = SystemUtils.getClassInjectTempDir(Constants.INJECT_DIR_BOOTSTRAP);
         ClassInjector
             .UsingInstrumentation.of(classInjectTempDir, ClassInjector.UsingInstrumentation.Target.BOOTSTRAP, instrumentation)
@@ -65,7 +65,8 @@ public final class ClassUtils {
      */
     public static void walkClassFiles(
         BiConsumer<Path, String> walker,
-        String packagePrefix
+        String packagePrefix,
+        boolean ignoreRepeat
     ) throws IOException, URISyntaxException {
         Enumeration<URL> classesEnumeration = ClassUtils.class
             .getClassLoader()
@@ -97,6 +98,9 @@ public final class ClassUtils {
                 if (Objects.nonNull(zipFileSystem)) {
                     zipFileSystem.close();
                 }
+            }
+            if (ignoreRepeat){
+                break;
             }
         }
     }

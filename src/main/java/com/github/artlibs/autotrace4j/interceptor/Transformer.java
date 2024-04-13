@@ -2,12 +2,10 @@ package com.github.artlibs.autotrace4j.interceptor;
 
 import com.github.artlibs.autotrace4j.AutoTrace4j;
 import com.github.artlibs.autotrace4j.exception.LoadInterceptorException;
-import com.github.artlibs.autotrace4j.interceptor.base.AbstractDelegateInterceptor;
 import com.github.artlibs.autotrace4j.interceptor.base.AbstractVisitorInterceptor;
 import com.github.artlibs.autotrace4j.support.ClassUtils;
 import com.github.artlibs.autotrace4j.support.Constants;
 import net.bytebuddy.agent.builder.AgentBuilder;
-import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.MethodDelegation;
@@ -53,30 +51,35 @@ public final class Transformer {
      * @throws IOException -
      */
     public void on(Instrumentation instrument) throws IOException, URISyntaxException {
-        AgentBuilder agentBuilder = this.newAgentBuilderWithIgnore(new AutoListener()
-        );
+        AgentBuilder agentBuilder = this.newAgentBuilderWithIgnore();
         for (Interceptor interceptor : loadInterceptor()) {
-            agentBuilder = agentBuilder.type(interceptor.typeMatcher()).transform(
-                    (builder, typeDescription, classLoader, javaModule, protectionDomain) -> {
-                        // for jdk class, using asm visitor mode to intercept
-                if (interceptor.isVisitorMode()) {
-                    AbstractVisitorInterceptor visitor = (AbstractVisitorInterceptor) interceptor;
-                    return builder.visit(Advice.to(visitor.getClass())
-                            .on(isMethod().and(interceptor.methodMatcher())));
-                }
+            agentBuilder = agentBuilder
+                .type(interceptor.typeMatcher())
+                .transform((builder, typeDescription, classLoader, javaModule, protectionDomain) -> {
+                    DynamicType.Builder<?> newBuilder = interceptor.doTypeTransform(
+                        builder, typeDescription, javaModule, classLoader
+                    );
+                    if (Objects.isNull(newBuilder)) {
+                        newBuilder = builder;
+                    }
+                    // for jdk class, using asm visitor mode to intercept
+                    if (interceptor.isVisitorMode()) {
+                        AbstractVisitorInterceptor visitor = (AbstractVisitorInterceptor) interceptor;
+                        newBuilder = visitor.visit(newBuilder);
+                    } else {
                         // for other class, using method delegate mode to intercept
                         // this mode supports to add fields to the target object class.
-                DynamicType.Builder<?> newBuilder = ((AbstractDelegateInterceptor<?>)interceptor)
-                        .doTypeTransform(builder, typeDescription, javaModule, classLoader);
-                if (Objects.isNull(newBuilder)) {
-                    newBuilder = builder;
-                }
-                return newBuilder.method(isMethod().and(interceptor.methodMatcher()))
-                        .intercept(MethodDelegation.withDefaultConfiguration()
-                                .withBinders(Morph.Binder.install(MorphCall.class))
-                                .to(interceptor));
-
-            });
+                        newBuilder = newBuilder
+                            .method(isMethod().and(interceptor.methodMatcher()))
+                            .intercept(
+                                MethodDelegation
+                                    .withDefaultConfiguration()
+                                    .withBinders(Morph.Binder.install(MorphCall.class))
+                                    .to(interceptor)
+                            );
+                    }
+                    return newBuilder == null ? builder : newBuilder;
+                });
         }
         agentBuilder.installOn(instrument);
     }
@@ -92,21 +95,23 @@ public final class Transformer {
     /**
      * init an agent builder with ignore
      *
-     * @param listener transform listener
      * @return AgentBuilder
      */
-    private AgentBuilder newAgentBuilderWithIgnore(AgentBuilder.Listener listener) {
+    private AgentBuilder newAgentBuilderWithIgnore() {
         return new AgentBuilder.Default().ignore(
                 nameStartsWith("com.intellij.rt.")
-                        .or(nameStartsWith("jdk.jfr."))
-                        .or(nameStartsWith("com.alibaba.csp."))
-                        .or(nameStartsWith("org.apache.skywalking."))
-                        .or(nameStartsWith("com.navercorp.pinpoint."))
-                        .or(nameStartsWith(AutoTrace4j.class.getPackage().getName()))
-                        .or(nameStartsWith("org.springframework.boot.devtools"))
-                        .or(nameStartsWith("org.springframework.cloud.sleuth."))
-                        .or(isAnnotatedWith(named("org.springframework.boot.autoconfigure.SpringBootApplication")))
-        ).with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION).with(listener);
+                    .or(nameStartsWith("jdk.jfr."))
+                    .or(nameStartsWith("com.alibaba.csp."))
+                    .or(nameStartsWith("org.apache.skywalking."))
+                    .or(nameStartsWith("com.navercorp.pinpoint."))
+                    .or(nameStartsWith(AutoTrace4j.class.getPackage().getName()))
+                    .or(nameStartsWith("org.springframework.boot.devtools"))
+                    .or(nameStartsWith("org.springframework.cloud.sleuth."))
+                    .or(isAnnotatedWith(named("org.springframework.boot.autoconfigure.SpringBootApplication")))
+            )
+            .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
+            .with(AgentBuilder.InjectionStrategy.UsingUnsafe.INSTANCE)
+            .with(new AutoListener());
     }
 
     /**
@@ -144,7 +149,7 @@ public final class Transformer {
             } catch (Exception e) {
                 throw new LoadInterceptorException(e);
             }
-        }, Interceptor.class.getPackage().getName() + ".impl");
+        }, Interceptor.class.getPackage().getName() + ".impl", true);
 
         return interceptorList;
     }

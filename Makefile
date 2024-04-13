@@ -8,4 +8,3 @@ test: prepackage
 	@mvn test --file pom.xml
 
 build: prepackage test
-	@mvn clean package -D maven.test.skip=false
