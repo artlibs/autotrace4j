@@ -186,7 +186,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
-                    <argLine>-javaagent:${project.build.directory}/${build.finalName}.jar=${test-case-package}</argLine>
+                    <argLine>
+                        -javaagent:${project.build.directory}${file.separator}${build.finalName}.jar=${test-case-package}
+                    </argLine>
                 </configuration>
             </plugin>
         </plugins>
