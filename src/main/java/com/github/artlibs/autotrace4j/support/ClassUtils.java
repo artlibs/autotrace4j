@@ -87,7 +87,8 @@ public final class ClassUtils {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         if (file.getFileName().toString().endsWith(".class")){
-                            String replaced = file.toString().replace("/", ".");
+                            String separator = file.getFileSystem().getSeparator();
+                            String replaced = file.toString().replace(separator, ".");
                             String classCanonicalName = replaced.substring(replaced.indexOf(packagePrefix)).replaceAll(".class", "");
                             walker.accept(file, classCanonicalName);
                         }
