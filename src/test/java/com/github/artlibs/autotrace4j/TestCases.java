@@ -24,7 +24,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.github.artlibs.testcase.XxlJobCase.*;
 
@@ -63,47 +62,60 @@ public class TestCases {
         AutoTraceCtx.removeAll();
     }
 
+    private static @NotNull TupleResult generateResult() {
+        return new TupleResult(
+            AutoTraceCtx.getTraceId(),
+            AutoTraceCtx.getSpanId(),
+            AutoTraceCtx.getParentSpanId(),
+            String.valueOf(Thread.currentThread().getId())
+        );
+    }
+
     @Test
     void testForkJoinPool() throws InterruptedException, ExecutionException {
         // 01.Prepare
-        List<TupleResult> results = new ArrayList<>();
+        List<TupleResult> results = new ArrayList<>(6);
         final String mainThreadId = String.valueOf(Thread.currentThread().getId());
         // 02.When
         ForkJoinPool pool = ForkJoinPool.commonPool();
 
         // execute case
-        CountDownLatch latch = new CountDownLatch(1);
-        AtomicReference<TupleResult> resultOfExecute = new AtomicReference<>();
+        CountDownLatch latch;
+        latch = new CountDownLatch(3);
         pool.execute(
             () -> {
-                resultOfExecute.set(new TupleResult(
-                    AutoTraceCtx.getTraceId(),
-                    AutoTraceCtx.getSpanId(),
-                    AutoTraceCtx.getParentSpanId(),
-                    String.valueOf(Thread.currentThread().getId())
-                ));
+                results.add(0, generateResult());
                 latch.countDown();
             }
         );
+        pool.execute(
+            () -> {
+                results.add(1, generateResult());
+                latch.countDown();
+            }
+        );
+        pool.execute(ForkJoinTask.adapt(
+            () -> {
+                results.add(2, generateResult());
+                latch.countDown();
+            }
+        ));
+
         latch.await();
-        Assertions.assertNotNull(resultOfExecute.get());
-        results.add(resultOfExecute.get());
 
         // submit case
-        ForkJoinTask<TupleResult> taskOfSubmit = pool.submit(
-            () -> new TupleResult(
-                AutoTraceCtx.getTraceId(),
-                AutoTraceCtx.getSpanId(),
-                AutoTraceCtx.getParentSpanId(),
-                String.valueOf(Thread.currentThread().getId())
-            )
-        );
-        TupleResult resultOfSubmit = taskOfSubmit.get();
-        Assertions.assertNotNull(resultOfSubmit);
-        results.add(resultOfSubmit);
+        pool.submit(() -> {
+            results.add(3, generateResult());
+            return results.get(3);
+        }).get();
+
+        pool.submit(() -> results.add(4, generateResult())).get();
+
+        pool.submit(ForkJoinTask.adapt(() -> results.add(5, generateResult()))).get();
 
         // 03.Verify
         results.forEach(result -> {
+            Assertions.assertNotNull(result);
             // expected that the traceId is the same
             Assertions.assertEquals(initTraceId, result.getValue1());
             // expected that the spanId is not null and to be a new one
@@ -181,11 +193,7 @@ public class TestCases {
             this.beforeEach();
 
             // 02.When
-            TupleResult result = service.submit(() -> new TupleResult(
-                    AutoTraceCtx.getTraceId(),
-                    AutoTraceCtx.getSpanId(),
-                    AutoTraceCtx.getParentSpanId(),
-                    String.valueOf(Thread.currentThread().getId()))
+            TupleResult result = service.submit(() -> generateResult()
             ).get();
 
             // 03.Verify
@@ -244,21 +252,13 @@ public class TestCases {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 System.err.println(e.getMessage());
-                asyncTupleHolder[0] = new TupleResult(
-                        AutoTraceCtx.getTraceId(), AutoTraceCtx.getSpanId(),
-                        AutoTraceCtx.getParentSpanId(),
-                        String.valueOf(Thread.currentThread().getId())
-                );
+                asyncTupleHolder[0] = generateResult();
                 latch.countDown();
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response resp) {
-                asyncTupleHolder[0] = new TupleResult(
-                        AutoTraceCtx.getTraceId(), AutoTraceCtx.getSpanId(),
-                        AutoTraceCtx.getParentSpanId(),
-                        String.valueOf(Thread.currentThread().getId())
-                );
+                asyncTupleHolder[0] = generateResult();
                 responseHolder[0] = resp;
                 latch.countDown();
             }
