@@ -29,9 +29,9 @@ import static com.github.artlibs.testcase.XxlJobCase.*;
 
 public class TestCases {
 
-    private final String initTraceId = "init-trace-id";
-    private final String initSpanId = "init-span-id";
-    private final String initParentSpanId = "init-p-span-id";
+    private String initTraceId = "init-trace-id";
+    private String initSpanId = "init-span-id";
+    private String initParentSpanId = "init-p-span-id";
     private final String httpBinOrgUrl = "https://httpbin.org/get";
     private static final String ATO_TRACE_ID = "X-Ato-Trace-Id";
     private static final String ATO_SPAN_ID = "X-Ato-Span-Id";
@@ -51,15 +51,22 @@ public class TestCases {
     }
 
     @BeforeEach
-    public void beforeEach() {
-        AutoTraceCtx.setTraceId(initTraceId);
-        AutoTraceCtx.setSpanId(initSpanId);
-        AutoTraceCtx.setParentSpanId(initParentSpanId);
+    public void beforeEach(TestInfo testInfo) {
+        initTraceCtx(testInfo.getDisplayName());
     }
 
     @AfterEach
     public void afterEach() {
         AutoTraceCtx.removeAll();
+    }
+
+    public void initTraceCtx(String testCase) {
+        initTraceId = initTraceId + "-"+ testCase;
+        initSpanId = initSpanId + "-"+ testCase;
+        initParentSpanId = initParentSpanId + "-"+ testCase;
+        AutoTraceCtx.setTraceId(initTraceId);
+        AutoTraceCtx.setSpanId(initSpanId);
+        AutoTraceCtx.setParentSpanId(initParentSpanId);
     }
 
     private static @NotNull TupleResult generateResult() {
@@ -71,32 +78,80 @@ public class TestCases {
         );
     }
 
+    private void verifyTaskResults(List<TupleResult> results, int cases, String mainThreadId) {
+        Assertions.assertEquals(cases, results.size());
+        results.forEach(result -> {
+            Assertions.assertNotNull(result);
+            // expected that the traceId is the same
+            Assertions.assertEquals(initTraceId, result.getValue1());
+            // expected that the spanId is not null and to be a new one
+            Assertions.assertNotNull(result.getValue2());
+            Assertions.assertNotEquals(initSpanId, result.getValue2());
+            // expected that the spanId is equals to the parent span id
+            Assertions.assertNotNull(result.getValue3());
+            Assertions.assertEquals(initSpanId, result.getValue3());
+            // expected that run in the different thread context
+            Assertions.assertNotEquals(mainThreadId, result.getValue4());
+        });
+    }
+
+    @Test
+    void testThread() throws InterruptedException, ExecutionException {
+        // 01.Prepare
+        int cases = 5;
+        List<TupleResult> results = new ArrayList<>();
+        // 02.When
+        CountDownLatch latch = new CountDownLatch(cases);
+        new Thread(() -> {
+            results.add(generateResult());
+            latch.countDown();
+        }).start();
+        new Thread(Thread.currentThread().getThreadGroup(), () -> {
+            results.add(generateResult());
+            latch.countDown();
+        }).start();
+        new Thread(() -> {
+            results.add(generateResult());
+            latch.countDown();
+        },"test_0").start();
+        new Thread(Thread.currentThread().getThreadGroup(), () -> {
+            results.add(generateResult());
+            latch.countDown();
+        },"test_1").start();
+        new Thread(Thread.currentThread().getThreadGroup(), () -> {
+            results.add(generateResult());
+            latch.countDown();
+        },"test_2",0).start();
+        latch.await();
+        // 03.Verify
+        verifyTaskResults(results, cases, String.valueOf(Thread.currentThread().getId()));
+    }
+
     @Test
     void testForkJoinPool() throws InterruptedException, ExecutionException {
         // 01.Prepare
-        List<TupleResult> results = new ArrayList<>(6);
-        final String mainThreadId = String.valueOf(Thread.currentThread().getId());
+        int cases = 6;
+        List<TupleResult> results = new ArrayList<>();
         // 02.When
         ForkJoinPool pool = ForkJoinPool.commonPool();
 
         // execute case
-        CountDownLatch latch;
-        latch = new CountDownLatch(3);
+        CountDownLatch latch = new CountDownLatch(3);
         pool.execute(
             () -> {
-                results.add(0, generateResult());
+                results.add(generateResult());
                 latch.countDown();
             }
         );
         pool.execute(
             () -> {
-                results.add(1, generateResult());
+                results.add(generateResult());
                 latch.countDown();
             }
         );
         pool.execute(ForkJoinTask.adapt(
             () -> {
-                results.add(2, generateResult());
+                results.add(generateResult());
                 latch.countDown();
             }
         ));
@@ -105,28 +160,14 @@ public class TestCases {
 
         // submit case
         pool.submit(() -> {
-            results.add(3, generateResult());
+            results.add(generateResult());
             return results.get(3);
         }).get();
-
-        pool.submit(() -> results.add(4, generateResult())).get();
-
-        pool.submit(ForkJoinTask.adapt(() -> results.add(5, generateResult()))).get();
+        pool.submit(() -> results.add(generateResult())).get();
+        pool.submit(ForkJoinTask.adapt(() -> results.add(generateResult()))).get();
 
         // 03.Verify
-        results.forEach(result -> {
-            Assertions.assertNotNull(result);
-            // expected that the traceId is the same
-            Assertions.assertEquals(initTraceId, result.getValue1());
-            // expected that the spanId is not null and to be a new one
-            Assertions.assertNotNull(result.getValue2());
-            Assertions.assertEquals(initSpanId, result.getValue2());
-            // expected that the spanId is equals to the parent span id
-            Assertions.assertNotNull(result.getValue3());
-            Assertions.assertEquals(initParentSpanId, result.getValue3());
-            // expected that run in the different thread context
-            Assertions.assertNotEquals(mainThreadId, result.getValue3());
-        });
+        verifyTaskResults(results, cases, String.valueOf(Thread.currentThread().getId()));
     }
 
     @Test
@@ -139,7 +180,7 @@ public class TestCases {
                 new AfterV230Case1(),
                 new AfterV230Case2())) {
             // 01.Prepare
-            this.beforeEach();
+            this.initTraceCtx("testXxlJobHandler");
 
             // 02.When
             runner.trigger();
@@ -190,7 +231,7 @@ public class TestCases {
         final String mainThreadId = String.valueOf(Thread.currentThread().getId());
 
         for (ExecutorService service : Arrays.asList(threadPoolExecutor, scheduledExecutor)) {
-            this.beforeEach();
+            this.initTraceCtx("testThreadPoolExecutor");
 
             // 02.When
             TupleResult result = service.submit(() -> generateResult()
