@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 /**
  * 功能：系统工具
@@ -16,6 +17,21 @@ import java.nio.file.Paths;
  */
 public final class SystemUtils {
     private SystemUtils() {}
+
+    /**
+     * @throws java.nio.file.InvalidPathException if a {@code Path} object cannot be constructed from the abstract
+     *                                            path (see {@link java.nio.file.FileSystem#getPath FileSystem.getPath})
+     */
+    public static Path getSysPropertyPath(String name) {
+        if (Objects.isNull(System.getProperty(name)) || System.getProperty(name).isEmpty()) {
+            return null;
+        }
+        return new File(System.getProperty(name)).toPath();
+    }
+
+    public static boolean getSysPropertyBool(String name) {
+        return Boolean.parseBoolean(System.getProperty(name));
+    }
 
     public static String getSysTempDir() {
         return System.getProperty("java.io.tmpdir");
@@ -29,7 +45,7 @@ public final class SystemUtils {
      */
     private static String getClassInjectTempDirPath(String injectDir) {
         return getSysTempDir() + File.separator +
-                Constants.INJECT_DIR_ROOT + File.separator + injectDir;
+            Constants.INJECT_DIR_ROOT + File.separator + injectDir;
     }
 
     /**
