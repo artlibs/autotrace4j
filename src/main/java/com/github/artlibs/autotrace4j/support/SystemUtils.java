@@ -33,8 +33,8 @@ public final class SystemUtils {
         return Boolean.parseBoolean(System.getProperty(name));
     }
 
-    public static String getSysTempDir() {
-        return System.getProperty("java.io.tmpdir");
+    public static Path getSysTempDir() {
+        return Paths.get(System.getProperty("java.io.tmpdir"));
     }
 
     /**
@@ -43,9 +43,8 @@ public final class SystemUtils {
      * @param injectDir the real directory
      * @return the absolute path of injectDir
      */
-    private static String getClassInjectTempDirPath(String injectDir) {
-        return getSysTempDir() + File.separator +
-            Constants.INJECT_DIR_ROOT + File.separator + injectDir;
+    private static Path getClassInjectTempDirPath(String injectDir) {
+        return getSysTempDir().resolve(Constants.INJECT_DIR_ROOT).resolve(injectDir);
     }
 
     /**
@@ -55,7 +54,7 @@ public final class SystemUtils {
      * @return the absolute path of injectDir
      */
     public static File getClassInjectTempDir(String injectDir) throws IOException {
-        Path dirPath = Paths.get(getClassInjectTempDirPath(injectDir));
+        Path dirPath = getClassInjectTempDirPath(injectDir);
         if (!Files.exists(dirPath)) {
             Files.createDirectories(dirPath);
         }

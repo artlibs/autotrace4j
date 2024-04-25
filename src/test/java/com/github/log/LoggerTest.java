@@ -12,7 +12,6 @@ import com.github.artlibs.autotrace4j.support.SystemUtils;
 import org.junit.jupiter.api.*;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
@@ -36,24 +35,24 @@ import static com.github.artlibs.autotrace4j.support.FileUtils.deleteDirectoryRe
 public class LoggerTest {
 
     protected static final Level TEST_DEFAULT_LEVEL = WARN;
-    protected static final String LOG_DIR = SystemUtils.getSysTempDir() + "test" + File.separator + LoggerTest.class.getSimpleName();
+    protected static final Path LOG_DIR = SystemUtils.getSysTempDir().resolve("test").resolve(LoggerTest.class.getSimpleName());
 
     @BeforeAll
     public static void beforeAll() throws IOException {
-        deleteDirectoryRecursively(new File(LOG_DIR).toPath());
+        deleteDirectoryRecursively(LOG_DIR);
         // test systemProperty set
         System.setProperty(LogConstants.SYSTEM_PROPERTY_LOG_LEVEL, TEST_DEFAULT_LEVEL.name());
-        System.setProperty(LogConstants.SYSTEM_PROPERTY_LOG_DIR, LOG_DIR);
+        System.setProperty(LogConstants.SYSTEM_PROPERTY_LOG_DIR, LOG_DIR.toString());
     }
 
     @BeforeEach
     public void beforeEach() throws IOException {
-        Files.createDirectories(new File(LOG_DIR).toPath());
+        Files.createDirectories(LOG_DIR);
     }
 
     @AfterEach
     public void afterEach() throws IOException {
-        deleteDirectoryRecursively(new File(LOG_DIR).toPath());
+        deleteDirectoryRecursively(LOG_DIR);
     }
 
     public void benchMark() throws InterruptedException, IllegalAccessException {
@@ -109,7 +108,7 @@ public class LoggerTest {
             // check console log
             checkLogContents(logCollectStream.toString(StandardCharsets.UTF_8.name()).split("\n"), limitLevel);
             // check file log
-            Path logFile = new File(LOG_DIR + File.separator + DefaultFileAppender.dateToLogFileName(LocalDateTime.now())).toPath();
+            Path logFile = LOG_DIR.resolve(DefaultFileAppender.dateToLogFileName(LocalDateTime.now()));
             checkLogContents(
                 new String(Files.readAllBytes(logFile), StandardCharsets.UTF_8).split("\n"),
                 limitLevel
@@ -131,7 +130,7 @@ public class LoggerTest {
     @Order(3)
     public void cleanExpiredFile() throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         // because the LoggerFactory has DefaultFileAppender, it will be started that always scan and delete the log dir.
-        Path cleanExpiredFileTestDir = new File(LOG_DIR).toPath().resolve("cleanExpiredFile");
+        Path cleanExpiredFileTestDir = LOG_DIR.resolve("cleanExpiredFile");
         Files.createDirectories(cleanExpiredFileTestDir);
         DefaultFileAppender defaultFileAppender = new DefaultFileAppender(null, cleanExpiredFileTestDir);
         Integer logFileRetentionDays = ReflectUtils.getFieldValue(defaultFileAppender, "logFileRetentionDays");
