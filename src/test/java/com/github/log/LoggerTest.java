@@ -106,11 +106,11 @@ public class LoggerTest {
             redirectOutStream(originalStream);
 
             // check console log
-            checkLogContents(logCollectStream.toString(StandardCharsets.UTF_8.name()).split("\n"), limitLevel);
+            checkLogContents(logCollectStream.toString(StandardCharsets.UTF_8.name()).split(System.lineSeparator()), limitLevel);
             // check file log
             Path logFile = LOG_DIR.resolve(DefaultFileAppender.dateToLogFileName(LocalDateTime.now()));
             checkLogContents(
-                new String(Files.readAllBytes(logFile), StandardCharsets.UTF_8).split("\n"),
+                new String(Files.readAllBytes(logFile), StandardCharsets.UTF_8).split(System.lineSeparator()),
                 limitLevel
             );
             try (FileChannel fileChannel = FileChannel.open(logFile, StandardOpenOption.WRITE)) {
@@ -188,13 +188,13 @@ public class LoggerTest {
         Assertions.assertEquals(allowLevelNum, logs.length);
         for (int i = 0; i < allowLevelNum; i++) {
             // [2024-04-24T16:13:15.027] [main] [INFO] [com.github.log.LoggerTest] - INFO
+            System.out.printf("check log content pass: %s%n", logs[i]);
             String[] logItems = logs[i].split(LogConstants.SPACE);
             Level level = allowLevels.get(i);
             Assertions.assertEquals(logItems[1], buildItem(Thread.currentThread().getName()));
             Assertions.assertEquals(logItems[2], buildItem(level.name()));
             Assertions.assertEquals(logItems[3], buildItem(LoggerTest.class.getCanonicalName()));
             Assertions.assertEquals(logItems[5], level.name());
-            System.out.printf("check log content pass: %s%n", logs[i]);
         }
     }
 

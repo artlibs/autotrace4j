@@ -104,11 +104,10 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
 
     @Override
     void doAppend(LogEvent event) {
-        LogEvent LogEvent = ((LogEvent) event);
         Tuple2<Path, FileChannel> logFile = getLogFile();
         if (Objects.nonNull(logFile)) {
-            String message = layout.format(LogEvent);
-            message += "\n";
+            String message = layout.format(event);
+            message = String.format("%s%n", message);
             byte[] bytes = message.getBytes(StandardCharsets.UTF_8);
             int len = bytes.length;
             int rem = len;
