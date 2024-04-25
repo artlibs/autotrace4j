@@ -1,5 +1,13 @@
 package com.github.artlibs.autotrace4j.support;
 
+/**
+ * 功能：tuple
+ *
+ * @author suopovate
+ * @since 2024/04/27
+ * <p>
+ * All rights Reserved.
+ */
 public class Tuple2<O1, O2> {
 
     O1 o1;

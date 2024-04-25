@@ -1,7 +1,7 @@
 package com.github.artlibs.autotrace4j.log.layout;
 
 import com.github.artlibs.autotrace4j.log.Logger;
-import com.github.artlibs.autotrace4j.log.event.DefaultLogEvent;
+import com.github.artlibs.autotrace4j.log.event.LogEvent;
 import com.github.artlibs.autotrace4j.support.ThrowableUtils;
 
 import java.time.Instant;
@@ -19,22 +19,13 @@ import static com.github.artlibs.autotrace4j.log.LogConstants.*;
  * <p>
  * All rights Reserved.
  */
-public class DefaultLayout implements Layout<DefaultLogEvent> {
+public class DefaultLayout implements Layout<LogEvent> {
 
-    public static final String UNDEFINE = "undefine";
+    public static final String UN_DEFINE = "unDefine";
 
     @Override
-    public String format(DefaultLogEvent event) {
-        if (event != null && event.getTemplate() != null) {
-            Object[] args = event.getArguments();
-            Throwable throwable = null;
-            if (args != null && args.length > 0 && args[args.length - 1] instanceof Throwable) {
-                throwable = ((Throwable) args[args.length - 1]);
-                if (args.length > 1) {
-                    args = new Object[args.length - 1];
-                    System.arraycopy(event.getArguments(), 0, args, 0, args.length - 1);
-                }
-            }
+    public String format(LogEvent event) {
+        if (event != null && event.getMessage() != null) {
             Logger logger = event.getLogger();
             StringBuilder sb = new StringBuilder();
             appendItem(
@@ -42,18 +33,18 @@ public class DefaultLayout implements Layout<DefaultLogEvent> {
                     .ofNullable(event.getEventTime())
                     .map(eventTime -> LocalDateTime.ofInstant(Instant.ofEpochMilli(event.getEventTime()), ZoneId.systemDefault()))
                     .map(LocalDateTime::toString)
-                    .orElse(UNDEFINE),
+                    .orElse(UN_DEFINE),
                 sb
             );
-            appendItem(Optional.ofNullable(event.getThreadName()).orElse(UNDEFINE), sb);
-            appendItem(Optional.ofNullable(event.getLevel()).map(Enum::name).orElse(UNDEFINE), sb);
-            appendItem(Optional.ofNullable(logger).map(Logger::getName).orElse(UNDEFINE), sb);
+            appendItem(Optional.ofNullable(event.getThreadName()).orElse(UN_DEFINE), sb);
+            appendItem(Optional.ofNullable(event.getLevel()).map(Enum::name).orElse(UN_DEFINE), sb);
+            appendItem(Optional.ofNullable(logger).map(Logger::getName).orElse(UN_DEFINE), sb);
             sb.append("-");
             sb.append(SPACE);
-            sb.append(String.format(event.getTemplate(), args));
-            if (throwable != null) {
+            sb.append(String.format(event.getMessage(), event.getArguments()));
+            if (event.getThrowable() != null) {
                 sb.append("\n");
-                sb.append(ThrowableUtils.throwableToStr(throwable));
+                sb.append(ThrowableUtils.throwableToStr(event.getThrowable()));
             }
             return sb.toString();
         }

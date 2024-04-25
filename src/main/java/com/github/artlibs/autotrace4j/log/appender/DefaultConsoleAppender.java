@@ -1,6 +1,5 @@
 package com.github.artlibs.autotrace4j.log.appender;
 
-import com.github.artlibs.autotrace4j.log.event.DefaultLogEvent;
 import com.github.artlibs.autotrace4j.log.event.Level;
 import com.github.artlibs.autotrace4j.log.event.LogEvent;
 import com.github.artlibs.autotrace4j.log.layout.Layout;
@@ -17,26 +16,26 @@ import java.util.Objects;
  */
 public class DefaultConsoleAppender extends AsyncAppender<LogEvent> {
 
-    Layout<DefaultLogEvent> layout;
+    Layout<LogEvent> layout;
 
-    public DefaultConsoleAppender(Layout<DefaultLogEvent> layout) {
+    public DefaultConsoleAppender(Layout<LogEvent> layout) {
         super();
         this.layout = layout;
-        start();
     }
 
     @Override
     public boolean support(LogEvent event) {
-        return event instanceof DefaultLogEvent;
+        return event != null;
     }
 
     @Override
     void doAppend(LogEvent event) {
-        DefaultLogEvent defaultLogEvent = ((DefaultLogEvent) event);
-        if (Objects.equals(event.getLevel(), Level.ERROR)){
-            System.err.println(layout.format(defaultLogEvent));
-        } else {
-            System.out.println(layout.format(defaultLogEvent));
+        if (started()) {
+            if (Objects.equals(event.getLevel(), Level.ERROR)) {
+                System.err.println(layout.format(event));
+            } else {
+                System.out.println(layout.format(event));
+            }
         }
     }
 

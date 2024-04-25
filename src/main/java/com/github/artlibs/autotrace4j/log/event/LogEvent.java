@@ -11,8 +11,19 @@ import com.github.artlibs.autotrace4j.log.Logger;
  * All rights Reserved.
  */
 public interface LogEvent {
+
     Level getLevel();
+
     String getThreadName();
+
     Long getEventTime();
+
     Logger getLogger();
+
+    Throwable getThrowable();
+
+    String getMessage();
+
+    Object[] getArguments();
+
 }

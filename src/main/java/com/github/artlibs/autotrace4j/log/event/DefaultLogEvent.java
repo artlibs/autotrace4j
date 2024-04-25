@@ -12,21 +12,20 @@ import com.github.artlibs.autotrace4j.log.Logger;
  */
 public class DefaultLogEvent extends AbstractLogEvent {
 
-    public String template;
-    public Object[] arguments;
-
-    public DefaultLogEvent(Level level, String threadName, Long eventTime, Logger logger, String template, Object[] arguments) {
-        super(level, threadName, eventTime, logger);
-        this.template = template;
-        this.arguments = arguments;
+    public DefaultLogEvent(Level level, String threadName, Long eventTime, Logger logger, String message, Object[] arguments) {
+        super(level, threadName, eventTime, logger, message, arguments);
     }
 
-    public String getTemplate() {
-        return template;
-    }
-
-    public Object[] getArguments() {
-        return arguments;
+    public DefaultLogEvent(
+        Level level,
+        String threadName,
+        Long eventTime,
+        Logger logger,
+        String message,
+        Object[] arguments,
+        Throwable throwable
+    ) {
+        super(level, threadName, eventTime, logger, message, arguments, throwable);
     }
 
 }

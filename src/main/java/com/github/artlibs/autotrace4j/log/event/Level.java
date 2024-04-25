@@ -9,10 +9,5 @@ package com.github.artlibs.autotrace4j.log.event;
  * All rights Reserved.
  */
 public enum Level {
-
-    DEBUG,
-    INFO,
-    WARN,
-    ERROR;
-
+    TRACE, DEBUG, INFO, WARN, ERROR
 }

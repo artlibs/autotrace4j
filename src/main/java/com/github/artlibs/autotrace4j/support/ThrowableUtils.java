@@ -5,6 +5,14 @@ import java.util.List;
 
 import static com.github.artlibs.autotrace4j.log.LogConstants.CAUSED_BY;
 
+/**
+ * 功能：异常处理工具类
+ *
+ * @author suopovate
+ * @since 2024/04/27
+ * <p>
+ * All rights Reserved.
+ */
 public class ThrowableUtils {
 
     private ThrowableUtils() {

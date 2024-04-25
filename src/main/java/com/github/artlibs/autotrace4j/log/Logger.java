@@ -17,34 +17,71 @@ public class Logger {
 
     private final String name;
     private final AppenderCombiner<LogEvent> appenderCombiner;
+    private Level level;
 
-    public Logger(String name, AppenderCombiner<LogEvent> appenderCombiner) {
+    public Logger(String name, AppenderCombiner<LogEvent> appenderCombiner, Level level) {
         this.name = name;
         this.appenderCombiner = appenderCombiner;
+        this.level = level;
     }
 
     public String getName() {
         return name;
     }
 
-    private DefaultLogEvent buildLogEvent(Level level, String template, Object[] args) {
-        return new DefaultLogEvent(level, Thread.currentThread().getName(), System.currentTimeMillis(), this, template, args);
+    private DefaultLogEvent buildLogEvent(Level level, String message, Object[] args) {
+        Throwable throwable = null;
+        Object[] resolvedArgs = args;
+        if (args != null && args.length > 0 && args[args.length - 1] instanceof Throwable) {
+            throwable = ((Throwable) args[args.length - 1]);
+            if (args.length > 1) {
+                resolvedArgs = new Object[args.length - 1];
+                System.arraycopy(args, 0, resolvedArgs, 0, args.length - 1);
+            }
+        }
+        return new DefaultLogEvent(
+            level,
+            Thread.currentThread().getName(),
+            System.currentTimeMillis(),
+            this,
+            message,
+            resolvedArgs,
+            throwable
+        );
     }
 
-    public void debug(String template, Object... args) {
-        appenderCombiner.append(buildLogEvent(Level.DEBUG, template, args));
+    public void trace(String message, Object... args) {
+        append(buildLogEvent(Level.TRACE, message, args));
     }
 
-    public void info(String template, Object... args) {
-        appenderCombiner.append(buildLogEvent(Level.INFO, template, args));
+    public void debug(String message, Object... args) {
+        append(buildLogEvent(Level.DEBUG, message, args));
     }
 
-    public void warn(String template, Object... args) {
-        appenderCombiner.append(buildLogEvent(Level.WARN, template, args));
+    public void info(String message, Object... args) {
+        append(buildLogEvent(Level.INFO, message, args));
     }
 
-    public void error(String template, Object... args) {
-        appenderCombiner.append(buildLogEvent(Level.ERROR, template, args));
+    public void warn(String message, Object... args) {
+        append(buildLogEvent(Level.WARN, message, args));
+    }
+
+    public void error(String message, Object... args) {
+        append(buildLogEvent(Level.ERROR, message, args));
+    }
+
+    public void append(DefaultLogEvent event) {
+        if (event.getLevel().compareTo(level) >= 0) {
+            appenderCombiner.append(event);
+        }
+    }
+
+    public Level getLevel() {
+        return level;
+    }
+
+    public void setLevel(Level level) {
+        this.level = level;
     }
 
 }

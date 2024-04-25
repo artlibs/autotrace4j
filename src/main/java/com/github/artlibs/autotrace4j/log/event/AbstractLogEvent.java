@@ -16,12 +16,38 @@ public abstract class AbstractLogEvent implements LogEvent {
     private final String threadName;
     private final Long eventTime;
     private final Logger logger;
+    private final String message;
+    private final Object[] arguments;
+    private final Throwable throwable;
 
-    public AbstractLogEvent(Level level, String threadName, Long eventTime, Logger logger) {
+
+    public AbstractLogEvent(
+        Level level,
+        String threadName,
+        Long eventTime,
+        Logger logger,
+        String message,
+        Object[] arguments
+    ) {
+        this(level, threadName, eventTime, logger, message, arguments, null);
+    }
+
+    public AbstractLogEvent(
+        Level level,
+        String threadName,
+        Long eventTime,
+        Logger logger,
+        String message,
+        Object[] arguments,
+        Throwable throwable
+    ) {
         this.level = level;
         this.threadName = threadName;
         this.eventTime = eventTime;
         this.logger = logger;
+        this.message = message;
+        this.arguments = arguments;
+        this.throwable = throwable;
     }
 
     @Override
@@ -42,6 +68,21 @@ public abstract class AbstractLogEvent implements LogEvent {
     @Override
     public Logger getLogger() {
         return logger;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    @Override
+    public Object[] getArguments() {
+        return arguments;
+    }
+
+    @Override
+    public Throwable getThrowable() {
+        return throwable;
     }
 
 }
