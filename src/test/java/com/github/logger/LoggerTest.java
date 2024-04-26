@@ -1,4 +1,4 @@
-package com.github.log;
+package com.github.logger;
 
 import com.github.artlibs.autotrace4j.context.ReflectUtils;
 import com.github.artlibs.autotrace4j.logger.LogConstants;
@@ -35,6 +35,14 @@ import static com.github.artlibs.autotrace4j.context.ReflectUtils.getFieldValue;
 import static com.github.artlibs.autotrace4j.logger.event.Level.INFO;
 import static com.github.artlibs.autotrace4j.support.FileUtils.deleteDirectoryRecursively;
 
+/**
+ * 功能：日志测试
+ *
+ * @author suopovate
+ * @since 2024/04/27
+ * <p>
+ * All rights Reserved.
+ */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class LoggerTest {
 
