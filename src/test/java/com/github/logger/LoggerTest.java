@@ -14,6 +14,7 @@ import org.junit.jupiter.api.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
@@ -80,16 +81,16 @@ public class LoggerTest {
     @Order(1)
     public void defaultLayout() {
         DefaultLayout defaultLayout = new DefaultLayout();
-        Logger logger = new Logger(LoggerTest.class.getCanonicalName(), null, INFO);
+        Logger logger = newLogger(LoggerTest.class.getCanonicalName(), null, INFO);
         LogEvent logEvent = buildLogEvent(logger, "test", new Object[0]);
         String timeStr = buildItem(
             LocalDateTime
                 .ofInstant(Instant.ofEpochMilli(logEvent.getEventTime()), ZoneId.systemDefault())
                 .toString()
         );
-        // [2024-04-27T17:37:22.166] [main] [INFO] [com.github.log.LoggerTest] - test
+        // [2024-04-27T17:37:22.166] [main] [INFO] [com.github.logger.LoggerTest] - test
         Assertions.assertEquals(
-            timeStr + " [main] [INFO] [com.github.log.LoggerTest] - test" + System.lineSeparator(),
+            timeStr + " [main] [INFO] [com.github.logger.LoggerTest] - test" + System.lineSeparator(),
             defaultLayout.format(logEvent)
         );
 
@@ -100,9 +101,20 @@ public class LoggerTest {
                 .toString()
         );
         Assertions.assertEquals(
-            timeStr + " [main] [INFO] [com.github.log.LoggerTest] - test-format-1" + System.lineSeparator(),
+            timeStr + " [main] [INFO] [com.github.logger.LoggerTest] - test-format-1" + System.lineSeparator(),
             defaultLayout.format(logEvent)
         );
+    }
+
+    private static Logger newLogger(String name, Appender<?> appender, Level level) {
+        try {
+            Constructor<Logger> declaredConstructor = Logger.class.getDeclaredConstructor(String.class, Appender.class, Level.class);
+            declaredConstructor.setAccessible(true);
+            return declaredConstructor
+                .newInstance(name, appender, level);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -117,7 +129,7 @@ public class LoggerTest {
                 printStream
             );
             defaultPrintStreamAppender.start();
-            Logger logger = new Logger(LoggerTest.class.getCanonicalName(), defaultPrintStreamAppender, limitLevel);
+            Logger logger = newLogger(LoggerTest.class.getCanonicalName(), defaultPrintStreamAppender, limitLevel);
             // test every limit level log print
             Assertions.assertNotNull(logger);
 
@@ -148,7 +160,7 @@ public class LoggerTest {
             // don't clean file
             DefaultFileAppender defaultFileAppender = new DefaultFileAppender(new DefaultLayout(), logPath, 0);
             defaultFileAppender.start();
-            Logger logger = new Logger(LoggerTest.class.getCanonicalName(), defaultFileAppender, limitLevel);
+            Logger logger = newLogger(LoggerTest.class.getCanonicalName(), defaultFileAppender, limitLevel);
             // test every limit level log print
             // make all level's log
             for (Level level : Level.values()) {
@@ -226,7 +238,7 @@ public class LoggerTest {
         DefaultLayout defaultLayout = new DefaultLayout();
         DefaultFileAppender defaultFileAppender = new DefaultFileAppender(defaultLayout, rollingFileDir, 0, 0);
         defaultFileAppender.start();
-        Logger logger = new Logger(LoggerTest.class.getCanonicalName(), defaultFileAppender, INFO);
+        Logger logger = newLogger(LoggerTest.class.getCanonicalName(), defaultFileAppender, INFO);
 
         String message = "test";
         String log = defaultLayout.format(buildLogEvent(logger, message, new Object[0]));

@@ -19,7 +19,7 @@ public class Logger {
     private final Appender<LogEvent> appender;
     private Level level;
 
-    public Logger(String name, Appender<LogEvent> appender, Level level) {
+    Logger(String name, Appender<LogEvent> appender, Level level) {
         this.name = name;
         this.appender = appender;
         this.level = level;
