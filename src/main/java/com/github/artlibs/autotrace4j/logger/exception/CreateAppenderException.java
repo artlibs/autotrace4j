@@ -1,19 +1,19 @@
-package com.github.artlibs.autotrace4j.exception;
+package com.github.artlibs.autotrace4j.logger.exception;
 
 /**
- * Unlock Method Exception
+ * 功能：Create Appender Exception
  *
- * @author Fury
- * @since 2024-03-30
+ * @author suopovate
+ * @since 2024/04/24
  * <p>
  * All rights Reserved.
  */
-public class UnlockMethodException extends RuntimeException {
+public class CreateAppenderException extends RuntimeException {
     /** Constructs a new runtime exception with {@code null} as its
      * detail message.  The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause}.
      */
-    public UnlockMethodException() {
+    public CreateAppenderException() {
         super();
     }
 
@@ -24,7 +24,7 @@ public class UnlockMethodException extends RuntimeException {
      * @param   message   the detail message. The detail message is saved for
      *          later retrieval by the {@link #getMessage()} method.
      */
-    public UnlockMethodException(String message) {
+    public CreateAppenderException(String message) {
         super(message);
     }
 
@@ -42,7 +42,7 @@ public class UnlockMethodException extends RuntimeException {
      *         unknown.)
      * @since  1.4
      */
-    public UnlockMethodException(String message, Throwable cause) {
+    public CreateAppenderException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -58,7 +58,7 @@ public class UnlockMethodException extends RuntimeException {
      *         unknown.)
      * @since  1.4
      */
-    public UnlockMethodException(Throwable cause) {
+    public CreateAppenderException(Throwable cause) {
         super(cause);
     }
 
@@ -77,9 +77,9 @@ public class UnlockMethodException extends RuntimeException {
      *
      * @since 1.7
      */
-    protected UnlockMethodException(String message, Throwable cause,
-                                    boolean enableSuppression,
-                                    boolean writableStackTrace) {
+    protected CreateAppenderException(String message, Throwable cause,
+                                      boolean enableSuppression,
+                                      boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

@@ -1,8 +1,8 @@
 package com.github.artlibs.autotrace4j.interceptor.impl;
 
-import com.github.artlibs.autotrace4j.interceptor.base.AbstractInstanceInterceptor;
 import com.github.artlibs.autotrace4j.context.AutoTraceCtx;
 import com.github.artlibs.autotrace4j.context.ReflectUtils;
+import com.github.artlibs.autotrace4j.interceptor.base.AbstractInstanceInterceptor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
@@ -30,7 +30,7 @@ public class OkHttpClientInterceptor extends AbstractInstanceInterceptor {
         if (Objects.isNull(traceId) || Objects.isNull(thiz)) {
             return;
         }
-        List<String> namesAndValues = ReflectUtils.getFieldValue(thiz, "namesAndValues");
+        List<String> namesAndValues = ReflectUtils.getFieldValue(thiz, "namesAndValues", true);
         if (Objects.nonNull(namesAndValues) && !namesAndValues.contains(AutoTraceCtx.ATO_TRACE_ID)) {
             namesAndValues.add(AutoTraceCtx.ATO_TRACE_ID);
             namesAndValues.add(traceId);

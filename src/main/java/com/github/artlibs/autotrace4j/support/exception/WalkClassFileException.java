@@ -1,4 +1,4 @@
-package com.github.artlibs.autotrace4j.exception;
+package com.github.artlibs.autotrace4j.support.exception;
 
 /**
  * Walk Class File Exception

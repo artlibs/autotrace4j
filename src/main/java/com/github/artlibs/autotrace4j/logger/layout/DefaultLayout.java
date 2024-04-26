@@ -1,7 +1,7 @@
-package com.github.artlibs.autotrace4j.log.layout;
+package com.github.artlibs.autotrace4j.logger.layout;
 
-import com.github.artlibs.autotrace4j.log.Logger;
-import com.github.artlibs.autotrace4j.log.event.LogEvent;
+import com.github.artlibs.autotrace4j.logger.Logger;
+import com.github.artlibs.autotrace4j.logger.event.LogEvent;
 import com.github.artlibs.autotrace4j.support.ThrowableUtils;
 
 import java.time.Instant;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
 
-import static com.github.artlibs.autotrace4j.log.LogConstants.*;
+import static com.github.artlibs.autotrace4j.logger.LogConstants.*;
 
 /**
  * 功能：默认日志格式化器
@@ -43,9 +43,10 @@ public class DefaultLayout implements Layout<LogEvent> {
             sb.append(SPACE);
             sb.append(String.format(event.getMessage(), event.getArguments()));
             if (event.getThrowable() != null) {
-                sb.append("\n");
+                sb.append(System.lineSeparator());
                 sb.append(ThrowableUtils.throwableToStr(event.getThrowable()));
             }
+            sb.append(System.lineSeparator());
             return sb.toString();
         }
         return "";

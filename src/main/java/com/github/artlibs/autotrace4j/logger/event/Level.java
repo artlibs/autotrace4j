@@ -1,4 +1,4 @@
-package com.github.artlibs.autotrace4j.log.event;
+package com.github.artlibs.autotrace4j.logger.event;
 
 /**
  * 功能：日志级别枚举

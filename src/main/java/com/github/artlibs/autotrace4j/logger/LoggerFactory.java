@@ -1,18 +1,18 @@
-package com.github.artlibs.autotrace4j.log;
+package com.github.artlibs.autotrace4j.logger;
 
-import com.github.artlibs.autotrace4j.log.appender.AppenderCombiner;
-import com.github.artlibs.autotrace4j.log.appender.DefaultConsoleAppender;
-import com.github.artlibs.autotrace4j.log.appender.DefaultFileAppender;
-import com.github.artlibs.autotrace4j.log.event.Level;
-import com.github.artlibs.autotrace4j.log.event.LogEvent;
-import com.github.artlibs.autotrace4j.log.layout.DefaultLayout;
+import com.github.artlibs.autotrace4j.logger.appender.AppenderCombiner;
+import com.github.artlibs.autotrace4j.logger.appender.DefaultFileAppender;
+import com.github.artlibs.autotrace4j.logger.appender.DefaultPrintStreamAppender;
+import com.github.artlibs.autotrace4j.logger.event.Level;
+import com.github.artlibs.autotrace4j.logger.event.LogEvent;
+import com.github.artlibs.autotrace4j.logger.layout.DefaultLayout;
 import com.github.artlibs.autotrace4j.support.SystemUtils;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.github.artlibs.autotrace4j.log.LogConstants.SYSTEM_PROPERTY_LOG_DIR;
-import static com.github.artlibs.autotrace4j.log.LogConstants.SYSTEM_PROPERTY_LOG_LEVEL;
+import static com.github.artlibs.autotrace4j.logger.LogConstants.SYSTEM_PROPERTY_LOG_DIR;
+import static com.github.artlibs.autotrace4j.logger.LogConstants.SYSTEM_PROPERTY_LOG_LEVEL;
 
 /**
  * 功能：日志工厂
@@ -28,18 +28,18 @@ import static com.github.artlibs.autotrace4j.log.LogConstants.SYSTEM_PROPERTY_LO
  */
 public class LoggerFactory {
 
-    final private static ConcurrentHashMap<String, Logger> LOGGER_MAP = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Logger> LOGGER_MAP = new ConcurrentHashMap<>();
 
-    final private static AppenderCombiner<LogEvent> APPENDER_COMBINER;
+    private static final AppenderCombiner<LogEvent> APPENDER_COMBINER;
 
     volatile private static Level LEVEL;
 
     static {
         // appender set
         APPENDER_COMBINER = new AppenderCombiner<>();
-        DefaultConsoleAppender defaultConsoleAppender = new DefaultConsoleAppender(new DefaultLayout());
-        defaultConsoleAppender.start();
-        APPENDER_COMBINER.addAppender(defaultConsoleAppender);
+        DefaultPrintStreamAppender defaultPrintStreamAppender = new DefaultPrintStreamAppender(new DefaultLayout(), System.out, System.err);
+        defaultPrintStreamAppender.start();
+        APPENDER_COMBINER.addAppender(defaultPrintStreamAppender);
         Optional
             .ofNullable(SystemUtils.getSysPropertyPath(SYSTEM_PROPERTY_LOG_DIR))
             .ifPresent(path -> {

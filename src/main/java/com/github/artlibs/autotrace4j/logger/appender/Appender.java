@@ -1,6 +1,6 @@
-package com.github.artlibs.autotrace4j.log.appender;
+package com.github.artlibs.autotrace4j.logger.appender;
 
-import com.github.artlibs.autotrace4j.log.Lifecycle;
+import com.github.artlibs.autotrace4j.logger.Lifecycle;
 
 /**
  * 功能：Appender,负责日志输出.

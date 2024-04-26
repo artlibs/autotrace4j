@@ -1,4 +1,4 @@
-package com.github.artlibs.autotrace4j.log.layout;
+package com.github.artlibs.autotrace4j.logger.layout;
 
 /**
  * 功能：日志格式化器

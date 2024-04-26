@@ -1,6 +1,6 @@
 package com.github.artlibs.autotrace4j.support;
 
-import com.github.artlibs.autotrace4j.exception.UnlockMethodException;
+import com.github.artlibs.autotrace4j.support.exception.UnlockMethodException;
 import net.bytebuddy.utility.JavaModule;
 
 import java.lang.reflect.Field;

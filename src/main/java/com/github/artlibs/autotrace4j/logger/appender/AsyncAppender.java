@@ -1,4 +1,4 @@
-package com.github.artlibs.autotrace4j.log.appender;
+package com.github.artlibs.autotrace4j.logger.appender;
 
 import com.github.artlibs.autotrace4j.support.ThrowableUtils;
 

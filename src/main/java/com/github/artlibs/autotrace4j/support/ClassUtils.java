@@ -1,6 +1,6 @@
 package com.github.artlibs.autotrace4j.support;
 
-import com.github.artlibs.autotrace4j.exception.WalkClassFileException;
+import com.github.artlibs.autotrace4j.support.exception.WalkClassFileException;
 import net.bytebuddy.dynamic.ClassFileLocator;
 import net.bytebuddy.dynamic.loading.ClassInjector;
 

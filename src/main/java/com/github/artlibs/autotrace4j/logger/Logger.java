@@ -1,9 +1,9 @@
-package com.github.artlibs.autotrace4j.log;
+package com.github.artlibs.autotrace4j.logger;
 
-import com.github.artlibs.autotrace4j.log.appender.AppenderCombiner;
-import com.github.artlibs.autotrace4j.log.event.DefaultLogEvent;
-import com.github.artlibs.autotrace4j.log.event.Level;
-import com.github.artlibs.autotrace4j.log.event.LogEvent;
+import com.github.artlibs.autotrace4j.logger.appender.Appender;
+import com.github.artlibs.autotrace4j.logger.event.DefaultLogEvent;
+import com.github.artlibs.autotrace4j.logger.event.Level;
+import com.github.artlibs.autotrace4j.logger.event.LogEvent;
 
 /**
  * 功能：日志对象
@@ -16,12 +16,12 @@ import com.github.artlibs.autotrace4j.log.event.LogEvent;
 public class Logger {
 
     private final String name;
-    private final AppenderCombiner<LogEvent> appenderCombiner;
+    private final Appender<LogEvent> appender;
     private Level level;
 
-    public Logger(String name, AppenderCombiner<LogEvent> appenderCombiner, Level level) {
+    public Logger(String name, Appender<LogEvent> appender, Level level) {
         this.name = name;
-        this.appenderCombiner = appenderCombiner;
+        this.appender = appender;
         this.level = level;
     }
 
@@ -72,7 +72,7 @@ public class Logger {
 
     public void append(DefaultLogEvent event) {
         if (event.getLevel().compareTo(level) >= 0) {
-            appenderCombiner.append(event);
+            appender.append(event);
         }
     }
 

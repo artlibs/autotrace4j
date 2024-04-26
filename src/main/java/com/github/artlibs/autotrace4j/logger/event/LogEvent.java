@@ -1,6 +1,6 @@
-package com.github.artlibs.autotrace4j.log.event;
+package com.github.artlibs.autotrace4j.logger.event;
 
-import com.github.artlibs.autotrace4j.log.Logger;
+import com.github.artlibs.autotrace4j.logger.Logger;
 
 /**
  * 功能：日志事件

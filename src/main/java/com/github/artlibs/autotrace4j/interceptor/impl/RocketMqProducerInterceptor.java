@@ -26,7 +26,7 @@ public class RocketMqProducerInterceptor extends AbstractInstanceInterceptor {
      */
     @Override
     public void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
-        Map<String, String> properties = ReflectUtils.getFieldValue(allArgs[0], "properties");
+        Map<String, String> properties = ReflectUtils.getFieldValue(allArgs[0], "properties", true);
         if (Objects.nonNull(properties)) {
             String spanId = properties.get(AutoTraceCtx.SPAN_KEY);
             String traceId = properties.get(AutoTraceCtx.TRACE_KEY);

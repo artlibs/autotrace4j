@@ -1,4 +1,4 @@
-package com.github.artlibs.autotrace4j.log.appender;
+package com.github.artlibs.autotrace4j.logger.appender;
 
 /**
  * 功能：抽象appender

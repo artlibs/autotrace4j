@@ -1,4 +1,4 @@
-package com.github.artlibs.autotrace4j.log;
+package com.github.artlibs.autotrace4j.logger;
 
 /**
  * 功能：生命周期

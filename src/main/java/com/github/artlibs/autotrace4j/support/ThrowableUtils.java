@@ -3,7 +3,7 @@ package com.github.artlibs.autotrace4j.support;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.github.artlibs.autotrace4j.log.LogConstants.CAUSED_BY;
+import static com.github.artlibs.autotrace4j.logger.LogConstants.CAUSED_BY;
 
 /**
  * 功能：异常处理工具类
@@ -21,7 +21,7 @@ public class ThrowableUtils {
     public static String throwableToStr(Throwable t) {
         List<String> strList = new LinkedList<>();
         extract(strList, t, null);
-        return String.join("\n", strList);
+        return String.join(System.lineSeparator(), strList);
     }
 
     private static void extract(List<String> strList, Throwable t, StackTraceElement[] parentSTE) {

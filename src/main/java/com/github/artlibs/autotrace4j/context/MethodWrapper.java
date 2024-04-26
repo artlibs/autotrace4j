@@ -17,7 +17,7 @@ public class MethodWrapper {
 
     private MethodWrapper(){}
 
-    public static MethodWrapper of(Object obj, String methodName, Class<?>... parameterTypes) {
+    public static MethodWrapper of(Object obj, String methodName, boolean declared, Class<?>... parameterTypes) {
         MethodWrapper wrapper = new MethodWrapper();
         if (Objects.isNull(obj)) {
             return wrapper;
@@ -29,7 +29,9 @@ public class MethodWrapper {
             final String key = clazz.getName() + "." + methodName;
             wrapper.method = CachePools.getMethodCache(key);
             if (Objects.isNull(wrapper.method)) {
-                wrapper.method = clazz.getMethod(methodName, parameterTypes);
+                wrapper.method = declared
+                                 ? clazz.getDeclaredMethod(methodName, parameterTypes)
+                                 : clazz.getMethod(methodName, parameterTypes);
                 wrapper.method.setAccessible(true);
                 CachePools.setMethodCache(key, wrapper.method);
             }
