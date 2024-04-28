@@ -354,7 +354,7 @@ public class LoggerTest {
         Assertions.assertNotNull(logs);
         Assertions.assertEquals(allowLevelNum, logs.length);
         for (int i = 0; i < allowLevelNum; i++) {
-            // [2024-04-24T16:13:15.027] [main] [INFO] [com.github.log.LoggerTest] - INFO
+            // [2024-04-24T16:13:15.027] [main] [INFO] [io.github.artlibs.autotrace4j.LoggerTest] - INFO
             System.out.printf("check log content pass: %s%n", logs[i]);
             String[] logItems = logs[i].split(LogConstants.SPACE);
             Level level = allowLevels.get(i);

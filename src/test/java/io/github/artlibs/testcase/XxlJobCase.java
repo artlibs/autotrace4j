@@ -1,8 +1,8 @@
 package io.github.artlibs.testcase;
 
-import xxl.job.core.biz.model.ReturnT;
-import xxl.job.core.handler.ForTestHandler;
-import xxl.job.core.handler.annotation.XxlJob;
+import com.xxl.job.core.biz.model.ReturnT;
+import com.xxl.job.core.handler.ForTestHandler;
+import com.xxl.job.core.handler.annotation.XxlJob;
 
 /**
  * XxlJobCase, we copy the related class and not ref the xxl-job pom

@@ -48,6 +48,7 @@ public class XxlJobScheduleTaskInterceptor extends AbstractVisitorInterceptor {
     }
 
     public static class XxlJobAnnotatedAdvisor {
+        private XxlJobAnnotatedAdvisor(){}
 
         /**
          * advice on method enter: set context

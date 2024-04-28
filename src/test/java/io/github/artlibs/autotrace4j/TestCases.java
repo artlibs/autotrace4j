@@ -42,7 +42,7 @@ public class TestCases {
         // when debug on local,you should open this argument,like this: -DinstallAgent=true
         if (Boolean.parseBoolean(System.getProperty("installAgent"))){
             try {
-                AutoTrace4j.premain("com.github.artlibs.testcase", ByteBuddyAgent.install());
+                AutoTrace4j.premain("io.github.artlibs.testcase", ByteBuddyAgent.install());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -51,7 +51,10 @@ public class TestCases {
 
     @BeforeEach
     public void beforeEach(TestInfo testInfo) {
-        initTraceCtx(testInfo.getDisplayName());
+        String suffix = testInfo.getTestMethod().isPresent() ?
+                testInfo.getTestMethod().get().getName() :
+                testInfo.getDisplayName();
+        initTraceCtx(suffix);
     }
 
     @AfterEach
@@ -60,9 +63,9 @@ public class TestCases {
     }
 
     public void initTraceCtx(String testCase) {
-        initTraceId = initTraceId + "-"+ testCase;
-        initSpanId = initSpanId + "-"+ testCase;
-        initParentSpanId = initParentSpanId + "-"+ testCase;
+        initTraceId = initTraceId + "-" + testCase;
+        initSpanId = initSpanId + "-" + testCase;
+        initParentSpanId = initParentSpanId + "-" + testCase;
         AutoTraceCtx.setTraceId(initTraceId);
         AutoTraceCtx.setSpanId(initSpanId);
         AutoTraceCtx.setParentSpanId(initParentSpanId);
@@ -179,7 +182,7 @@ public class TestCases {
                 new AfterV230Case1(),
                 new AfterV230Case2())) {
             // 01.Prepare
-            this.initTraceCtx("testXxlJobHandler");
+            this.initTraceCtx(runner.getClass().getSimpleName());
 
             // 02.When
             runner.trigger();
@@ -230,11 +233,10 @@ public class TestCases {
         final String mainThreadId = String.valueOf(Thread.currentThread().getId());
 
         for (ExecutorService service : Arrays.asList(threadPoolExecutor, scheduledExecutor)) {
-            this.initTraceCtx("testThreadPoolExecutor");
+            this.initTraceCtx(service.getClass().getSimpleName());
 
             // 02.When
-            TupleResult result = service.submit(() -> generateResult()
-            ).get();
+            TupleResult result = service.submit(TestCases::generateResult).get();
 
             // 03.Verify
             Assertions.assertNotNull(result);

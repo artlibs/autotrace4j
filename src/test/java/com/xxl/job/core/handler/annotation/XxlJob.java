@@ -1,4 +1,4 @@
-package xxl.job.core.handler.annotation;
+package com.xxl.job.core.handler.annotation;
 
 import java.lang.annotation.*;
 

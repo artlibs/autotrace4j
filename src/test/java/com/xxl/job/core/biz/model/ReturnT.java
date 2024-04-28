@@ -1,4 +1,4 @@
-package xxl.job.core.biz.model;
+package com.xxl.job.core.biz.model;
 
 import java.io.Serializable;
 

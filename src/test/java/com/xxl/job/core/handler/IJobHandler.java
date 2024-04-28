@@ -1,6 +1,6 @@
-package xxl.job.core.handler;
+package com.xxl.job.core.handler;
 
-import xxl.job.core.biz.model.ReturnT;
+import com.xxl.job.core.biz.model.ReturnT;
 
 /**
  * job handler

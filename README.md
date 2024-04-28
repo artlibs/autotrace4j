@@ -65,7 +65,7 @@ $ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-dom
 
 ​	已支持XXL Job和Spring的Scheduled定时任务在产生时生成TraceId：
 
--   XxlJob Handler：`com.xxl.job.core.handler.IJobHandler`
+-   XxlJob Handler：`com.handler.com.xxl.job.core.IJobHandler`
 -   Spring Schedule Task：`org.springframework.scheduling.annotation.Scheduled`
 
 ### 6、Logging
