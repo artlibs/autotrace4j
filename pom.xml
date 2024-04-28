@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.artlibs</groupId>
+    <groupId>io.github.artlibs</groupId>
     <artifactId>autotrace4j</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -12,8 +12,8 @@
     <description>An auto trace agent base on byte-buddy for Java.</description>
 
     <properties>
-        <premain.class>com.github.artlibs.autotrace4j.AutoTrace4j</premain.class>
-        <buddy.shaded.patten>com.github.artlibs.autotrace4j.bytebuddy</buddy.shaded.patten>
+        <premain.class>io.github.artlibs.autotrace4j.AutoTrace4j</premain.class>
+        <buddy.shaded.patten>io.github.artlibs.autotrace4j.bytebuddy</buddy.shaded.patten>
         <junit-jupiter-engine.version>5.8.1</junit-jupiter-engine.version>
         <bytebuddy.version>1.14.13</bytebuddy.version>
         <maven-jar.version>2.3.2</maven-jar.version>
@@ -21,7 +21,7 @@
         <exec-maven.version>1.6.0</exec-maven.version>
         <maven-compiler.version>3.12.0</maven-compiler.version>
         <compiler-release.version>8</compiler-release.version>
-        <test-case-package>com.github.artlibs.testcase</test-case-package>
+        <test-case-package>io.github.artlibs.testcase</test-case-package>
     </properties>
 
     <dependencies>
