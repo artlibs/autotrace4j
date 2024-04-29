@@ -1,0 +1,27 @@
+name: Release
+
+# Run workflow on commits to the `main` branch
+on:
+  release:
+    types: [prereleased]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+      - name: Install Java and Maven
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'adopt-hotspot'
+          java-version: '21'
+          cache: 'maven'
+      - name: Release Maven package
+        uses: samuelmeuli/action-maven-publish@v1
+        with:
+          server_id: central
+          gpg_private_key: ${{ secrets.gpg_private_key }}
+          gpg_passphrase: ${{ secrets.gpg_passphrase }}
+          nexus_username: ${{ secrets.nexus_username }}
+          nexus_password: ${{ secrets.nexus_password }}
