@@ -13,10 +13,9 @@ import static io.github.artlibs.autotrace4j.logger.LogConstants.CAUSED_BY;
  * <p>
  * All rights Reserved.
  */
-public class ThrowableUtils {
+public final class ThrowableUtils {
 
-    private ThrowableUtils() {
-    }
+    private ThrowableUtils() {}
 
     public static String throwableToStr(Throwable t) {
         List<String> strList = new LinkedList<>();

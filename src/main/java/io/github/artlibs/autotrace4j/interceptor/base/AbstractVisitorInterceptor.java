@@ -22,15 +22,15 @@ public abstract class AbstractVisitorInterceptor implements Interceptor {
      * {@inheritDoc}
      */
     @Override
-    final public boolean isVisitorMode() {
+    public final boolean isVisitorMode() {
         return true;
     }
 
     @Override
-    final public ElementMatcher<? super MethodDescription> methodMatcher() {
+    public final ElementMatcher<? super MethodDescription> methodMatcher() {
         return none();
     }
 
-    abstract public DynamicType.Builder<?> visit(DynamicType.Builder<?> builder);
+    public abstract DynamicType.Builder<?> visit(DynamicType.Builder<?> builder);
 
 }

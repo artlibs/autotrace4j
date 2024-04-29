@@ -24,12 +24,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * All rights Reserved.
  */
 public class LoggerFactory {
+    private LoggerFactory(){}
 
     private static final ConcurrentHashMap<String, Logger> LOGGER_MAP = new ConcurrentHashMap<>();
 
     private static final AppenderCombiner<LogEvent> APPENDER_COMBINER;
 
-    volatile private static Level LEVEL;
+    private static final Level LEVEL;
 
     static {
         // appender set
@@ -57,11 +58,11 @@ public class LoggerFactory {
             .orElse(Level.INFO);
     }
 
-    public static Logger logger(Class<?> clazz) {
-        return logger(clazz.getCanonicalName());
+    public static Logger getLogger(Class<?> clazz) {
+        return getLogger(clazz.getCanonicalName());
     }
 
-    static public Logger logger(String name) {
+    public static Logger getLogger(String name) {
         Logger logger = LOGGER_MAP.get(name);
         if (logger == null) {
             logger = new Logger(name, APPENDER_COMBINER, LEVEL);

@@ -13,7 +13,8 @@ import java.lang.reflect.Method;
  *
  * @author Fury
  * @since 2024-03-30
- *
+
+ * @param <T> delegate type
  * All rights Reserved.
  */
 public abstract class AbstractDelegateInterceptor<T> implements Interceptor {
@@ -21,7 +22,7 @@ public abstract class AbstractDelegateInterceptor<T> implements Interceptor {
      * {@inheritDoc}
      */
     @Override
-    final public boolean isVisitorMode() {
+    public final boolean isVisitorMode() {
         return false;
     }
 
@@ -57,6 +58,7 @@ public abstract class AbstractDelegateInterceptor<T> implements Interceptor {
      * @param module JavaModule
      * @return new DynamicType.Builder
      */
+    @Override
     public DynamicType.Builder<?> doTypeTransform(DynamicType.Builder<?> builder
             , TypeDescription typeDescription, JavaModule module, ClassLoader classLoader) {
         return builder;
@@ -93,11 +95,17 @@ public abstract class AbstractDelegateInterceptor<T> implements Interceptor {
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return super.hashCode() + methodMatcher().hashCode() + typeMatcher().hashCode();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object obj) {
         return super.equals(obj);

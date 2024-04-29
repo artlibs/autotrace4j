@@ -8,7 +8,8 @@ package io.github.artlibs.autotrace4j.logger;
  * <p>
  * All rights Reserved.
  */
-public class LogConstants {
+public final class LogConstants {
+    private LogConstants(){}
 
     public static final String SPACE = " ";
     public static final String LEFT_MIDDLE_BRACKET = "[";
@@ -17,5 +18,4 @@ public class LogConstants {
 
     public static final String SYSTEM_PROPERTY_LOG_DIR = "autotrace4j.log.dir";
     public static final String SYSTEM_PROPERTY_LOG_LEVEL = "autotrace4j.log.level";
-
 }

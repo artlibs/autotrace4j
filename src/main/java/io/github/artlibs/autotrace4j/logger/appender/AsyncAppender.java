@@ -41,7 +41,7 @@ public abstract class AsyncAppender<E> extends AbstractAppender<E> {
     }
 
     @Override
-    final public void append(E event) {
+    public final void append(E event) {
         queue.offer(event);
     }
 

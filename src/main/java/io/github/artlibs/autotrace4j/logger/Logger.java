@@ -14,7 +14,6 @@ import io.github.artlibs.autotrace4j.logger.event.LogEvent;
  * All rights Reserved.
  */
 public class Logger {
-
     private final String name;
     private final Appender<LogEvent> appender;
     private Level level;
@@ -70,7 +69,7 @@ public class Logger {
         append(buildLogEvent(Level.ERROR, message, args));
     }
 
-    public void append(DefaultLogEvent event) {
+    private void append(DefaultLogEvent event) {
         if (event.getLevel().compareTo(level) >= 0) {
             appender.append(event);
         }
@@ -80,7 +79,7 @@ public class Logger {
         return level;
     }
 
-    public void setLevel(Level level) {
+    private void setLevel(Level level) {
         this.level = level;
     }
 

@@ -21,7 +21,7 @@ public abstract class AbstractLogEvent implements LogEvent {
     private final Throwable throwable;
 
 
-    public AbstractLogEvent(
+    protected AbstractLogEvent(
         Level level,
         String threadName,
         Long eventTime,
@@ -32,7 +32,7 @@ public abstract class AbstractLogEvent implements LogEvent {
         this(level, threadName, eventTime, logger, message, arguments, null);
     }
 
-    public AbstractLogEvent(
+    protected AbstractLogEvent(
         Level level,
         String threadName,
         Long eventTime,

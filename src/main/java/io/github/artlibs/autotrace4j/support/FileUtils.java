@@ -15,7 +15,8 @@ import java.nio.file.attribute.BasicFileAttributes;
  * <p>
  * All rights Reserved.
  */
-public class FileUtils {
+public final class FileUtils {
+    private FileUtils(){}
 
     public static void deleteDirectoryRecursively(Path directoryPath) throws IOException {
         if (!Files.isDirectory(directoryPath)) {

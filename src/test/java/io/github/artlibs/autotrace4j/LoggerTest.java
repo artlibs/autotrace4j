@@ -66,7 +66,7 @@ public class LoggerTest {
     }
 
     public void benchMark() throws InterruptedException, IllegalAccessException {
-        Logger byName = LoggerFactory.logger(LoggerTest.class.getCanonicalName());
+        Logger byName = LoggerFactory.getLogger(LoggerTest.class.getCanonicalName());
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < 1000000; i++) {
             byName.warn("benchMark");
@@ -277,13 +277,13 @@ public class LoggerTest {
 
     @Test
     @Order(6)
-    public void getLogger() {
+    void getLogger() {
         // test systemProperty set
         System.setProperty(LogConstants.SYSTEM_PROPERTY_LOG_LEVEL, TEST_DEFAULT_LEVEL.name());
         System.setProperty(LogConstants.SYSTEM_PROPERTY_LOG_DIR, LOG_DIR.toString());
 
-        Logger byName = LoggerFactory.logger(LoggerTest.class.getCanonicalName());
-        Logger byClass = LoggerFactory.logger(LoggerTest.class);
+        Logger byName = LoggerFactory.getLogger(LoggerTest.class.getCanonicalName());
+        Logger byClass = LoggerFactory.getLogger(LoggerTest.class);
 
         Assertions.assertSame(byName, byClass);
 
@@ -373,7 +373,7 @@ public class LoggerTest {
         Files
             .list(rollingFileDir)
             .sorted(Comparator.comparing(Path::getFileName))
-            .forEach(path -> System.out.println(path));
+            .forEach(System.out::println);
     }
 
     private static LogEvent buildLogEvent(Logger logger, String message, Object[] args) {

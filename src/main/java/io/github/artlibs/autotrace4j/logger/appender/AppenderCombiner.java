@@ -13,10 +13,9 @@ import java.util.List;
  */
 public class AppenderCombiner<E> extends AbstractAppender<E> {
 
-    volatile private List<Appender<E>> appenderList = new ArrayList<>();
+    private volatile List<Appender<E>> appenderList = new ArrayList<>();
 
-    public AppenderCombiner() {
-    }
+    public AppenderCombiner() {}
 
     public void addAppender(Appender<E> appender) {
         if (appender != null) {

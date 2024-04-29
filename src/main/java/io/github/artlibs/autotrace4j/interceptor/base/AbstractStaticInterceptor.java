@@ -19,7 +19,7 @@ import java.util.Objects;
  */
 public abstract class AbstractStaticInterceptor extends AbstractDelegateInterceptor<Class<?>> {
     /**
-     *
+     * intercept
      * @param clazz the class object
      * @param zuper the original object
      * @param args argument list
@@ -32,11 +32,17 @@ public abstract class AbstractStaticInterceptor extends AbstractDelegateIntercep
         return this.doIntercept(clazz, zuper, args, originMethod);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return super.hashCode();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof AbstractStaticInterceptor) {

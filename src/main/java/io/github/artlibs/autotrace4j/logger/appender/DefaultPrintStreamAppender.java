@@ -17,7 +17,6 @@ import java.util.Objects;
  * All rights Reserved.
  */
 public class DefaultPrintStreamAppender extends AsyncAppender<LogEvent> {
-
     Layout<LogEvent> layout;
     private final PrintStream outPrintStream;
     private final PrintStream errPrintStream;

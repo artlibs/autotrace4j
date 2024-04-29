@@ -8,7 +8,7 @@ package io.github.artlibs.autotrace4j.support;
  * <p>
  * All rights Reserved.
  */
-public class Tuple2<O1, O2> {
+public final class Tuple2<O1, O2> {
 
     O1 o1;
     O2 o2;
