@@ -2,8 +2,12 @@ name: Release
 
 # Run workflow on commits to the `main` branch
 on:
-  release:
-    types: [prereleased]
+  create:
+    tags:
+      - '*'
+
+env:
+  build-number: ${GITHUB_RUN_NUMBER}
 
 jobs:
   release:
@@ -17,7 +21,23 @@ jobs:
           distribution: 'adopt-hotspot'
           java-version: '21'
           cache: 'maven'
-      - name: Release Maven package
+      - name: Run Tests
+        run: make test
+      - name: Upload Agent Jar Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Package
+          path: target
+          retention-days: 1
+      - name: Automatic releases
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.ARTLIBS_TOKEN }}"
+          automatic_release_tag: "${{ github.run_number }}"
+          title: "Automated Build ${{ github.run_number }}"
+          prerelease: true
+          files: target/autotrace4j.jar
+      - name: Release Maven Central
         uses: samuelmeuli/action-maven-publish@v1
         with:
           server_id: central

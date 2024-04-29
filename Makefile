@@ -1,6 +1,5 @@
 .PHONY: prepackage test build
 
-
 prepackage:
 	@mvn clean package -DskipTests=true
 
