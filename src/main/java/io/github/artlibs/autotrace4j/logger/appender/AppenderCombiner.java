@@ -15,8 +15,16 @@ public class AppenderCombiner<E> extends AbstractAppender<E> {
 
     private volatile List<Appender<E>> appenderList = new ArrayList<>();
 
+    /**
+     * appender 组合器
+     */
     public AppenderCombiner() {}
 
+    /**
+     * 添加 appender
+     *
+     * @param appender Appender
+     */
     public void addAppender(Appender<E> appender) {
         if (appender != null) {
             List<Appender<E>> newAppenderList = new ArrayList<>(appenderList);

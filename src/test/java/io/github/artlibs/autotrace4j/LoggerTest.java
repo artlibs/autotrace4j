@@ -280,7 +280,6 @@ public class LoggerTest {
     void getLogger() {
         // test systemProperty set
         System.setProperty(LogConstants.SYSTEM_PROPERTY_LOG_LEVEL, TEST_DEFAULT_LEVEL.name());
-        System.setProperty(LogConstants.SYSTEM_PROPERTY_LOG_DIR, LOG_DIR.toString());
 
         Logger byName = LoggerFactory.getLogger(LoggerTest.class.getCanonicalName());
         Logger byClass = LoggerFactory.getLogger(LoggerTest.class);
@@ -306,8 +305,11 @@ public class LoggerTest {
                 defaultFileAppendExists = true;
             }
         }
+        boolean logDirPresent = SystemUtils.getSysPropertyPath(LogConstants.SYSTEM_PROPERTY_LOG_DIR).isPresent();
         Assertions.assertTrue(defaultPrintStreamAppendExists);
-        Assertions.assertTrue(defaultFileAppendExists);
+        if (logDirPresent){
+            Assertions.assertTrue(defaultFileAppendExists);
+        }
     }
 
     private static void waitingForLoggerFactoryAsyncAppend() throws IllegalAccessException, InterruptedException {

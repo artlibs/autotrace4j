@@ -38,10 +38,19 @@ public class LoggerFactory {
         DefaultPrintStreamAppender defaultPrintStreamAppender = new DefaultPrintStreamAppender(new DefaultLayout(), System.out, System.err);
         defaultPrintStreamAppender.start();
         APPENDER_COMBINER.addAppender(defaultPrintStreamAppender);
-        Optional
-            .ofNullable(SystemUtils.getSysPropertyPath(LogConstants.SYSTEM_PROPERTY_LOG_DIR))
+        SystemUtils
+            .getSysPropertyPath(LogConstants.SYSTEM_PROPERTY_LOG_DIR)
             .ifPresent(path -> {
-                DefaultFileAppender defaultFileAppender = new DefaultFileAppender(new DefaultLayout(), path);
+                DefaultFileAppender defaultFileAppender = new DefaultFileAppender(
+                    new DefaultLayout(),
+                    path,
+                    SystemUtils
+                        .getSysPropertyInteger(LogConstants.SYSTEM_PROPERTY_LOG_FILE_RETENTION)
+                        .orElse(LogConstants.DEFAULT_LOG_FILE_RETENTION),
+                    SystemUtils
+                        .getSysPropertyInteger(LogConstants.SYSTEM_PROPERTY_LOG_FILE_SIZE)
+                        .orElse(LogConstants.DEFAULT_LOG_FILE_SIZE)
+                );
                 defaultFileAppender.start();
                 APPENDER_COMBINER.addAppender(defaultFileAppender);
             });

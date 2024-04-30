@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.channels.spi.AbstractInterruptibleChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,6 +30,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import static io.github.artlibs.autotrace4j.logger.LogConstants.DEFAULT_LOG_FILE_RETENTION;
+import static io.github.artlibs.autotrace4j.logger.LogConstants.DEFAULT_LOG_FILE_SIZE;
 
 /**
  * 功能：默认日志输出-文件
@@ -65,11 +69,11 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
     ThreadLocal<ByteBuffer> logWriteBuffer = ThreadLocal.withInitial(() -> ByteBuffer.allocateDirect(WRITE_BUFFER_SIZE));
 
     public DefaultFileAppender(Layout<LogEvent> layout, Path directory) {
-        this(layout, directory, 7, 0);
+        this(layout, directory, DEFAULT_LOG_FILE_RETENTION, DEFAULT_LOG_FILE_SIZE);
     }
 
     public DefaultFileAppender(Layout<LogEvent> layout, Path directory, int logFileRetentionDays) {
-        this(layout, directory, logFileRetentionDays, 0);
+        this(layout, directory, logFileRetentionDays, DEFAULT_LOG_FILE_SIZE);
     }
 
     public DefaultFileAppender(Layout<LogEvent> layout, Path directory, int logFileRetentionDays, int logFileSizeBytes) {
@@ -100,7 +104,7 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
             LocalDateTime now = LocalDateTime.now();
             Tuple2<Path, FileChannel> initLogFile = openLogFile(dateToLogFileName(now), computeFileIndex(now, false));
             logFile.set(initLogFile);
-        } catch (IOException e){
+        } catch (IOException e) {
             throw new CreateAppenderException(e);
         }
     }
@@ -183,6 +187,8 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
                     return fileAndChannel;
                 }
                 try {
+                    // clos the old channel
+                    closedFileChannel(logFile.get());
                     LocalDateTime date = LocalDateTime.now();
                     int fileIndex = computeFileIndex(date, true);
                     fileAndChannel = openLogFile(logFileNamePrefix, fileIndex);
@@ -286,6 +292,20 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
         return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
     }
 
+    private void closedFileChannel(Tuple2<Path, FileChannel> logFile) {
+        Optional
+            .ofNullable(logFile)
+            .map(Tuple2::getO2)
+            .filter(AbstractInterruptibleChannel::isOpen)
+            .ifPresent(fileChannel -> {
+                try {
+                    fileChannel.close();
+                } catch (IOException e) {
+                    System.out.println("[DefaultFileAppender] close log file failed.");
+                }
+            });
+    }
+
     private static class CleanerTask implements Runnable {
 
         /**
@@ -310,4 +330,5 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
         }
 
     }
+
 }

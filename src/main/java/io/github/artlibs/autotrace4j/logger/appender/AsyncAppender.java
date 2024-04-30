@@ -17,8 +17,12 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public abstract class AsyncAppender<E> extends AbstractAppender<E> {
 
+    /** 日志事件队列 */
     private final BlockingQueue<E> queue;
-
+    /**
+     * AsyncAppender构造函数，用于创建一个异步Appender实例。
+     * 该构造函数会初始化一个LinkedBlockingQueue作为Appender内部的消息队列。
+     */
     public AsyncAppender() {
         this.queue = new LinkedBlockingQueue<>();
     }

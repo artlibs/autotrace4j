@@ -18,4 +18,10 @@ public final class LogConstants {
 
     public static final String SYSTEM_PROPERTY_LOG_DIR = "autotrace4j.log.dir";
     public static final String SYSTEM_PROPERTY_LOG_LEVEL = "autotrace4j.log.level";
+    public static final String SYSTEM_PROPERTY_LOG_FILE_RETENTION = "autotrace4j.log.file.retention";
+    public static final String SYSTEM_PROPERTY_LOG_FILE_SIZE = "autotrace4j.log.file.size";
+
+    public static final int DEFAULT_LOG_FILE_RETENTION = 7;
+    public static final int DEFAULT_LOG_FILE_SIZE = 0;
+
 }
