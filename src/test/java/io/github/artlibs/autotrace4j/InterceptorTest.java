@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
@@ -102,6 +103,7 @@ public class InterceptorTest {
         // 01.Prepare
         int cases = 5;
         List<TupleResult> results = new ArrayList<>();
+
         // 02.When
         CountDownLatch latch = new CountDownLatch(cases);
         new Thread(() -> {
@@ -125,8 +127,10 @@ public class InterceptorTest {
             latch.countDown();
         },"test_2",0).start();
         latch.await();
+
         // 03.Verify
-        verifyTaskResults(results, cases, String.valueOf(Thread.currentThread().getId()));
+        verifyTaskResults(results, cases, String.valueOf(Thread
+                .currentThread().getId()));
     }
 
     @Test
@@ -134,39 +138,40 @@ public class InterceptorTest {
         // 01.Prepare
         int cases = 6;
         List<TupleResult> results = new ArrayList<>();
+
         // 02.When
-        ForkJoinPool pool = ForkJoinPool.commonPool();
+        try(ForkJoinPool pool = ForkJoinPool.commonPool()) {
+            // execute case
+            CountDownLatch latch = new CountDownLatch(3);
+            pool.execute(
+                    () -> {
+                        results.add(generateResult());
+                        latch.countDown();
+                    }
+            );
+            pool.execute(
+                    () -> {
+                        results.add(generateResult());
+                        latch.countDown();
+                    }
+            );
+            pool.execute(ForkJoinTask.adapt(
+                    () -> {
+                        results.add(generateResult());
+                        latch.countDown();
+                    }
+            ));
 
-        // execute case
-        CountDownLatch latch = new CountDownLatch(3);
-        pool.execute(
-            () -> {
-                results.add(generateResult());
-                latch.countDown();
-            }
-        );
-        pool.execute(
-            () -> {
-                results.add(generateResult());
-                latch.countDown();
-            }
-        );
-        pool.execute(ForkJoinTask.adapt(
-            () -> {
-                results.add(generateResult());
-                latch.countDown();
-            }
-        ));
+            latch.await();
 
-        latch.await();
-
-        // submit case
-        pool.submit(() -> {
-            results.add(generateResult());
-            return results.get(3);
-        }).get();
-        pool.submit(() -> results.add(generateResult())).get();
-        pool.submit(ForkJoinTask.adapt(() -> results.add(generateResult()))).get();
+            // submit case
+            pool.submit(() -> {
+                results.add(generateResult());
+                return results.get(3);
+            }).get();
+            pool.submit(() -> results.add(generateResult())).get();
+            pool.submit(ForkJoinTask.adapt(() -> results.add(generateResult()))).get();
+        }
 
         // 03.Verify
         verifyTaskResults(results, cases, String.valueOf(Thread.currentThread().getId()));
@@ -256,7 +261,7 @@ public class InterceptorTest {
     @Test
     void testHttpURLConnection() throws Exception {
         // 01.Prepare
-        URL url = new URL(httpBinOrgUrl);
+        URL url = new URI(httpBinOrgUrl).toURL();
 
         // 02.When
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -340,38 +345,40 @@ public class InterceptorTest {
         Request request = new Request.Builder()
                 .url(httpBinOrgUrl).build();
 
-        // 02.When
-        Response response = client.newCall(request).execute();
-        boolean success = response.isSuccessful();
-        ResponseBody body = response.body();
-        String resp = Objects.requireNonNull(body).string();
-        System.out.println("OkHttp sync out: " + resp);
-        TupleResult header = extractTraceIdFromHeader(resp);
+        try(Response response = client.newCall(request).execute()) {
+            // 02.When
+            boolean success = response.isSuccessful();
+            ResponseBody body = response.body();
+            String resp = Objects.requireNonNull(body).string();
+            System.out.println("OkHttp sync out: " + resp);
+            TupleResult header = extractTraceIdFromHeader(resp);
 
-        // 03.Verify
-        Assertions.assertTrue(success);
-        Assertions.assertEquals(initTraceId, header.getValue1());
-        Assertions.assertEquals(initSpanId, header.getValue2());
-        Assertions.assertNull(header.getValue3());
+            // 03.Verify
+            Assertions.assertTrue(success);
+            Assertions.assertEquals(initTraceId, header.getValue1());
+            Assertions.assertEquals(initSpanId, header.getValue2());
+            Assertions.assertNull(header.getValue3());
+        }
     }
 
     @Test
     void testApacheHttpClient() throws Exception {
-        // 01.Prepare
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpGet httpGet = new HttpGet(httpBinOrgUrl);
+        try(CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            // 01.Prepare
+            HttpGet httpGet = new HttpGet(httpBinOrgUrl);
 
-        // 02.When
-        CloseableHttpResponse respObj = httpClient.execute(httpGet);
-        String response = EntityUtils.toString(respObj.getEntity());
-        System.out.println("ApacheHttp out: " + response);
-        TupleResult header = extractTraceIdFromHeader(response);
+            // 02.When
+            CloseableHttpResponse respObj = httpClient.execute(httpGet);
+            String response = EntityUtils.toString(respObj.getEntity());
+            System.out.println("ApacheHttp out: " + response);
+            TupleResult header = extractTraceIdFromHeader(response);
 
-        // 03.Verify
-        Assertions.assertEquals(initTraceId, header.getValue1());
-        Assertions.assertEquals(initSpanId, header.getValue2());
-        Assertions.assertNull(header.getValue3());
-        Assertions.assertEquals(200, respObj.getStatusLine().getStatusCode());
+            // 03.Verify
+            Assertions.assertEquals(initTraceId, header.getValue1());
+            Assertions.assertEquals(initSpanId, header.getValue2());
+            Assertions.assertNull(header.getValue3());
+            Assertions.assertEquals(200, respObj.getStatusLine().getStatusCode());
+        }
     }
 
     private TupleResult extractTraceIdFromHeader(String response) {

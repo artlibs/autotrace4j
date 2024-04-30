@@ -23,7 +23,7 @@ public abstract class AsyncAppender<E> extends AbstractAppender<E> {
      * AsyncAppender构造函数，用于创建一个异步Appender实例。
      * 该构造函数会初始化一个LinkedBlockingQueue作为Appender内部的消息队列。
      */
-    public AsyncAppender() {
+    protected AsyncAppender() {
         this.queue = new LinkedBlockingQueue<>();
     }
 
@@ -36,7 +36,7 @@ public abstract class AsyncAppender<E> extends AbstractAppender<E> {
                         E event = queue.take();
                         doAppend(event);
                     }
-                } catch (Exception e) {
+                } catch (InterruptedException e) {
                     System.err.println(ThrowableUtils.throwableToStr(e));
                 }
             }

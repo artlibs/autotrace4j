@@ -6,7 +6,6 @@ import io.github.artlibs.autotrace4j.logger.layout.Layout;
 import io.github.artlibs.autotrace4j.support.ThrowableUtils;
 import io.github.artlibs.autotrace4j.support.Tuple2;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -44,7 +43,7 @@ import static io.github.artlibs.autotrace4j.logger.LogConstants.DEFAULT_LOG_FILE
  * <p>
  * All rights Reserved.
  */
-@SuppressWarnings({ "ResultOfMethodCallIgnored", "resource", "UnusedReturnValue" })
+@SuppressWarnings({"resource", "UnusedReturnValue" })
 public class DefaultFileAppender extends AsyncAppender<LogEvent> {
 
     public static final int MIN_FILE_SIZE = 10 * 1024 * 1024;
@@ -138,11 +137,6 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
     }
 
     @Override
-    public boolean start() {
-        return super.start();
-    }
-
-    @Override
     public boolean stop() {
         scheduledExecutorService.shutdown();
         return super.stop();
@@ -158,8 +152,8 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
         try {
             String message = layout.format(event);
             byte[] bytes = message.getBytes(StandardCharsets.UTF_8);
-            Tuple2<Path, FileChannel> logFile = getLogFile(bytes.length);
-            if (Objects.nonNull(logFile)) {
+            Tuple2<Path, FileChannel> logFileTuple = getLogFile(bytes.length);
+            if (Objects.nonNull(logFileTuple)) {
                 int len = bytes.length;
                 int rem = len;
                 while (rem > 0) {
@@ -167,7 +161,7 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
                     logWriteBuffer.get().clear();
                     logWriteBuffer.get().put(bytes, (len - rem), n);
                     logWriteBuffer.get().flip();
-                    logFile.getO2().write(logWriteBuffer.get());
+                    logFileTuple.getO2().write(logWriteBuffer.get());
                     rem -= n;
                 }
             }
@@ -237,7 +231,7 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
         return logFileSizeBytes <= 0 || (pathAndChannel.getO2().size() + messageLength <= logFileSizeBytes);
     }
 
-    private boolean isSuperMessage(int messageLength) throws IOException {
+    private boolean isSuperMessage(int messageLength) {
         return logFileSizeBytes > 0 && messageLength > logFileSizeBytes;
     }
 
@@ -249,20 +243,24 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
         fileOptionLock.lock();
         try {
             LocalDateTime expiredTime = triggerDate
-                .with(LocalTime.MIN)
-                .minusDays(logFileRetentionDays);
+                    .with(LocalTime.MIN)
+                    .minusDays(logFileRetentionDays);
             Files.list(directory)
-                .map(DefaultFileAppender::mapPathToLogFile)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .sorted(Comparator.comparing(Tuple2::getO1))
-                .forEach(dateAndPath -> {
-                    if (!dateAndPath.getO1().isAfter(expiredTime)) {
-                        File file = dateAndPath.getO2().toFile();
-                        file.delete();
-                        System.out.printf("[DefaultFileAppender] expired log file [%s] deleted.%n", file.getName());
-                    }
-                });
+                    .map(DefaultFileAppender::mapPathToLogFile)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .sorted(Comparator.comparing(Tuple2::getO1))
+                    .forEach(dateAndPath -> {
+                        if (!dateAndPath.getO1().isAfter(expiredTime)) {
+                            try {
+                                Files.deleteIfExists(dateAndPath.getO2());
+                                System.out.printf("[DefaultFileAppender] expired log file [%s] deleted.%n"
+                                        , dateAndPath.getO2().toFile().getName());
+                            } catch (IOException e) {
+                                System.err.println("[DefaultFileAppender] delete expired log file failure: " + e.getMessage());
+                            }
+                        }
+                    });
         } finally {
             System.out.println("[DefaultFileAppender] clean expired log files finish.");
             fileOptionLock.unlock();
