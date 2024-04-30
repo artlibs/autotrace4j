@@ -1,4 +1,4 @@
-package io.github.artlibs.testcase;
+package io.github.artlibs.testsupport;
 
 /**
  * Tuple

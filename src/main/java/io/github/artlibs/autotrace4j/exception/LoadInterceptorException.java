@@ -8,7 +8,7 @@ package io.github.artlibs.autotrace4j.exception;
  * <p>
  * All rights Reserved.
  */
-public class LoadInterceptorException extends RuntimeException {
+public final class LoadInterceptorException extends RuntimeException {
     /** Constructs a new runtime exception with {@code null} as its
      * detail message.  The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause}.

@@ -3,10 +3,10 @@ package io.github.artlibs.autotrace4j;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import io.github.artlibs.autotrace4j.context.AutoTraceCtx;
-import io.github.artlibs.testcase.Injected;
-import io.github.artlibs.testcase.ScheduledCase;
-import io.github.artlibs.testcase.TupleResult;
-import io.github.artlibs.testcase.XxlJobCase.*;
+import io.github.artlibs.testsupport.Injected;
+import io.github.artlibs.testsupport.ScheduledCase;
+import io.github.artlibs.testsupport.TupleResult;
+import io.github.artlibs.testsupport.XxlJobCase.*;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import okhttp3.*;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -26,7 +26,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class TestCases {
+public class InterceptorTest {
 
     private String initTraceId = "init-trace-id";
     private String initSpanId = "init-span-id";
@@ -42,7 +42,7 @@ public class TestCases {
         // when debug on local,you should open this argument,like this: -DinstallAgent=true
         if (Boolean.parseBoolean(System.getProperty("installAgent"))){
             try {
-                AutoTrace4j.premain("io.github.artlibs.testcase", ByteBuddyAgent.install());
+                AutoTrace4j.premain("io.github.artlibs.testsupport", ByteBuddyAgent.install());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -236,7 +236,7 @@ public class TestCases {
             this.initTraceCtx(service.getClass().getSimpleName());
 
             // 02.When
-            TupleResult result = service.submit(TestCases::generateResult).get();
+            TupleResult result = service.submit(InterceptorTest::generateResult).get();
 
             // 03.Verify
             Assertions.assertNotNull(result);

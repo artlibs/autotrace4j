@@ -13,7 +13,7 @@ import io.github.artlibs.autotrace4j.logger.event.LogEvent;
  * <p>
  * All rights Reserved.
  */
-public class Logger {
+public final class Logger {
     private final String name;
     private final Appender<LogEvent> appender;
     private Level level;

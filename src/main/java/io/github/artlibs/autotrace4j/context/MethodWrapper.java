@@ -11,7 +11,7 @@ import java.util.Objects;
  * <p>
  * All rights Reserved.
  */
-public class MethodWrapper {
+public final class MethodWrapper {
     /** raw method */
     private Method method;
     /** raw instance */

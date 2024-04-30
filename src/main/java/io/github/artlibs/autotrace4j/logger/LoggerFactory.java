@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>
  * All rights Reserved.
  */
-public class LoggerFactory {
+public final class LoggerFactory {
     private LoggerFactory(){}
 
     private static final ConcurrentHashMap<String, Logger> LOGGER_MAP = new ConcurrentHashMap<>();

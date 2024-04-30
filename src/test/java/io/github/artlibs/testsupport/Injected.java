@@ -1,4 +1,4 @@
-package io.github.artlibs.testcase;
+package io.github.artlibs.testsupport;
 
 import io.github.artlibs.autotrace4j.context.AutoTraceCtx;
 

@@ -1,4 +1,4 @@
-package io.github.artlibs.testcase;
+package io.github.artlibs.testsupport;
 
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.ForTestHandler;
