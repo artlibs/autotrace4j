@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Stream;
 
 import static io.github.artlibs.autotrace4j.context.ReflectUtils.getField;
 import static io.github.artlibs.autotrace4j.context.ReflectUtils.getFieldValue;
@@ -79,7 +80,7 @@ public class LoggerTest {
 
     @Test
     @Order(1)
-    public void defaultLayout() {
+    void defaultLayout() {
         DefaultLayout defaultLayout = new DefaultLayout();
         Logger logger = newLogger(LoggerTest.class.getCanonicalName(), null, INFO);
         LogEvent logEvent = buildLogEvent(logger, "test", new Object[0]);
@@ -119,7 +120,7 @@ public class LoggerTest {
 
     @Test
     @Order(2)
-    public void logConsole() throws IOException, InterruptedException, IllegalAccessException {
+    void logConsole() throws IOException, InterruptedException, IllegalAccessException {
         for (Level limitLevel : Level.values()) {
             ByteArrayOutputStream logCollectStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(logCollectStream);
@@ -153,7 +154,7 @@ public class LoggerTest {
 
     @Test
     @Order(3)
-    public void logFile() throws IOException, InterruptedException, IllegalAccessException {
+    void logFile() throws IOException, InterruptedException, IllegalAccessException {
         Path logPath = LOG_DIR.resolve("logFile");
         Files.createDirectories(logPath);
         for (Level limitLevel : Level.values()) {
@@ -186,12 +187,12 @@ public class LoggerTest {
 
     @Test
     @Order(4)
-    public void cleanExpiredFile() throws IOException, InterruptedException, ExecutionException {
+    void cleanExpiredFile() throws IOException, InterruptedException, ExecutionException {
         LocalDateTime now = LocalDateTime.now();
         // because the LoggerFactory has DefaultFileAppender, it will be started that always scan and delete the log dir.
         Path cleanExpiredFileDir = LOG_DIR.resolve("cleanExpiredFile");
         Files.createDirectories(cleanExpiredFileDir);
-        Integer logFileRetentionDays = 7;
+        int logFileRetentionDays = 7;
         DefaultFileAppender defaultFileAppender = new DefaultFileAppender(
             new DefaultLayout(),
             cleanExpiredFileDir,
@@ -217,6 +218,7 @@ public class LoggerTest {
             .invoke(now);
 
         // waiting task finish
+        Assertions.assertNotNull(future);
         future.get();
 
         System.out.println("after clean,log files: ");
@@ -230,7 +232,7 @@ public class LoggerTest {
 
     @Test
     @Order(5)
-    public void rollingFile() throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InterruptedException {
+    void rollingFile() throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InterruptedException {
         // because the LoggerFactory has DefaultFileAppender, it will be started that always scan and delete the log dir.
         Path rollingFileDir = LOG_DIR.resolve("rollingFile");
         Files.createDirectories(rollingFileDir);
@@ -250,7 +252,9 @@ public class LoggerTest {
         ReflectUtils.setFieldValue(defaultFileAppender, "logFileSizeBytes", logSize, true);
         logger.info(message);
         waitingForAsyncAppend(defaultFileAppender);
-        Assertions.assertEquals(Files.list(rollingFileDir).count(), 1);
+        try (Stream<Path> s = Files.list(rollingFileDir)) {
+            Assertions.assertEquals(1, s.count());
+        }
         System.out.println("after files: ");
         printDirectory(rollingFileDir);
 
@@ -258,7 +262,9 @@ public class LoggerTest {
         ReflectUtils.setFieldValue(defaultFileAppender, "logFileSizeBytes", logSize - 1, true);
         logger.info(message);
         waitingForAsyncAppend(defaultFileAppender);
-        Assertions.assertEquals(Files.list(rollingFileDir).count(), 1);
+        try (Stream<Path> s = Files.list(rollingFileDir)) {
+            Assertions.assertEquals(1, s.count());
+        }
         System.out.println("after files: ");
         printDirectory(rollingFileDir);
 
@@ -268,7 +274,9 @@ public class LoggerTest {
         logger.info(message);
         logger.info(message);
         waitingForAsyncAppend(defaultFileAppender);
-        Assertions.assertEquals(3, Files.list(rollingFileDir).count());
+        try (Stream<Path> s = Files.list(rollingFileDir)) {
+            Assertions.assertEquals(3, s.count());
+        }
         System.out.println("after files: ");
         printDirectory(rollingFileDir);
 
@@ -297,6 +305,7 @@ public class LoggerTest {
         boolean defaultPrintStreamAppendExists = false;
         boolean defaultFileAppendExists = false;
         List<Appender<?>> appenderList = getFieldValue(appenderCombiner, "appenderList", true);
+        Assertions.assertNotNull(appenderList);
         for (Appender<?> appender : appenderList) {
             if (appender instanceof DefaultPrintStreamAppender) {
                 defaultPrintStreamAppendExists = true;
@@ -321,6 +330,7 @@ public class LoggerTest {
         boolean allEmpty = false;
         while (!allEmpty) {
             allEmpty = true;
+            Assertions.assertNotNull(appenders);
             for (Appender<?> appender : appenders) {
                 if (appender instanceof AsyncAppender) {
                     BlockingQueue<?> queue = (BlockingQueue<?>) getField(AsyncAppender.class, "queue", true).get(appender);
@@ -372,10 +382,10 @@ public class LoggerTest {
     }
 
     private static void printDirectory(Path rollingFileDir) throws IOException {
-        Files
-            .list(rollingFileDir)
-            .sorted(Comparator.comparing(Path::getFileName))
-            .forEach(System.out::println);
+        try(Stream<Path> s = Files.list(rollingFileDir)) {
+            s.sorted(Comparator.comparing(Path::getFileName))
+                    .forEach(System.out::println);
+        }
     }
 
     private static LogEvent buildLogEvent(Logger logger, String message, Object[] args) {
