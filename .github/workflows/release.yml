@@ -4,7 +4,7 @@ name: Release
 on:
   create:
     tags:
-      - '*'
+      - 'v*'
 
 env:
   build-number: ${GITHUB_RUN_NUMBER}
@@ -33,15 +33,5 @@ jobs:
         uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: "${{ secrets.ARTLIBS_TOKEN }}"
-          automatic_release_tag: "${{ github.run_number }}"
-          title: "Automated Build ${{ github.run_number }}"
           prerelease: true
           files: target/autotrace4j.jar
-      - name: Release Maven Central
-        uses: samuelmeuli/action-maven-publish@v1
-        with:
-          server_id: central
-          gpg_private_key: ${{ secrets.gpg_private_key }}
-          gpg_passphrase: ${{ secrets.gpg_passphrase }}
-          nexus_username: ${{ secrets.nexus_username }}
-          nexus_password: ${{ secrets.nexus_password }}
