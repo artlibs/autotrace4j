@@ -50,8 +50,7 @@ public class AutoListener implements AgentBuilder.Listener {
      */
     @Override
     public void onError(String typeName, ClassLoader classLoader, JavaModule module, boolean loaded, Throwable throwable) {
-        logger.error("TypeName: " + typeName + "\nclassLoader: " + classLoader
-                + "\nmodule: " + module + "\nthrowable: " + throwable);
+        logger.error("TypeName: %s\n classLoader: %s\n module: %s\n", typeName, classLoader, module, throwable);
     }
 
     /**

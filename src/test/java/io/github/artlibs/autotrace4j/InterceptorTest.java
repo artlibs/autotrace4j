@@ -133,6 +133,7 @@ public class InterceptorTest {
                 .currentThread().getId()));
     }
 
+    @SuppressWarnings("resource")
     @Test
     void testForkJoinPool() throws InterruptedException, ExecutionException {
         // 01.Prepare
@@ -140,38 +141,38 @@ public class InterceptorTest {
         List<TupleResult> results = new ArrayList<>();
 
         // 02.When
-        try(ForkJoinPool pool = ForkJoinPool.commonPool()) {
-            // execute case
-            CountDownLatch latch = new CountDownLatch(3);
-            pool.execute(
-                    () -> {
-                        results.add(generateResult());
-                        latch.countDown();
-                    }
-            );
-            pool.execute(
-                    () -> {
-                        results.add(generateResult());
-                        latch.countDown();
-                    }
-            );
-            pool.execute(ForkJoinTask.adapt(
-                    () -> {
-                        results.add(generateResult());
-                        latch.countDown();
-                    }
-            ));
+        ForkJoinPool pool = new ForkJoinPool(4);
 
-            latch.await();
-
-            // submit case
-            pool.submit(() -> {
+        // execute case
+        CountDownLatch latch = new CountDownLatch(3);
+        pool.execute(
+            () -> {
                 results.add(generateResult());
-                return results.get(3);
-            }).get();
-            pool.submit(() -> results.add(generateResult())).get();
-            pool.submit(ForkJoinTask.adapt(() -> results.add(generateResult()))).get();
-        }
+                latch.countDown();
+            }
+        );
+        pool.execute(
+            () -> {
+                results.add(generateResult());
+                latch.countDown();
+            }
+        );
+        pool.execute(ForkJoinTask.adapt(
+            () -> {
+                results.add(generateResult());
+                latch.countDown();
+            }
+        ));
+
+        latch.await();
+
+        // submit case
+        pool.submit(() -> {
+            results.add(generateResult());
+            return results.get(3);
+        }).get();
+        pool.submit(() -> results.add(generateResult())).get();
+        pool.submit(ForkJoinTask.adapt(() -> results.add(generateResult()))).get();
 
         // 03.Verify
         verifyTaskResults(results, cases, String.valueOf(Thread.currentThread().getId()));
