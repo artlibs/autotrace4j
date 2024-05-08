@@ -57,11 +57,11 @@ public interface TaskInterceptor extends Interceptor {
                 .intercept(Advice.to(ConstructorVisitor.class));
     }
 
-    public class ConstructorVisitor {
+    class ConstructorVisitor {
         private ConstructorVisitor(){}
 
         @Advice.OnMethodExit
-        public static void adviceOnMethodExit(
+        private static void adviceOnMethodExit(
             @Advice.FieldValue(value = AutoTraceCtx.TRACE_KEY, readOnly = false) String traceId,
             @Advice.FieldValue(value = AutoTraceCtx.SPAN_KEY, readOnly = false) String spanId,
             @Advice.FieldValue(value = AutoTraceCtx.PARENT_SPAN_KEY, readOnly = false) String parentSpanId

@@ -51,7 +51,7 @@ public class ThreadInterceptor extends AbstractVisitorInterceptor {
         return ElementMatchers.named("java.lang.Thread");
     }
 
-    public static class Constructor0Advisor {
+    private static class Constructor0Advisor {
 
         @Advice.OnMethodEnter
         public static void adviceOnMethodEnter(
@@ -72,10 +72,10 @@ public class ThreadInterceptor extends AbstractVisitorInterceptor {
         }
     }
 
-    public static class Constructor1Advisor {
+    private static class Constructor1Advisor {
 
         @Advice.OnMethodEnter
-        public static void adviceOnMethodEnter(
+        private static void adviceOnMethodEnter(
             @Advice.Argument(
                 value = 1, typing = Assigner.Typing.DYNAMIC, optional = false, readOnly = false
             ) Runnable runnable

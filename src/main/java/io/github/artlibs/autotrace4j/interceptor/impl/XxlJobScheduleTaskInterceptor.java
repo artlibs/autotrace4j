@@ -47,14 +47,14 @@ public class XxlJobScheduleTaskInterceptor extends AbstractVisitorInterceptor {
         );
     }
 
-    public static class XxlJobAnnotatedAdvisor {
+    private static class XxlJobAnnotatedAdvisor {
         private XxlJobAnnotatedAdvisor(){}
 
         /**
          * advice on method enter: set context
          */
         @Advice.OnMethodEnter
-        public static void adviceOnMethodEnter() {
+        private static void adviceOnMethodEnter() {
             AutoTraceCtx.setTraceId(AutoTraceCtx.generate());
             AutoTraceCtx.setSpanId(AutoTraceCtx.generate());
             // There will be no parent span as this is a startup context

@@ -40,10 +40,10 @@ public class ThreadPoolExecutorInterceptor extends AbstractVisitorInterceptor {
         return ElementMatchers.named("java.util.concurrent.ThreadPoolExecutor");
     }
 
-    public static class DoExecuteAdvisor {
+    private static class DoExecuteAdvisor {
 
         @Advice.OnMethodEnter
-        public static void adviceOnMethodEnter(@Advice.Argument(value = 0, readOnly = false
+        private static void adviceOnMethodEnter(@Advice.Argument(value = 0, readOnly = false
             , typing = Assigner.Typing.DYNAMIC) Runnable task) throws Exception {
             try {
                 if (Objects.nonNull(task)) {
