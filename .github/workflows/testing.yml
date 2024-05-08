@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Run Tests
+name: Run Unit Tests
 
 on:
   push:
@@ -15,7 +15,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  test:
+  testing:
     strategy:
       matrix:
         os: [ macos-latest, ubuntu-latest, windows-latest ]
