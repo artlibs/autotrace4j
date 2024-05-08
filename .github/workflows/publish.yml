@@ -1,4 +1,4 @@
-name: Publishing
+name: Publish to Maven
 
 # Run workflow on released
 on:
