@@ -10,7 +10,7 @@ name: Run Tests
 
 on:
   push:
-    branches: [ "feature/*" ]
+    branches: [ "*" ]
   pull_request:
     branches: [ "main" ]
 

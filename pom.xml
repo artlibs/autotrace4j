@@ -22,6 +22,7 @@
         <maven-compiler.version>3.12.0</maven-compiler.version>
         <compiler-release.version>8</compiler-release.version>
         <test-case-package>io.github.artlibs.testsupport</test-case-package>
+        <repository.url>git@github.com:artlibs/autotrace4j.git</repository.url>
     </properties>
 
     <dependencies>
@@ -90,6 +91,59 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>fury</id>
+            <name>Fury</name>
+            <email>i36.lib@gmail.com</email>
+            <url>https://github.com/i36lib</url>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+8</timezone>
+        </developer>
+        <developer>
+            <id>supervate</id>
+            <name>vate</name>
+            <email>806019582@qq.com</email>
+            <url>https://github.com/supervate</url>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+8</timezone>
+        </developer>
+        <developer>
+            <id>leo</id>
+            <name>Leo</name>
+            <email>414563035@qq.com</email>
+            <url>https://github.com/Bedroome</url>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+8</timezone>
+        </developer>
+    </developers>
+
+    <issueManagement>
+        <system>github.com</system>
+        <url>https://github.com/artlibs/autotrace4j/issues</url>
+    </issueManagement>
+
+    <scm>
+        <connection>scm:git:${repository.url}</connection>
+        <developerConnection>scm:git:${repository.url}</developerConnection>
+        <url>${repository.url}</url>
+    </scm>
 
     <build>
         <finalName>autotrace4j</finalName>
