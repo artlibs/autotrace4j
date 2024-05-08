@@ -1,6 +1,6 @@
 name: Pre Release
 
-# Run workflow on commits to the `main` branch
+# Run workflow on create tags
 on:
   create:
     tags:
