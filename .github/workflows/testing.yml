@@ -15,7 +15,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  test:
+  testing:
     strategy:
       matrix:
         os: [ macos-latest, ubuntu-latest, windows-latest ]
