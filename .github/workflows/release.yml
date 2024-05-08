@@ -2,7 +2,7 @@ name: Pre Release
 
 # Run workflow on create tags
 on:
-  create:
+  push:
     tags:
       - 'v*'
 
