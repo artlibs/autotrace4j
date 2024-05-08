@@ -4,23 +4,28 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.artlibs</groupId>
+    <groupId>io.github.artlibs</groupId>
     <artifactId>autotrace4j</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
+    <packaging>jar</packaging>
     <url>https://github.com/artlibs/autotrace4j</url>
     <description>An auto trace agent base on byte-buddy for Java.</description>
 
     <properties>
-        <bytebuddy.version>1.11.18</bytebuddy.version>
+        <premain.class>io.github.artlibs.autotrace4j.AutoTrace4j</premain.class>
+        <buddy.shaded.patten>io.github.artlibs.autotrace4j.bytebuddy</buddy.shaded.patten>
+        <junit-jupiter-engine.version>5.8.1</junit-jupiter-engine.version>
+        <bytebuddy.version>1.14.13</bytebuddy.version>
         <maven-jar.version>2.3.2</maven-jar.version>
         <maven-shade.version>3.3.0</maven-shade.version>
         <exec-maven.version>1.6.0</exec-maven.version>
-        <maven-compiler.version>3.1</maven-compiler.version>
-        <premain.class>com.github.artlibs.autotrace4j.AutoTrace4j</premain.class>
-        <buddy.shaded.patten>com.github.artlibs.autotrace4j.bytebuddy</buddy.shaded.patten>
+        <maven-compiler.version>3.12.0</maven-compiler.version>
+        <compiler-release.version>8</compiler-release.version>
+        <test-case-package>io.github.artlibs.testsupport</test-case-package>
     </properties>
 
     <dependencies>
+        <!-- minimal dependencies -->
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
@@ -32,6 +37,57 @@
             <artifactId>byte-buddy-agent</artifactId>
             <version>${bytebuddy.version}</version>
             <scope>compile</scope>
+        </dependency>
+
+        <!-- testing support -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit-jupiter-engine.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit-jupiter-engine.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>2.0.32</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- for interceptor testing -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.9.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.14</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.36</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.2.10.RELEASE</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -57,8 +113,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler.version}</version>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <!-- Why Java 21 https://www.oracle.com/hk/java/technologies/java-se-support-roadmap.html -->
+                    <release>${compiler-release.version}</release>
                     <encoding>${file.encoding}</encoding>
                 </configuration>
             </plugin>
@@ -68,7 +124,7 @@
                 <version>${maven-shade.version}</version>
                 <executions>
                     <execution>
-                        <!-- 加上 id 标签解决错误 Cannot find 'resource' in
+                        <!-- <id> fix: Cannot find 'resource' in
                         class org.apache.maven.plugins.shade.resource.ManifestResourceTransformer -->
                         <id>shade-bytebuddy</id>
                         <phase>package</phase>
@@ -123,6 +179,81 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <!-- https://stackoverflow.com/questions/51382356/maven-does-not-run-beforeeach-methods-while-running -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <argLine>
+                        -javaagent:${project.build.directory}${file.separator}${build.finalName}.jar=${test-case-package}
+                    </argLine>
+                </configuration>
+            </plugin>
+            <!-- Setup plugin for deployment to Maven Central. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <doclint>none</doclint>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Prevent `gpg` from using pinentry programs -->
+                            <gpgArguments>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.4.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <tokenAuth>true</tokenAuth>
+                    <!--<waitUntil>published</waitUntil>
+                    <waitMaxTime>1800</waitMaxTime>-->
+                    <autoPublish>true</autoPublish>
+                </configuration>
             </plugin>
         </plugins>
     </build>

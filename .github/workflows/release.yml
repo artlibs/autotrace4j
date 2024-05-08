@@ -1,0 +1,37 @@
+name: Release
+
+# Run workflow on commits to the `main` branch
+on:
+  create:
+    tags:
+      - 'v*'
+
+env:
+  build-number: ${GITHUB_RUN_NUMBER}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+      - name: Install Java and Maven
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'adopt-hotspot'
+          java-version: '21'
+          cache: 'maven'
+      - name: Run Tests
+        run: make test
+      - name: Upload Agent Jar Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Package
+          path: target
+          retention-days: 1
+      - name: Automatic releases
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.ARTLIBS_TOKEN }}"
+          prerelease: true
+          files: target/autotrace4j.jar
