@@ -3,7 +3,7 @@ name: Publishing
 # Run workflow on released
 on:
   release:
-    types: [published]
+    types: [released]
 
 jobs:
   publish:
