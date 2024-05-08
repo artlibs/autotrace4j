@@ -60,7 +60,7 @@ public class SunHttpClientInterceptor extends AbstractVisitorInterceptor {
         return ElementMatchers.named("sun.net.www.http.HttpClient");
     }
 
-    public static class WriteRequestsAdvisor {
+    private static class WriteRequestsAdvisor {
 
         /**
          * advice on method enter: set http header
@@ -68,7 +68,7 @@ public class SunHttpClientInterceptor extends AbstractVisitorInterceptor {
          * @param msgHeader http message header
          */
         @Advice.OnMethodEnter
-        public static void adviceOnMethodEnter(
+        private static void adviceOnMethodEnter(
             @Advice.Argument(value = 0, readOnly = false
                 , typing = Assigner.Typing.DYNAMIC) Object msgHeader
         ) {

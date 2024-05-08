@@ -24,13 +24,13 @@ public abstract class AbstractTaskVisitorInterceptor extends AbstractVisitorInte
         return builder.visit(Advice.to(FillTraceAdvisor.class).on(traceInjectedMethod()));
     }
 
-    public static class FillTraceAdvisor {
+    private static class FillTraceAdvisor {
 
         /**
          * advice on method enter
          */
         @Advice.OnMethodEnter
-        public static void adviceOnMethodEnter(
+        private static void adviceOnMethodEnter(
             @Advice.FieldValue(value = AutoTraceCtx.TRACE_KEY, readOnly = false) String traceId,
             @Advice.FieldValue(value = AutoTraceCtx.SPAN_KEY, readOnly = false) String spanId
         ) {
@@ -48,7 +48,7 @@ public abstract class AbstractTaskVisitorInterceptor extends AbstractVisitorInte
          * advice on method exit: remove trace id
          */
         @Advice.OnMethodExit
-        public static void adviceOnMethodExit() {
+        private static void adviceOnMethodExit() {
             AutoTraceCtx.removeAll();
         }
 

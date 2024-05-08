@@ -46,7 +46,7 @@ public class ScheduledThreadPoolInterceptor extends AbstractVisitorInterceptor {
         return named("java.util.concurrent.ScheduledThreadPoolExecutor");
     }
 
-    public static class DelayedExecuteAdvisor {
+    private static class DelayedExecuteAdvisor {
 
         /**
          * advice on method enter
@@ -54,7 +54,7 @@ public class ScheduledThreadPoolInterceptor extends AbstractVisitorInterceptor {
          * @param task the raw runnable task
          */
         @Advice.OnMethodEnter
-        public static void adviceOnMethodEnter(
+        private static void adviceOnMethodEnter(
             @Advice.Argument(value = 0, readOnly = false
                 , typing = Assigner.Typing.DYNAMIC) RunnableScheduledFuture<?> task
         ) {
