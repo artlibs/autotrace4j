@@ -75,12 +75,12 @@ public class LogbackEncoderInterceptor extends AbstractInstanceInterceptor {
                     return message;
                 }
 
-                String preTrimMessage = AutoTraceCtx.getTraceId() + SEPARATOR;
+                String preTrimMessage = "[TraceId]" + AutoTraceCtx.getTraceId() + SEPARATOR;
                 if (Objects.nonNull(AutoTraceCtx.getSpanId())) {
-                    preTrimMessage += AutoTraceCtx.getSpanId() + SEPARATOR;
+                    preTrimMessage += "[SpanId]" + AutoTraceCtx.getSpanId() + SEPARATOR;
                 }
                 if (Objects.nonNull(AutoTraceCtx.getParentSpanId())) {
-                    preTrimMessage += AutoTraceCtx.getParentSpanId() + SEPARATOR;
+                    preTrimMessage += "[P-SpanId]" + AutoTraceCtx.getParentSpanId() + SEPARATOR;
                 }
                 trimMessage = preTrimMessage + trimMessage;
             }
