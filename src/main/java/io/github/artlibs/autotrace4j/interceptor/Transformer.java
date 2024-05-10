@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static io.github.artlibs.autotrace4j.support.Constants.INTERCEPT_METHOD_NAME;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
@@ -30,6 +31,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  * All rights Reserved.
  */
 public final class Transformer {
+
     private Transformer(){}
 
     private static List<Interceptor> interceptorList = null;
@@ -75,6 +77,7 @@ public final class Transformer {
                                 MethodDelegation
                                     .withDefaultConfiguration()
                                     .withBinders(Morph.Binder.install(MorphCall.class))
+                                    .filter(target -> INTERCEPT_METHOD_NAME.equals(target.getActualName()))
                                     .to(interceptor)
                             );
                     }
