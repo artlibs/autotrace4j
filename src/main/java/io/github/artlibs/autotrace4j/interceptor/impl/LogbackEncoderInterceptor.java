@@ -1,16 +1,15 @@
 package io.github.artlibs.autotrace4j.interceptor.impl;
 
-import io.github.artlibs.autotrace4j.interceptor.base.AbstractInstanceInterceptor;
 import io.github.artlibs.autotrace4j.context.AutoTraceCtx;
+import io.github.artlibs.autotrace4j.interceptor.base.AbstractInstanceInterceptor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatchers;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
 
-import static net.bytebuddy.matcher.ElementMatchers.named;
+import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
  * Logback Encoder Interceptor
@@ -31,7 +30,7 @@ public class LogbackEncoderInterceptor extends AbstractInstanceInterceptor {
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return ElementMatchers.hasSuperType(named(LAYOUT_WRAPPING_ENCODER));
+        return hasSuperType(named(LAYOUT_WRAPPING_ENCODER));
     }
 
     /**
@@ -40,8 +39,8 @@ public class LogbackEncoderInterceptor extends AbstractInstanceInterceptor {
     @Override
     public ElementMatcher<? super MethodDescription> methodMatcher() {
         return named("encode").and(
-                ElementMatchers.isOverriddenFrom(named(LAYOUT_WRAPPING_ENCODER)).or(
-                ElementMatchers.isDeclaredBy(named(LAYOUT_WRAPPING_ENCODER)) )
+                isOverriddenFrom(named(LAYOUT_WRAPPING_ENCODER)).or(
+                isDeclaredBy(named(LAYOUT_WRAPPING_ENCODER)) )
         );
     }
 

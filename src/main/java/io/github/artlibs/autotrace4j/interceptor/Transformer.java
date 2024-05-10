@@ -2,10 +2,13 @@ package io.github.artlibs.autotrace4j.interceptor;
 
 import io.github.artlibs.autotrace4j.AutoTrace4j;
 import io.github.artlibs.autotrace4j.exception.LoadInterceptorException;
+import io.github.artlibs.autotrace4j.interceptor.base.AbstractDelegateInterceptor;
 import io.github.artlibs.autotrace4j.interceptor.base.AbstractVisitorInterceptor;
 import io.github.artlibs.autotrace4j.support.ClassUtils;
 import io.github.artlibs.autotrace4j.support.Constants;
 import net.bytebuddy.agent.builder.AgentBuilder;
+import net.bytebuddy.asm.Advice;
+import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.MethodDelegation;
@@ -17,6 +20,7 @@ import java.lang.instrument.Instrumentation;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static io.github.artlibs.autotrace4j.support.Constants.INTERCEPT_METHOD_NAME;
@@ -58,7 +62,7 @@ public final class Transformer {
             agentBuilder = agentBuilder
                 .type(interceptor.typeMatcher())
                 .transform((builder, typeDescription, classLoader, javaModule, protectionDomain) -> {
-                    DynamicType.Builder<?> newBuilder = interceptor.doTypeTransform(
+                    DynamicType.Builder<?> newBuilder = interceptor.typeTransformer(
                         builder, typeDescription, javaModule, classLoader
                     );
                     if (Objects.isNull(newBuilder)) {
@@ -67,12 +71,15 @@ public final class Transformer {
                     // for jdk class, using asm visitor mode to intercept
                     if (interceptor.isVisitorMode()) {
                         AbstractVisitorInterceptor visitor = (AbstractVisitorInterceptor) interceptor;
-                        newBuilder = visitor.visit(newBuilder);
+                        for (Map.Entry<Class<?>, ElementMatcher<? super MethodDescription>> entry
+                                : visitor.methodMatchers().entrySet()) {
+                            newBuilder = newBuilder.visit(Advice.to(entry.getKey()).on(entry.getValue()));
+                        }
                     } else {
                         // for other class, using method delegate mode to intercept
                         // this mode supports to add fields to the target object class.
                         newBuilder = newBuilder
-                            .method(isMethod().and(interceptor.methodMatcher()))
+                            .method(isMethod().and(((AbstractDelegateInterceptor<?>)interceptor).methodMatcher()))
                             .intercept(
                                 MethodDelegation
                                     .withDefaultConfiguration()
@@ -81,7 +88,7 @@ public final class Transformer {
                                     .to(interceptor)
                             );
                     }
-                    return newBuilder == null ? builder : newBuilder;
+                    return newBuilder;
                 });
         }
         agentBuilder.installOn(instrument);

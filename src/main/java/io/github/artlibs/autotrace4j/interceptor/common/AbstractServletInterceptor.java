@@ -23,7 +23,8 @@ public abstract class AbstractServletInterceptor extends AbstractInstanceInterce
      */
     @Override
     public void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
-        Class<?> httpReqClazz, httpRespClazz;
+        Class<?> httpReqClazz;
+        Class<?> httpRespClazz;
         try {
             httpReqClazz = Class.forName(
                 "javax.servlet.http.HttpServletRequest", false, AbstractServletInterceptor.class.getClassLoader()
@@ -35,7 +36,8 @@ public abstract class AbstractServletInterceptor extends AbstractInstanceInterce
             // warning that we can't intercept the servlet
             return;
         }
-        Class<?> argServletReqClazz = allArgs[0].getClass(), argServletRespClazz = allArgs[1].getClass();
+        Class<?> argServletReqClazz = allArgs[0].getClass();
+        Class<?> argServletRespClazz = allArgs[1].getClass();
         boolean isHttp = httpReqClazz.isAssignableFrom(argServletReqClazz) && httpRespClazz.isAssignableFrom(argServletRespClazz);
         // just intercept http request
         if (isHttp) {

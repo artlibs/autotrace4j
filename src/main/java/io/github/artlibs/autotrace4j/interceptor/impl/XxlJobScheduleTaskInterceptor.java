@@ -2,11 +2,12 @@ package io.github.artlibs.autotrace4j.interceptor.impl;
 
 import io.github.artlibs.autotrace4j.context.AutoTraceCtx;
 import io.github.artlibs.autotrace4j.interceptor.Transformer;
-import io.github.artlibs.autotrace4j.interceptor.base.AbstractVisitorInterceptor;
-import net.bytebuddy.asm.Advice;
+import io.github.artlibs.autotrace4j.interceptor.base.AbstractInstanceInterceptor;
+import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.matcher.ElementMatcher;
+
+import java.lang.reflect.Method;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
@@ -18,20 +19,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  *
  * All rights Reserved.
  */
-public class XxlJobScheduleTaskInterceptor extends AbstractVisitorInterceptor {
-
-    @Override
-    public DynamicType.Builder<?> visit(DynamicType.Builder<?> builder) {
-        return builder.visit(
-            Advice
-                .to(XxlJobAnnotatedAdvisor.class)
-                .on(
-                    isAnnotatedWith(named("com.xxl.job.core.handler.annotation.XxlJob"))
-                        .or(named("execute").and(takesNoArguments()))
-                        .or(named("execute").and(takesArgument(0, String.class)))
-                )
-        );
-    }
+public class XxlJobScheduleTaskInterceptor extends AbstractInstanceInterceptor {
 
     /**
      * {@inheritDoc}
@@ -47,28 +35,34 @@ public class XxlJobScheduleTaskInterceptor extends AbstractVisitorInterceptor {
         );
     }
 
-    private static class XxlJobAnnotatedAdvisor {
-        private XxlJobAnnotatedAdvisor(){}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ElementMatcher<? super MethodDescription> methodMatcher() {
+        return isAnnotatedWith(named("com.xxl.job.core.handler.annotation.XxlJob"))
+                .or(named("execute").and(takesNoArguments()))
+                .or(named("execute").and(takesArgument(0, String.class)));
+    }
 
-        /**
-         * advice on method enter: set context
-         */
-        @Advice.OnMethodEnter
-        private static void adviceOnMethodEnter() {
-            AutoTraceCtx.setTraceId(AutoTraceCtx.generate());
-            AutoTraceCtx.setSpanId(AutoTraceCtx.generate());
-            // There will be no parent span as this is a startup context
-            AutoTraceCtx.setParentSpanId(null);
-        }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onMethodEnter(Object obj, Object[] allArgs, Method originMethod) throws Exception {
+        AutoTraceCtx.setTraceId(AutoTraceCtx.generate());
+        AutoTraceCtx.setSpanId(AutoTraceCtx.generate());
+        // There will be no parent span as this is a startup context
+        AutoTraceCtx.setParentSpanId(null);
+    }
 
-        /**
-         * advice on method exist: remove context
-         */
-        @Advice.OnMethodExit
-        public static void adviceOnMethodExit() {
-            AutoTraceCtx.removeAll();
-        }
-
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object onMethodExit(Object obj, Object[] allArgs, Object result, Method originMethod) throws Exception {
+        AutoTraceCtx.removeAll();
+        return result;
     }
 
 }

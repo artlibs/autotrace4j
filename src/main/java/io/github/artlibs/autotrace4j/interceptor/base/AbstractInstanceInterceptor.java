@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
  */
 public abstract class AbstractInstanceInterceptor extends AbstractDelegateInterceptor<Object> {
     /**
-     *
+     * intercept <code>io.github.artlibs.autotrace4j.support.Constants.INTERCEPT_METHOD_NAME</code>
      * @param thiz the object
      * @param zuper the original object
      * @param args argument list

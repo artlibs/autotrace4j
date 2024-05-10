@@ -1,6 +1,5 @@
 package io.github.artlibs.autotrace4j.interceptor;
 
-import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.matcher.ElementMatcher;
@@ -29,12 +28,6 @@ public interface Interceptor {
     ElementMatcher<? super TypeDescription> typeMatcher();
 
     /**
-     * method matcher
-     * @return ElementMatcher
-     */
-    ElementMatcher<? super MethodDescription> methodMatcher();
-
-    /**
      * do type transform
      * @param builder origin DynamicType.Builder
      * @param typeDescription TypeDescription
@@ -42,12 +35,11 @@ public interface Interceptor {
      * @param module JavaModule
      * @return new DynamicType.Builder
      */
-    default DynamicType.Builder<?> doTypeTransform(
+    default DynamicType.Builder<?> typeTransformer(
         DynamicType.Builder<?> builder,
         TypeDescription typeDescription,
         JavaModule module,
-        ClassLoader classLoader
-    ) {
+        ClassLoader classLoader) {
         return builder;
     }
 

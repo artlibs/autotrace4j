@@ -22,7 +22,8 @@ public class HttpFilterInterceptor extends AbstractServletInterceptor {
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return hasSuperType(named("javax.servlet.Filter")).and(not(isInterface())).and(not(isAbstract()));
+        return hasSuperType(named("javax.servlet.Filter"))
+                .and(not(isInterface())).and(not(isAbstract()));
     }
 
     /**

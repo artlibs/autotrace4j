@@ -26,9 +26,11 @@ public class ForkJoinTaskInterceptor extends AbstractTaskVisitorInterceptor {
         return named("java.util.concurrent.ForkJoinTask");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected ElementMatcher<? super MethodDescription> traceInjectedMethod() {
+    protected ElementMatcher<? super MethodDescription> interceptTargetMethod() {
         return named("doExec");
     }
-
 }

@@ -25,7 +25,7 @@ public interface TaskInterceptor extends Interceptor {
      * {@inheritDoc}
      */
     @Override
-    default DynamicType.Builder<?> doTypeTransform(
+    default DynamicType.Builder<?> typeTransformer(
         DynamicType.Builder<?> builder,
         TypeDescription typeDescription,
         JavaModule module,

@@ -99,7 +99,7 @@ public class InterceptorTest {
     }
 
     @Test
-    void testThread() throws InterruptedException, ExecutionException {
+    void testJavaThread() throws InterruptedException, ExecutionException {
         // 01.Prepare
         int cases = 5;
         List<TupleResult> results = new ArrayList<>();
