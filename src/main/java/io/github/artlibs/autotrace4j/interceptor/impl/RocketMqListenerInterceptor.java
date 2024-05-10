@@ -1,16 +1,17 @@
 package io.github.artlibs.autotrace4j.interceptor.impl;
 
-import io.github.artlibs.autotrace4j.interceptor.base.AbstractInstanceInterceptor;
 import io.github.artlibs.autotrace4j.context.AutoTraceCtx;
 import io.github.artlibs.autotrace4j.context.MethodWrapper;
 import io.github.artlibs.autotrace4j.context.ReflectUtils;
+import io.github.artlibs.autotrace4j.interceptor.base.AbstractInstanceInterceptor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatchers;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
+
+import static net.bytebuddy.matcher.ElementMatchers.named;
 
 /**
  * RocketMq Listener Interceptor
@@ -22,6 +23,23 @@ import java.util.Objects;
  */
 public class RocketMqListenerInterceptor extends AbstractInstanceInterceptor {
     private static final String GUP = "getUserProperty";
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ElementMatcher<? super TypeDescription> typeMatcher() {
+        return named("org.apache.rocketmq.spring.support.DefaultRocketMQListenerContainer");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ElementMatcher<? super MethodDescription> methodMatcher() {
+        return named("doConvertMessage");
+    }
 
     /**
      * {@inheritDoc}
@@ -41,19 +59,4 @@ public class RocketMqListenerInterceptor extends AbstractInstanceInterceptor {
         AutoTraceCtx.setSpanId(AutoTraceCtx.generate());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return ElementMatchers.named("org.apache.rocketmq.spring.support.DefaultRocketMQListenerContainer");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ElementMatcher<? super MethodDescription> methodMatcher() {
-        return ElementMatchers.named("doConvertMessage");
-    }
 }

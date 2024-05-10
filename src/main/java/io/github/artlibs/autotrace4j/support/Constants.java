@@ -11,8 +11,6 @@ package io.github.artlibs.autotrace4j.support;
 public final class Constants {
     private Constants(){}
 
-    public static final String INTERCEPT_METHOD_NAME = "intercept";
-
     public static final String COMMA = ",";
     public static final String EMPTY_STRING = "";
     public static final String GET_HEADER = "getHeader";
@@ -21,4 +19,5 @@ public final class Constants {
     public static final String SET_ATTRIBUTE = "setAttribute";
     public static final String INJECT_DIR_ROOT = "autotrace4j/inject";
     public static final String INJECT_DIR_BOOTSTRAP = "bootstrap";
+    public static final String INTERCEPT_METHOD_NAME = "intercept";
 }

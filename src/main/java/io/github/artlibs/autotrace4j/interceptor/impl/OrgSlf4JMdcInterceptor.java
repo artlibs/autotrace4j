@@ -1,7 +1,7 @@
 package io.github.artlibs.autotrace4j.interceptor.impl;
 
-import io.github.artlibs.autotrace4j.interceptor.base.AbstractStaticInterceptor;
 import io.github.artlibs.autotrace4j.context.AutoTraceCtx;
+import io.github.artlibs.autotrace4j.interceptor.base.AbstractStaticInterceptor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
@@ -23,6 +23,24 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
  * All rights Reserved.
  */
 public class OrgSlf4JMdcInterceptor extends AbstractStaticInterceptor {
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ElementMatcher<? super TypeDescription> typeMatcher() {
+        return ElementMatchers.named("org.slf4j.MDC");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ElementMatcher<? super MethodDescription> methodMatcher() {
+        return ElementMatchers.isStatic().and(ElementMatchers.named("get")
+                .and(takesArgument(0, String.class)));
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -46,20 +64,4 @@ public class OrgSlf4JMdcInterceptor extends AbstractStaticInterceptor {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return ElementMatchers.named("org.slf4j.MDC");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ElementMatcher<? super MethodDescription> methodMatcher() {
-        return ElementMatchers.isStatic().and(ElementMatchers.named("get")
-                     .and(takesArgument(0, String.class)));
-    }
 }

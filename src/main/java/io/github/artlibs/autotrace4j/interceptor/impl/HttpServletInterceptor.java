@@ -4,8 +4,8 @@ import io.github.artlibs.autotrace4j.interceptor.common.AbstractServletIntercept
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatchers;
 
+import static net.bytebuddy.matcher.ElementMatchers.named;
 import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 
 /**
@@ -23,7 +23,7 @@ public class HttpServletInterceptor extends AbstractServletInterceptor {
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return ElementMatchers.named("javax.servlet.http.HttpServlet");
+        return named("javax.servlet.http.HttpServlet");
     }
 
     /**
@@ -31,8 +31,8 @@ public class HttpServletInterceptor extends AbstractServletInterceptor {
      */
     @Override
     public ElementMatcher<? super MethodDescription> methodMatcher() {
-        return ElementMatchers.named("service")
-            .and(takesArgument(0, ElementMatchers.named("javax.servlet.http.HttpServletRequest")))
-            .and(takesArgument(1, ElementMatchers.named("javax.servlet.http.HttpServletResponse")));
+        return named("service")
+            .and(takesArgument(0, named("javax.servlet.http.HttpServletRequest")))
+            .and(takesArgument(1, named("javax.servlet.http.HttpServletResponse")));
     }
 }

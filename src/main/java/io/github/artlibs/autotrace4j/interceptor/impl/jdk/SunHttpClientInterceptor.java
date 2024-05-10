@@ -5,12 +5,13 @@ import io.github.artlibs.autotrace4j.context.MethodWrapper;
 import io.github.artlibs.autotrace4j.context.ReflectUtils;
 import io.github.artlibs.autotrace4j.interceptor.base.AbstractVisitorInterceptor;
 import net.bytebuddy.asm.Advice;
+import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 
+import java.util.Map;
 import java.util.Objects;
 
 import static net.bytebuddy.matcher.ElementMatchers.named;
@@ -30,28 +31,6 @@ public class SunHttpClientInterceptor extends AbstractVisitorInterceptor {
     private static final String POS_CLASS = "sun.net.www.http.PosterOutputStream";
     private static final String MESSAGE_HEADER_CLS = "sun.net.www.MessageHeader";
 
-    @Override
-    public DynamicType.Builder<?> visit(DynamicType.Builder<?> builder) {
-        return builder.visit(
-            Advice
-                .to(WriteRequestsAdvisor.class)
-                .on(ElementMatchers.named(WRITE_REQUESTS)
-                        .and(takesArgument(0, named(MESSAGE_HEADER_CLS)))
-                        .or(
-                            ElementMatchers.named(WRITE_REQUESTS)
-                                .and(takesArgument(0, named(MESSAGE_HEADER_CLS)))
-                                .and(takesArgument(1, named(POS_CLASS)))
-                        )
-                        .or(
-                            ElementMatchers.named(WRITE_REQUESTS)
-                                .and(takesArgument(0, named(MESSAGE_HEADER_CLS)))
-                                .and(takesArgument(1, named(POS_CLASS)))
-                                .and(takesArgument(2, boolean.class))
-                        )
-                )
-        );
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -60,36 +39,49 @@ public class SunHttpClientInterceptor extends AbstractVisitorInterceptor {
         return ElementMatchers.named("sun.net.www.http.HttpClient");
     }
 
-    private static class WriteRequestsAdvisor {
-
-        /**
-         * advice on method enter: set http header
-         *
-         * @param msgHeader http message header
-         */
-        @Advice.OnMethodEnter
-        private static void adviceOnMethodEnter(
-            @Advice.Argument(value = 0, readOnly = false
-                , typing = Assigner.Typing.DYNAMIC) Object msgHeader
-        ) {
-            try {
-                final String traceId = AutoTraceCtx.getTraceId();
-                if (Objects.nonNull(traceId)) {
-                    MethodWrapper methodWrapper = ReflectUtils.getMethodWrapper(msgHeader
-                        , SET_IF_NOT_SET, String.class, String.class);
-                    methodWrapper.invoke(AutoTraceCtx.ATO_TRACE_ID, traceId);
-
-                    final String spanId = AutoTraceCtx.getSpanId();
-                    if (Objects.nonNull(spanId)) {
-                        methodWrapper.invoke(AutoTraceCtx.ATO_SPAN_ID, spanId);
-                    }
-                }
-            } catch (Exception ignore) {
-                // No sonar
-            }
-        }
-
+    @Override
+    public Map<Class<?>, ElementMatcher<? super MethodDescription>> methodMatchers() {
+        return ofMatcher(named(WRITE_REQUESTS)
+                .and(takesArgument(0, named(MESSAGE_HEADER_CLS)))
+                .or(
+                        named(WRITE_REQUESTS)
+                                .and(takesArgument(0, named(MESSAGE_HEADER_CLS)))
+                                .and(takesArgument(1, named(POS_CLASS)))
+                )
+                .or(
+                        named(WRITE_REQUESTS)
+                                .and(takesArgument(0, named(MESSAGE_HEADER_CLS)))
+                                .and(takesArgument(1, named(POS_CLASS)))
+                                .and(takesArgument(2, boolean.class))
+                )
+        );
     }
 
+    /**
+     * advice on method enter: set http header
+     *
+     * @param msgHeader http message header
+     */
+    @Advice.OnMethodEnter
+    private static void adviceOnMethodEnter(
+        @Advice.Argument(value = 0, readOnly = false
+            , typing = Assigner.Typing.DYNAMIC) Object msgHeader
+    ) {
+        try {
+            final String traceId = AutoTraceCtx.getTraceId();
+            if (Objects.nonNull(traceId)) {
+                MethodWrapper methodWrapper = ReflectUtils.getMethodWrapper(msgHeader
+                    , SET_IF_NOT_SET, String.class, String.class);
+                methodWrapper.invoke(AutoTraceCtx.ATO_TRACE_ID, traceId);
+
+                final String spanId = AutoTraceCtx.getSpanId();
+                if (Objects.nonNull(spanId)) {
+                    methodWrapper.invoke(AutoTraceCtx.ATO_SPAN_ID, spanId);
+                }
+            }
+        } catch (Exception ignore) {
+            // No sonar
+        }
+    }
 
 }

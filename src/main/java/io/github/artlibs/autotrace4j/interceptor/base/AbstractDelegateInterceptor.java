@@ -2,8 +2,10 @@ package io.github.artlibs.autotrace4j.interceptor.base;
 
 import io.github.artlibs.autotrace4j.interceptor.Interceptor;
 import io.github.artlibs.autotrace4j.interceptor.MorphCall;
+import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
+import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.utility.JavaModule;
 
 import java.lang.reflect.Method;
@@ -25,6 +27,12 @@ public abstract class AbstractDelegateInterceptor<T> implements Interceptor {
     public final boolean isVisitorMode() {
         return false;
     }
+
+    /**
+     * method matcher
+     * @return ElementMatcher
+     */
+    public abstract ElementMatcher<? super MethodDescription> methodMatcher();
 
     /**
      * enhance on method enter
@@ -59,7 +67,7 @@ public abstract class AbstractDelegateInterceptor<T> implements Interceptor {
      * @return new DynamicType.Builder
      */
     @Override
-    public DynamicType.Builder<?> doTypeTransform(DynamicType.Builder<?> builder
+    public DynamicType.Builder<?> typeTransformer(DynamicType.Builder<?> builder
             , TypeDescription typeDescription, JavaModule module, ClassLoader classLoader) {
         return builder;
     }

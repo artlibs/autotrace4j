@@ -21,6 +21,24 @@ import java.util.Objects;
  * All rights Reserved.
  */
 public class OkHttpClientInterceptor extends AbstractInstanceInterceptor {
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ElementMatcher<? super TypeDescription> typeMatcher() {
+        return ElementMatchers.named("okhttp3.Headers$Builder");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ElementMatcher<? super MethodDescription> methodMatcher() {
+        return ElementMatchers.named("build");
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -43,20 +61,4 @@ public class OkHttpClientInterceptor extends AbstractInstanceInterceptor {
         }
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return ElementMatchers.named("okhttp3.Headers$Builder");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ElementMatcher<? super MethodDescription> methodMatcher() {
-        return ElementMatchers.named("build");
-    }
 }

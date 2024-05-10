@@ -2,11 +2,12 @@ package io.github.artlibs.autotrace4j.interceptor.impl;
 
 import io.github.artlibs.autotrace4j.context.AutoTraceCtx;
 import io.github.artlibs.autotrace4j.interceptor.Transformer;
-import io.github.artlibs.autotrace4j.interceptor.base.AbstractVisitorInterceptor;
-import net.bytebuddy.asm.Advice;
+import io.github.artlibs.autotrace4j.interceptor.base.AbstractInstanceInterceptor;
+import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.matcher.ElementMatcher;
+
+import java.lang.reflect.Method;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
@@ -18,16 +19,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  *
  * All rights Reserved.
  */
-public class SpringScheduledInterceptor extends AbstractVisitorInterceptor {
-
-    @Override
-    public DynamicType.Builder<?> visit(DynamicType.Builder<?> builder) {
-        return builder.visit(
-            Advice
-                .to(ScheduledAnnotatedAdvisor.class)
-                .on(isAnnotatedWith(named("org.springframework.scheduling.annotation.Scheduled")))
-        );
-    }
+public class SpringScheduledInterceptor extends AbstractInstanceInterceptor {
 
     /**
      * {@inheritDoc}
@@ -41,27 +33,32 @@ public class SpringScheduledInterceptor extends AbstractVisitorInterceptor {
             .and(declaresMethod(isAnnotatedWith(named("org.springframework.scheduling.annotation.Scheduled"))));
     }
 
-    private static class ScheduledAnnotatedAdvisor {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ElementMatcher<? super MethodDescription> methodMatcher() {
+        return isAnnotatedWith(named("org.springframework.scheduling.annotation.Scheduled"));
+    }
 
-        /**
-         * advice on method enter: set trace id
-         */
-        @Advice.OnMethodEnter
-        private static void adviceOnMethodEnter() {
-            AutoTraceCtx.setSpanId(AutoTraceCtx.generate());
-            AutoTraceCtx.setTraceId(AutoTraceCtx.generate());
-            // There will be no parent span as this is a startup context
-            AutoTraceCtx.setParentSpanId(null);
-        }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onMethodEnter(Object obj, Object[] allArgs, Method originMethod) throws Exception {
+        AutoTraceCtx.setSpanId(AutoTraceCtx.generate());
+        AutoTraceCtx.setTraceId(AutoTraceCtx.generate());
+        // There will be no parent span as this is a startup context
+        AutoTraceCtx.setParentSpanId(null);
+    }
 
-        /**
-         * advice on method exit: remove trace id
-         */
-        @Advice.OnMethodExit
-        private static void adviceOnMethodExit() {
-            AutoTraceCtx.removeAll();
-        }
-
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object onMethodExit(Object obj, Object[] allArgs, Object result, Method originMethod) throws Exception {
+        AutoTraceCtx.removeAll();
+        return result;
     }
 
 }

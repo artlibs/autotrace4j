@@ -19,7 +19,7 @@ import java.util.Objects;
  */
 public abstract class AbstractStaticInterceptor extends AbstractDelegateInterceptor<Class<?>> {
     /**
-     * intercept
+     * intercept <code>io.github.artlibs.autotrace4j.support.Constants.INTERCEPT_METHOD_NAME</code>
      * @param clazz the class object
      * @param zuper the original object
      * @param args argument list

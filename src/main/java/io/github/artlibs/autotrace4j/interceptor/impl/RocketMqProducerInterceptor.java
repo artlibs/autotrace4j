@@ -12,6 +12,9 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
 
+import static net.bytebuddy.matcher.ElementMatchers.named;
+import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
+
 /**
  * RocketMq Producer Interceptor
  *
@@ -21,6 +24,40 @@ import java.util.Objects;
  * All rights Reserved.
  */
 public class RocketMqProducerInterceptor extends AbstractInstanceInterceptor {
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ElementMatcher<? super TypeDescription> typeMatcher() {
+        return named("org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ElementMatcher<? super MethodDescription> methodMatcher() {
+        return ElementMatchers.isPublic()
+                // only rocket mq client have these three
+                .and(named("send")
+                        .and(takesArgument(0, named("org.apache.rocketmq.common.message.Message")))
+                        .and(takesArgument(1, named("org.apache.rocketmq.client.producer.SendCallback")))
+                        .and(takesArgument(2, long.class))
+                ).or(named("send")
+                                .and(takesArgument(0, named("org.apache.rocketmq.common.message.Message")))
+                                .and(takesArgument(1, named("org.apache.rocketmq.common.message.MessageQueue")))
+                                .and(takesArgument(2, named("org.apache.rocketmq.client.producer.SendCallback")))
+                                .and(takesArgument(3, long.class))
+                ).or(named("send")
+                                .and(takesArgument(0, named("org.apache.rocketmq.common.message.Message")))
+                                .and(takesArgument(1, named("org.apache.rocketmq.client.producer.MessageQueueSelector")))
+                                .and(takesArgument(2, Object.class))
+                                .and(takesArgument(3, named("org.apache.rocketmq.client.producer.SendCallback")))
+                                .and(takesArgument(4, long.class))
+                ).or(named("sendKernelImpl"));
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -45,40 +82,4 @@ public class RocketMqProducerInterceptor extends AbstractInstanceInterceptor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return ElementMatchers.named("org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ElementMatcher<? super MethodDescription> methodMatcher() {
-        return ElementMatchers.isPublic()
-                // only rocket mq client have these three
-                .and(ElementMatchers.named("send")
-                        .and(ElementMatchers.takesArgument(0, ElementMatchers.named("org.apache.rocketmq.common.message.Message")))
-                        .and(ElementMatchers.takesArgument(1, ElementMatchers.named("org.apache.rocketmq.client.producer.SendCallback")))
-                        .and(ElementMatchers.takesArgument(2, long.class))
-                ).or(
-                        ElementMatchers.named("send")
-                                .and(ElementMatchers.takesArgument(0, ElementMatchers.named("org.apache.rocketmq.common.message.Message")))
-                                .and(ElementMatchers.takesArgument(1, ElementMatchers.named("org.apache.rocketmq.common.message.MessageQueue")))
-                                .and(ElementMatchers.takesArgument(2, ElementMatchers.named("org.apache.rocketmq.client.producer.SendCallback")))
-                                .and(ElementMatchers.takesArgument(3, long.class))
-                ).or(
-                        ElementMatchers.named("send")
-                                .and(ElementMatchers.takesArgument(0, ElementMatchers.named("org.apache.rocketmq.common.message.Message")))
-                                .and(ElementMatchers.takesArgument(1, ElementMatchers.named("org.apache.rocketmq.client.producer.MessageQueueSelector")))
-                                .and(ElementMatchers.takesArgument(2, Object.class))
-                                .and(ElementMatchers.takesArgument(3, ElementMatchers.named("org.apache.rocketmq.client.producer.SendCallback")))
-                                .and(ElementMatchers.takesArgument(4, long.class))
-                ).or(
-                        ElementMatchers.named("sendKernelImpl")
-                );
-    }
 }
