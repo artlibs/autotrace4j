@@ -17,9 +17,11 @@ import java.util.Map;
  * All rights Reserved.
  */
 public abstract class AbstractTaskVisitorInterceptor extends AbstractVisitorInterceptor implements TaskInterceptor {
-
     protected abstract ElementMatcher<? super MethodDescription> interceptTargetMethod();
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<Class<?>, ElementMatcher<? super MethodDescription>> methodMatchers() {
         return ofMatcher(AbstractTaskVisitorInterceptor.class, interceptTargetMethod());

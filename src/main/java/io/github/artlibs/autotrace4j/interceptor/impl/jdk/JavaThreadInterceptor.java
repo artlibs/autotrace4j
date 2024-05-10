@@ -45,7 +45,7 @@ public class JavaThreadInterceptor extends AbstractVisitorInterceptor {
      * @param runnable -
      */
     @Advice.OnMethodEnter
-    public static void adviceOnMethodEnter(@Advice.Argument(value = 3
+    private static void adviceOnMethodEnter(@Advice.Argument(value = 3
             , typing = Assigner.Typing.DYNAMIC, optional = false
             , readOnly = false) Runnable runnable) {
         try {

@@ -33,6 +33,9 @@ public class SchdThreadPoolInterceptor extends AbstractVisitorInterceptor {
         return named("java.util.concurrent.ScheduledThreadPoolExecutor");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<Class<?>, ElementMatcher<? super MethodDescription>> methodMatchers() {
         return ofMatcher(isPrivate()
