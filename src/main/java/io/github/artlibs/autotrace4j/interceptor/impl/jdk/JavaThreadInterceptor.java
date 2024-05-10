@@ -36,59 +36,27 @@ public class JavaThreadInterceptor extends AbstractVisitorInterceptor {
      */
     @Override
     public Map<Class<?>, ElementMatcher<? super MethodDescription>> methodMatchers() {
-        return newMmHolder()
-                .put(Advice0.class, isConstructor().and(isPublic())
-                        .and(takesArgument(0, Runnable.class))
-                ).put(Advice1.class, isConstructor().and(isPublic())
-                        .and(takesArgument(1, Runnable.class))
-                ).get();
+        return ofMatcher(isConstructor().and(isPackagePrivate())
+                .and(takesArgument(3, Runnable.class)));
     }
 
-    public static class Advice0 {
-        private Advice0(){}
-
-        /**
-         * 注：与Advice1的代码相同, 不能去冗余
-         * @param runnable -
-         */
-        @Advice.OnMethodEnter
-        public static void adviceOnMethodEnter(@Advice.Argument(value = 0
-                , typing = Assigner.Typing.DYNAMIC, optional = false
-                , readOnly = false) Runnable runnable) {
-            try {
-                if (Objects.nonNull(runnable)) {
-                    String traceId = AutoTraceCtx.getTraceId();
-                    if (Objects.nonNull(traceId) && !(runnable instanceof ThreadPoolTask)) {
-                        runnable = new ThreadPoolTask(runnable, traceId, AutoTraceCtx.getSpanId());
-                    }
+    /**
+     * adviceOnMethodEnter
+     * @param runnable -
+     */
+    @Advice.OnMethodEnter
+    public static void adviceOnMethodEnter(@Advice.Argument(value = 3
+            , typing = Assigner.Typing.DYNAMIC, optional = false
+            , readOnly = false) Runnable runnable) {
+        try {
+            if (Objects.nonNull(runnable)) {
+                String traceId = AutoTraceCtx.getTraceId();
+                if (Objects.nonNull(traceId) && !(runnable instanceof ThreadPoolTask)) {
+                    runnable = new ThreadPoolTask(runnable, traceId, AutoTraceCtx.getSpanId());
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-        }
-    }
-
-    public static class Advice1 {
-        private Advice1(){}
-
-        /**
-         * 注：与Advice0的代码相同, 不能去冗余
-         * @param runnable -
-         */
-        @Advice.OnMethodEnter
-        public static void adviceOnMethodEnter(@Advice.Argument(value = 1
-                , typing = Assigner.Typing.DYNAMIC, optional = false
-                , readOnly = false) Runnable runnable) {
-            try {
-                if (Objects.nonNull(runnable)) {
-                    String traceId = AutoTraceCtx.getTraceId();
-                    if (Objects.nonNull(traceId) && !(runnable instanceof ThreadPoolTask)) {
-                        runnable = new ThreadPoolTask(runnable, traceId, AutoTraceCtx.getSpanId());
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
