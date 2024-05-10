@@ -41,13 +41,13 @@ public abstract class AbstractServletInterceptor extends AbstractInstanceInterce
         if (isHttp) {
             // first we take it from the req attributes
             String traceId = ReflectUtils
-                .getMethodWrapper(allArgs[0], Constants.GET_ATTRIBUTE, Object.class)
+                .getMethodWrapper(allArgs[0], Constants.GET_ATTRIBUTE, String.class)
                 .invoke(AutoTraceCtx.ATO_TRACE_ID);
             String parentSpanId = ReflectUtils
-                .getMethodWrapper(allArgs[0], Constants.GET_ATTRIBUTE, Object.class)
+                .getMethodWrapper(allArgs[0], Constants.GET_ATTRIBUTE, String.class)
                 .invoke(AutoTraceCtx.ATO_PARENT_SPAN_ID);
             String spanId = ReflectUtils
-                .getMethodWrapper(allArgs[0], Constants.GET_ATTRIBUTE, Object.class)
+                .getMethodWrapper(allArgs[0], Constants.GET_ATTRIBUTE, String.class)
                 .invoke(AutoTraceCtx.ATO_SPAN_ID);
 
             if (Objects.nonNull(traceId)) {

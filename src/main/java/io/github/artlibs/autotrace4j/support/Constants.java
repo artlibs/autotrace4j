@@ -11,6 +11,8 @@ package io.github.artlibs.autotrace4j.support;
 public final class Constants {
     private Constants(){}
 
+    public static final String INTERCEPT_METHOD_NAME = "intercept";
+
     public static final String COMMA = ",";
     public static final String EMPTY_STRING = "";
     public static final String GET_HEADER = "getHeader";
