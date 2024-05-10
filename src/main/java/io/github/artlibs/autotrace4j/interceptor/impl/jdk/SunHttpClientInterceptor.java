@@ -39,6 +39,9 @@ public class SunHttpClientInterceptor extends AbstractVisitorInterceptor {
         return ElementMatchers.named("sun.net.www.http.HttpClient");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<Class<?>, ElementMatcher<? super MethodDescription>> methodMatchers() {
         return ofMatcher(named(WRITE_REQUESTS)
