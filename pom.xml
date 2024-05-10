@@ -6,7 +6,7 @@
 
     <groupId>io.github.artlibs</groupId>
     <artifactId>autotrace4j</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <packaging>jar</packaging>
     <url>https://github.com/artlibs/autotrace4j</url>
     <description>An auto trace agent base on byte-buddy for Java.</description>
