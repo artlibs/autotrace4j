@@ -349,10 +349,10 @@ public class LoggerTest {
         BlockingQueue<?> queue = (BlockingQueue<?>) getField(AsyncAppender.class, "queue", true).get(asyncAppender);
         if (queue != null) {
             while (!queue.isEmpty()) {
-                Thread.sleep(1);
+                Thread.yield();
             }
         }
-        Thread.sleep(1);
+        Thread.sleep(5);
     }
 
     private static void checkLogContents(String[] logs, Level limitLevel) {
