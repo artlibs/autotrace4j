@@ -31,14 +31,21 @@ $ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-dom
 
 ## Supported Context
 
-### 1、Thread Pool
+### 1、Thread
+
+​	针对Thread进行了增强，在创建线程时支持自动Trace跟踪:
+
+-   `java.lang.Thread`
+
+### 2、Thread Pool
 
 ​	基于如下包作为基础的线程池均支持自动Trace跟踪:
 
 -   `java.util.concurrent.ThreadPoolExecutor`
+-   `java.util.concurrent.ForkJoinPool`
 -   `java.util.concurrent.ScheduledThreadPoolExecutor`
 
-### 2、Http Client
+### 3、Http Client
 
 ​	基于如下几个Client的HTTP请求客户端在发送请求时都会自动将当前上下文的TraceId设置到请求头：
 
@@ -46,14 +53,14 @@ $ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-dom
 -   JDK Http Client：`jdk:sun.net.www.http.HttpClient`
 -   ApacheHttpClient：`org.apache.httpcomponents:httpclient`
 
-### 3、Http Servlet
+### 4、Http Servlet
 
 ​	我们支持了HTTP Filter和HTTP Servlet来从请求头当中接收TraceId并设置到当前上下文：
 
 -   `javax.servlet.Filter`
 -   `javax.servlet.http.HttpServlet`
 
-### 4、MessageQunue
+### 5、MessageQunue
 
 ​	目前支持阿里云ONS和RocketMQ在生产和消费时带上TraceId：
 
@@ -61,14 +68,14 @@ $ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-dom
 -   Aliyun ONS：`Producer` & `Consumer`
 -   Kafka：comming soon....
 
-### 5、Scheduled Task
+### 6、Scheduled Task
 
 ​	已支持XXL Job和Spring的Scheduled定时任务在产生时生成TraceId：
 
 -   XxlJob Handler：`com.handler.com.xxl.job.core.IJobHandler`
 -   Spring Schedule Task：`org.springframework.scheduling.annotation.Scheduled`
 
-### 6、Logging
+### 7、Logging
 
 ​	目前支持在logback中输出日志时注入trace id进行输出：
 
