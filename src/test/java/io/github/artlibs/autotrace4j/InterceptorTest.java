@@ -81,7 +81,7 @@ public class InterceptorTest {
         );
     }
 
-    private void verifyTaskResults(List<TupleResult> results, int cases, String mainThreadId) {
+    private void verifyTaskResults(Collection<TupleResult> results, int cases, String mainThreadId) {
         Assertions.assertEquals(cases, results.size());
         results.forEach(result -> {
             Assertions.assertNotNull(result);
@@ -102,7 +102,7 @@ public class InterceptorTest {
     void testJavaThread() throws InterruptedException, ExecutionException {
         // 01.Prepare
         int cases = 5;
-        List<TupleResult> results = new ArrayList<>();
+        ConcurrentLinkedDeque<TupleResult> results = new ConcurrentLinkedDeque<>();
 
         // 02.When
         CountDownLatch latch = new CountDownLatch(cases);
