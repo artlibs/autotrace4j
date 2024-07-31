@@ -27,10 +27,10 @@ public abstract class AbstractServletInterceptor extends AbstractInstanceInterce
         Class<?> httpRespClazz;
         try {
             httpReqClazz = Class.forName(
-                "javax.servlet.http.HttpServletRequest", false, AbstractServletInterceptor.class.getClassLoader()
+                    "javax.servlet.http.HttpServletRequest", false, Thread.currentThread().getContextClassLoader()
             );
             httpRespClazz = Class.forName(
-                "javax.servlet.http.HttpServletResponse", false, AbstractServletInterceptor.class.getClassLoader()
+                    "javax.servlet.http.HttpServletResponse", false, Thread.currentThread().getContextClassLoader()
             );
         } catch (ClassNotFoundException e) {
             // warning that we can't intercept the servlet
