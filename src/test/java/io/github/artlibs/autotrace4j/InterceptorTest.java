@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import io.github.artlibs.autotrace4j.context.AutoTraceCtx;
 import io.github.artlibs.testsupport.Injected;
+import io.github.artlibs.testsupport.PowerJobCase;
 import io.github.artlibs.testsupport.ScheduledCase;
 import io.github.artlibs.testsupport.TupleResult;
 import io.github.artlibs.testsupport.XxlJobCase.*;
@@ -17,6 +18,7 @@ import org.apache.http.util.EntityUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.*;
 import org.slf4j.MDC;
+import tech.powerjob.worker.core.processor.TaskContext;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -212,6 +214,22 @@ public class InterceptorTest {
 
         // 03.Verify
         TupleResult tuple = c.getInjected();
+        // expected a new traceId, spanId, and no parent span id
+        Assertions.assertNotEquals(initTraceId, tuple.getValue1());
+        Assertions.assertNotEquals(initSpanId, tuple.getValue2());
+        Assertions.assertNull(tuple.getValue3());
+    }
+
+    @Test
+    void testPowerJobProcessor() throws Exception {
+        // 01.Prepare
+        PowerJobCase pj = new PowerJobCase();
+
+        // 02.When
+        pj.process(new TaskContext());
+
+        // 03.Verify
+        TupleResult tuple = pj.getInjected();
         // expected a new traceId, spanId, and no parent span id
         Assertions.assertNotEquals(initTraceId, tuple.getValue1());
         Assertions.assertNotEquals(initSpanId, tuple.getValue2());
