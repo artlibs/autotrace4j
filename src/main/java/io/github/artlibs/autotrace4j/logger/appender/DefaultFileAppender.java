@@ -161,7 +161,7 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
                     logWriteBuffer.get().clear();
                     logWriteBuffer.get().put(bytes, (len - rem), n);
                     logWriteBuffer.get().flip();
-                    logFileTuple.getO2().write(logWriteBuffer.get());
+                    logFileTuple.getSecond().write(logWriteBuffer.get());
                     rem -= n;
                 }
             }
@@ -215,10 +215,10 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
 
     private boolean isValidLogFile(Tuple2<Path, FileChannel> pathAndChannel, int messageLength) throws IOException {
         if (Objects.isNull(pathAndChannel)) return false;
-        Path path = pathAndChannel.getO1();
+        Path path = pathAndChannel.getFirst();
         String logFileName = path.getFileName().toString();
         boolean isTodayFile = logFileName.startsWith(dateToLogFileName(LocalDateTime.now()));
-        boolean exists = Files.exists(pathAndChannel.getO1());
+        boolean exists = Files.exists(pathAndChannel.getFirst());
         boolean sufficient = false;
         if (exists && isTodayFile) {
             // 针对消息体大于当前文件的情况,我们允许它本次将内容追加进去,作为兜底策略.
@@ -228,7 +228,7 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
     }
 
     private boolean capacitySufficient(Tuple2<Path, FileChannel> pathAndChannel, int messageLength) throws IOException {
-        return logFileSizeBytes <= 0 || (pathAndChannel.getO2().size() + messageLength <= logFileSizeBytes);
+        return logFileSizeBytes <= 0 || (pathAndChannel.getSecond().size() + messageLength <= logFileSizeBytes);
     }
 
     private boolean isSuperMessage(int messageLength) {
@@ -249,13 +249,13 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
                     .map(DefaultFileAppender::mapPathToLogFile)
                     .filter(Optional::isPresent)
                     .map(Optional::get)
-                    .sorted(Comparator.comparing(Tuple2::getO1))
+                    .sorted(Comparator.comparing(Tuple2::getFirst))
                     .forEach(dateAndPath -> {
-                        if (!dateAndPath.getO1().isAfter(expiredTime)) {
+                        if (!dateAndPath.getFirst().isAfter(expiredTime)) {
                             try {
-                                Files.deleteIfExists(dateAndPath.getO2());
+                                Files.deleteIfExists(dateAndPath.getSecond());
                                 System.out.printf("[DefaultFileAppender] expired log file [%s] deleted.%n"
-                                        , dateAndPath.getO2().toFile().getName());
+                                        , dateAndPath.getSecond().toFile().getName());
                             } catch (IOException e) {
                                 System.err.println("[DefaultFileAppender] delete expired log file failure: " + e.getMessage());
                             }
@@ -293,7 +293,7 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
     private void closedFileChannel(Tuple2<Path, FileChannel> logFile) {
         Optional
             .ofNullable(logFile)
-            .map(Tuple2::getO2)
+            .map(Tuple2::getSecond)
             .filter(AbstractInterruptibleChannel::isOpen)
             .ifPresent(fileChannel -> {
                 try {

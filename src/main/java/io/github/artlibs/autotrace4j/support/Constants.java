@@ -1,5 +1,7 @@
 package io.github.artlibs.autotrace4j.support;
 
+import java.util.Objects;
+
 /**
  * Constants
  *
@@ -12,7 +14,7 @@ public final class Constants {
     private Constants(){}
 
     public static final String COMMA = ",";
-    public static final String EMPTY_STRING = "";
+    public static final String EMPTY = "";
     public static final String GET_HEADER = "getHeader";
     public static final String SET_HEADER = "setHeader";
     public static final String GET_ATTRIBUTE = "getAttribute";
@@ -20,4 +22,15 @@ public final class Constants {
     public static final String INJECT_DIR_ROOT = "autotrace4j/inject";
     public static final String INJECT_DIR_BOOTSTRAP = "bootstrap";
     public static final String INTERCEPT_METHOD_NAME = "intercept";
+
+    public static String concat(String source, String... appends) {
+        Objects.requireNonNull(source);
+        StringBuilder sb = new StringBuilder(appends.length)
+                .append(source);
+        for (String append : appends) {
+            sb.append(append);
+        }
+
+        return sb.toString();
+    }
 }

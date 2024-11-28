@@ -2,7 +2,7 @@ package io.github.artlibs.autotrace4j;
 
 import io.github.artlibs.autotrace4j.interceptor.Transformer;
 import io.github.artlibs.autotrace4j.support.ClassUtils;
-import io.github.artlibs.autotrace4j.support.JavaModuleUtils;
+import io.github.artlibs.autotrace4j.support.ModuleUtils;
 import net.bytebuddy.utility.JavaModule;
 
 import java.io.IOException;
@@ -10,8 +10,9 @@ import java.lang.instrument.Instrumentation;
 import java.net.URISyntaxException;
 import java.util.Objects;
 
-import static io.github.artlibs.autotrace4j.support.JavaModuleUtils.getOwnModule;
-import static io.github.artlibs.autotrace4j.support.JavaModuleUtils.notJavaModule;
+import static io.github.artlibs.autotrace4j.support.Constants.concat;
+import static io.github.artlibs.autotrace4j.support.ModuleUtils.getOwnModule;
+import static io.github.artlibs.autotrace4j.support.ModuleUtils.notJavaModule;
 
 /**
  * Auto Trace for Java
@@ -47,15 +48,15 @@ public final class AutoTrace4j {
                     " to determine the enhancement scope; such as：\n"
                     + "-javaagent:/dir/to/autotrace4j.jar=com.your-domain1.pkg1,com.your-domain2.pkg2");
         }
-        String ctxPackagePrefix = AutoTrace4j.class.getPackage().getName() + ".context";
-        ClassUtils.injectClassToBootStrap(instrument, ctxPackagePrefix);
+        String contextPackage = concat(AutoTrace4j.class.getPackage().getName(), ".", "context");
+        ClassUtils.injectClassToBootStrap(instrument, contextPackage);
         //note: this method must be called after injectClassToBootStrap, don't move it forward
-        compatibleJavaModule(ctxPackagePrefix);
+        compatibleJavaModule(contextPackage);
         // do intercept
         Transformer.intercept(enhancePackages).on(instrument);
     }
 
-    private static void compatibleJavaModule(String ctxPackagePrefix) {
+    private static void compatibleJavaModule(String contextPackage) {
         if (notJavaModule()) {
             return;
         }
@@ -67,18 +68,18 @@ public final class AutoTrace4j {
         };
 
         // java9+: open the system module to us
-        JavaModuleUtils.openJavaBaseModuleForAnotherModule(
+        ModuleUtils.openJavaBaseModuleForAnotherModule(
                 agentNecessaryJavaBasePackages,
-                JavaModule.ofType(JavaModuleUtils.MethodLockSupport.class)
+                JavaModule.ofType(ModuleUtils.MethodLockSupport.class)
         );
         // java9+: remove the package - module mapping to avoid double context package's class
         // note: this method need the privilege of 'jdk.internal.loader' package
-        JavaModuleUtils.removePkgModuleMapping(new String[]{ ctxPackagePrefix });
+        ModuleUtils.removePkgModuleMapping(new String[]{ contextPackage });
         // java9+: open the system module to bootstrap's unnamed module
         // we need found the unnamed module by ModuleLocator
-        JavaModuleUtils.openJavaBaseModuleForAnotherModule(
+        ModuleUtils.openJavaBaseModuleForAnotherModule(
                 agentNecessaryJavaBasePackages,
-                getOwnModule(ctxPackagePrefix + ".jdk.ModuleLocator")
+                getOwnModule(contextPackage + ".jdk.ModuleLocator")
         );
     }
 

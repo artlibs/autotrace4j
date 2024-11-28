@@ -4,34 +4,34 @@ package io.github.artlibs.autotrace4j.support;
  * 功能：tuple
  *
  * @author suopovate
+ * @author Fury
  * @since 2024/04/27
  * <p>
  * All rights Reserved.
  */
-public final class Tuple2<O1, O2> {
+public final class Tuple2<First, Second> {
+    private First first;
+    private Second second;
 
-    O1 o1;
-    O2 o2;
-
-    public Tuple2(O1 o1, O2 o2) {
-        this.o1 = o1;
-        this.o2 = o2;
+    public Tuple2(First first, Second o2) {
+        this.first = first;
+        this.second = o2;
     }
 
-    public O1 getO1() {
-        return o1;
+    public First getFirst() {
+        return first;
     }
 
-    public O2 getO2() {
-        return o2;
+    public Second getSecond() {
+        return second;
     }
 
-    public void setO1(O1 o1) {
-        this.o1 = o1;
+    public void setFirst(First first) {
+        this.first = first;
     }
 
-    public void setO2(O2 o2) {
-        this.o2 = o2;
+    public void setSecond(Second second) {
+        this.second = second;
     }
 
 }

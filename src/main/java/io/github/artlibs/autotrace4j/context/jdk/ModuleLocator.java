@@ -1,7 +1,7 @@
 package io.github.artlibs.autotrace4j.context.jdk;
 
 import io.github.artlibs.autotrace4j.AutoTrace4j;
-import io.github.artlibs.autotrace4j.support.JavaModuleUtils;
+import io.github.artlibs.autotrace4j.support.ModuleUtils;
 
 /**
  * 功能：用于java9+定位模块,不包含具体逻辑
@@ -11,7 +11,7 @@ import io.github.artlibs.autotrace4j.support.JavaModuleUtils;
  * <p>
  * All rights Reserved.
  *
- * @see JavaModuleUtils#getOwnModule(String)
+ * @see ModuleUtils#getOwnModule(String)
  * @see AutoTrace4j#compatibleJavaModule(String)
  */
 @SuppressWarnings("unused")

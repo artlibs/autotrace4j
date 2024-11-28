@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static io.github.artlibs.autotrace4j.support.Constants.INTERCEPT_METHOD_NAME;
+import static io.github.artlibs.autotrace4j.support.Constants.concat;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
@@ -149,17 +150,17 @@ public final class Transformer {
         if (Objects.nonNull(interceptorList) && !interceptorList.isEmpty()) {
             return interceptorList;
         }
-        interceptorList = new ArrayList<>(32);
+        interceptorList = new ArrayList<>(64);
         ClassUtils.walkClassFiles((path, classCanonicalName) -> {
             try {
                 Class<?> clazz = Class.forName(classCanonicalName);
                 if (Interceptor.class.isAssignableFrom(clazz)) {
-                    interceptorList.add((Interceptor) clazz.newInstance());
+                    interceptorList.add((Interceptor) clazz.getDeclaredConstructor().newInstance());
                 }
             } catch (Exception e) {
                 throw new LoadInterceptorException(e);
             }
-        }, Interceptor.class.getPackage().getName() + ".impl", true);
+        }, concat(Interceptor.class.getPackage().getName(), ".", "impl"), true);
 
         return interceptorList;
     }

@@ -1,9 +1,12 @@
 package io.github.artlibs.autotrace4j.interceptor;
 
+import net.bytebuddy.description.NamedElement;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.utility.JavaModule;
+
+import static net.bytebuddy.matcher.ElementMatchers.none;
 
 
 /**
@@ -22,8 +25,8 @@ public interface Interceptor {
     boolean isVisitorMode();
 
     /**
-     * type matcher
-     * @return ElementMatcher
+     * The type matcher which is used to find the type to be intercepted.
+     * @return the type matcher
      */
     ElementMatcher<? super TypeDescription> typeMatcher();
 

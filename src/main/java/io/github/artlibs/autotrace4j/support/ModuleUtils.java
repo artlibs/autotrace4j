@@ -15,8 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>
  * All rights Reserved.
  */
-public final class JavaModuleUtils {
-    private JavaModuleUtils() {}
+public final class ModuleUtils {
+    private ModuleUtils() {}
 
     private static Class<?> moduleClass;
     static {
