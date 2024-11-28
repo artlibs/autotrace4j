@@ -1,6 +1,6 @@
 package io.github.artlibs.testsupport;
 
-import io.github.artlibs.autotrace4j.context.AutoTraceCtx;
+import io.github.artlibs.autotrace4j.context.TraceContext;
 
 /**
  * Abstract Injected
@@ -17,9 +17,9 @@ public interface Injected {
 
         void setInjected() {
             injected = new TupleResult(
-                    AutoTraceCtx.getTraceId(),
-                    AutoTraceCtx.getSpanId(),
-                    AutoTraceCtx.getParentSpanId()
+                    TraceContext.getTraceId(),
+                    TraceContext.getSpanId(),
+                    TraceContext.getParentSpanId()
             );
         }
         TupleResult getInjected() {

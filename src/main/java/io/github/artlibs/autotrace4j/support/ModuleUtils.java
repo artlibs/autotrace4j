@@ -28,6 +28,37 @@ public final class ModuleUtils {
         }
     }
 
+    /**
+     * Java 9+ 模块兼容处理
+     * @param contextPackage context所在包
+     */
+    public static void compatibleJavaModule(String contextPackage) {
+        if (notJavaModule()) {
+            return;
+        }
+
+        final String[] agentNecessaryJavaBasePackages = {
+                "sun.net.www.protocol.http",
+                "sun.net.www",
+                "jdk.internal.loader",
+        };
+
+        // java9+: open the system module to us
+        openJavaBaseModuleForAnotherModule(
+                agentNecessaryJavaBasePackages,
+                JavaModule.ofType(ModuleUtils.MethodLockSupport.class)
+        );
+        // java9+: remove the package - module mapping to avoid double context package's class
+        // note: this method need the privilege of 'jdk.internal.loader' package
+        removePkgModuleMapping(new String[]{ contextPackage });
+        // java9+: open the system module to bootstrap's unnamed module
+        // we need found the unnamed module by ModuleLocator
+        openJavaBaseModuleForAnotherModule(
+                agentNecessaryJavaBasePackages,
+                getOwnModule(contextPackage + ".jdk.ModuleLocator")
+        );
+    }
+
     public static boolean notJavaModule() {
         return moduleClass == null;
     }
@@ -114,7 +145,7 @@ public final class ModuleUtils {
     }
 
     /**
-     * call public api: ModuleLayer.boot().findModule("java.base").get();
+     * call public api: ModuleLayer.boot().findModule("java.abs").get();
      * but use reflection because we don't want this code to crash on jdk1.7 and below.
      * In that case, none of this stuff was needed in the first place, so we just exit via
      * the catch block and do nothing.
@@ -126,7 +157,7 @@ public final class ModuleUtils {
             Object bootLayer = mBoot.invoke(null);
             Class<?> cOptional = Class.forName("java.util.Optional");
             Method mFindModule = cModuleLayer.getDeclaredMethod("findModule", String.class);
-            Object oCompilerO = mFindModule.invoke(bootLayer, "java.base");
+            Object oCompilerO = mFindModule.invoke(bootLayer, "java.abs");
             return cOptional.getDeclaredMethod("get").invoke(oCompilerO);
         } catch (Exception e) {
             return null;

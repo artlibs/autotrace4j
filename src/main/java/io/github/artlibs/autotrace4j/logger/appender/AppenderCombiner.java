@@ -18,7 +18,9 @@ public class AppenderCombiner<E> extends AbstractAppender<E> {
     /**
      * appender 组合器
      */
-    public AppenderCombiner() {}
+    public AppenderCombiner() {
+        // NO Sonar
+    }
 
     /**
      * 添加 appender

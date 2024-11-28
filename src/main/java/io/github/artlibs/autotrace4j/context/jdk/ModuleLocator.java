@@ -1,6 +1,5 @@
 package io.github.artlibs.autotrace4j.context.jdk;
 
-import io.github.artlibs.autotrace4j.AutoTrace4j;
 import io.github.artlibs.autotrace4j.support.ModuleUtils;
 
 /**
@@ -12,7 +11,7 @@ import io.github.artlibs.autotrace4j.support.ModuleUtils;
  * All rights Reserved.
  *
  * @see ModuleUtils#getOwnModule(String)
- * @see AutoTrace4j#compatibleJavaModule(String)
+ * @see ModuleUtils#compatibleJavaModule(String)
  */
 @SuppressWarnings("unused")
 public class ModuleLocator {}

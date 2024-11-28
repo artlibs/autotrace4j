@@ -1,6 +1,6 @@
 package io.github.artlibs.autotrace4j.context.jdk;
 
-import io.github.artlibs.autotrace4j.context.AutoTraceCtx;
+import io.github.artlibs.autotrace4j.context.TraceContext;
 
 import java.util.Objects;
 
@@ -52,19 +52,19 @@ public class ThreadPoolTask implements Runnable {
         }
 
         try {
-            AutoTraceCtx.setSpanId(AutoTraceCtx.generate());
+            TraceContext.setSpanId(TraceContext.generate());
 
             if (Objects.nonNull(traceId)) {
-                AutoTraceCtx.setTraceId(traceId);
+                TraceContext.setTraceId(traceId);
             }
 
             if (Objects.nonNull(spanId)) {
-                AutoTraceCtx.setParentSpanId(spanId);
+                TraceContext.setParentSpanId(spanId);
             }
 
             this.rawTask.run();
         } finally {
-            AutoTraceCtx.removeAll();
+            TraceContext.removeAll();
         }
     }
 

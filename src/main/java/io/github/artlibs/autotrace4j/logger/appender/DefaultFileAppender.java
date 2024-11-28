@@ -65,7 +65,7 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
     @SuppressWarnings("FieldMayBeFinal")
     private int logFileSizeBytes;
 
-    ThreadLocal<ByteBuffer> logWriteBuffer = ThreadLocal.withInitial(() -> ByteBuffer.allocateDirect(WRITE_BUFFER_SIZE));
+    private final ThreadLocal<ByteBuffer> logWriteBuffer = ThreadLocal.withInitial(() -> ByteBuffer.allocateDirect(WRITE_BUFFER_SIZE));
 
     public DefaultFileAppender(Layout<LogEvent> layout, Path directory) {
         this(layout, directory, DEFAULT_LOG_FILE_RETENTION, DEFAULT_LOG_FILE_SIZE);
