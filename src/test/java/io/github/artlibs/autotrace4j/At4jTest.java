@@ -29,7 +29,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class At4jTransformerTest {
+public class At4jTest {
 
     private String initTraceId = "init-trace-id";
     private String initSpanId = "init-span-id";
@@ -260,7 +260,7 @@ public class At4jTransformerTest {
             this.initTraceCtx(service.getClass().getSimpleName());
 
             // 02.When
-            TupleResult result = service.submit(At4jTransformerTest::generateResult).get();
+            TupleResult result = service.submit(At4jTest::generateResult).get();
 
             // 03.Verify
             Assertions.assertNotNull(result);

@@ -178,7 +178,7 @@
                 <version>${maven-compiler.version}</version>
                 <configuration>
                     <!-- Why Java 21 https://www.oracle.com/hk/java/technologies/java-se-support-roadmap.html -->
-                    <release>${compiler-release.version}</release>
+                    <!-- <release>${compiler-release.version}</release> -->
                     <encoding>${file.encoding}</encoding>
                 </configuration>
             </plugin>

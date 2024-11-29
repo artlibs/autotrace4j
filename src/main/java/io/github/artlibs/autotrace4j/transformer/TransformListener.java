@@ -10,13 +10,13 @@ import net.bytebuddy.utility.JavaModule;
 
 /**
  * 转换过程监听器
- *
+ * <p>
  * @author Fury
  * @since 2024-03-30
- *
+ * <p>
  * All rights Reserved.
  */
-public class TransformListener implements AgentBuilder.Listener {
+public final class TransformListener implements AgentBuilder.Listener {
     private static final Logger logger = LoggerFactory.getLogger(TransformListener.class);
 
     /**

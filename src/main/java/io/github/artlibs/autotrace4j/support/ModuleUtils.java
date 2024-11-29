@@ -7,11 +7,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static io.github.artlibs.autotrace4j.support.Constants.concat;
-
 /**
- * 功能：java模块工具类
- *
+ * Java模块工具类
+ * <p>
  * @author suopovate
  * @since 2024/04/04
  * <p>
@@ -50,9 +48,11 @@ public final class ModuleUtils {
                 agentNecessaryJavaBasePackages,
                 JavaModule.ofType(ModuleUtils.MethodLockSupport.class)
         );
+
         // java9+: remove the package - module mapping to avoid double context package's class
         // note: this method need the privilege of 'jdk.internal.loader' package
         removePkgModuleMapping(new String[]{ contextPackage });
+
         // java9+: open the system module to bootstrap's unnamed module
         // we need found the unnamed module by ModuleLocator
         openJavaBaseModuleForAnotherModule(

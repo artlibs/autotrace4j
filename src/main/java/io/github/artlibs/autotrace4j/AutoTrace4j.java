@@ -57,11 +57,7 @@ public final class AutoTrace4j {
                     " to determine the biz intercept scope; e.g.：\n"
                     + "-javaagent:/dir/to/autotrace4j.jar=com.your-domain1.pkg,com.your-domain2.pkg");
         }
-        String contextPackage = AutoTrace4j.class.getPackage().getName() + ".context";
-        ClassUtils.injectClassToBootStrap(instrument, contextPackage);
-        // note: this method must be called after injectClassToBootStrap, don't move it forward
-        ModuleUtils.compatibleJavaModule(contextPackage);
-        // do transform
+
         AutoTrace4j.Transformer.withBizScope(bizPackages).on(instrument);
     }
 
@@ -89,6 +85,11 @@ public final class AutoTrace4j {
          * @throws IOException -
          */
         public void on(Instrumentation instrument) throws IOException, URISyntaxException {
+            String contextPackage = AutoTrace4j.class.getPackage().getName() + ".context";
+            ClassUtils.injectClassToBootStrap(instrument, contextPackage);
+            // note: this method must be called after injectClassToBootStrap, don't move it forward
+            ModuleUtils.compatibleJavaModule(contextPackage);
+
             AgentBuilder builder = this.newAgentBuilder();
             for (At4jTransformer transformer : loadTransformers()) {
                 builder = builder.type(transformer.typeMatcher())

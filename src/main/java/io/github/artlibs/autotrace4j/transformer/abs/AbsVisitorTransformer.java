@@ -43,11 +43,12 @@ public abstract class AbsVisitorTransformer implements At4jTransformer {
             @MaybeNull JavaModule javaModule,
             @MaybeNull ProtectionDomain protectionDomain
     ) {
-        DynamicType.Builder<?> newBuilder = builder;
+        DynamicType.Builder<?> newBuilder = transformType(builder, typeDescription, javaModule, classLoader);
         for (Map.Entry<Class<?>, ElementMatcher<? super MethodDescription>> entry
                 : this.methodMatchers().get().entrySet()) {
             newBuilder = newBuilder.visit(Advice.to(entry.getKey()).on(entry.getValue()));
         }
+
         return newBuilder;
     }
 
