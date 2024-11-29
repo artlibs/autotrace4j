@@ -13,13 +13,15 @@ import java.util.Objects;
 import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 
 /**
+ * 增强SLF4J的MDC,支持通过其获取到三个Trace ID
+ * <p>
  * MDC.get("X-ATO-SPAN-ID") return SpanId
  * MDC.get("X-ATO-P-SPAN-ID") return ParentSpanId
  * MDC.get("X-ATO-TRACE-ID") return TraceId
- *
+ * <p>
  * @author Fury
  * @since 2024-03-30
- *
+ * <p>
  * All rights Reserved.
  */
 public class OrgSlf4JMdcTransformer extends AbsDelegateTransformer.Static {
@@ -36,7 +38,7 @@ public class OrgSlf4JMdcTransformer extends AbsDelegateTransformer.Static {
      * {@inheritDoc}
      */
     @Override
-    public ElementMatcher<? super MethodDescription> methodMatcher() {
+    protected ElementMatcher<? super MethodDescription> methodMatcher() {
         return ElementMatchers.isStatic().and(ElementMatchers.named("get")
                 .and(takesArgument(0, String.class)));
     }
@@ -45,7 +47,7 @@ public class OrgSlf4JMdcTransformer extends AbsDelegateTransformer.Static {
      * {@inheritDoc}
      */
     @Override
-    public Object onMethodExit(Class<?> clazz, Object[] allArgs, Object result, Method originMethod) throws Exception {
+    protected Object onMethodExit(Class<?> clazz, Object[] allArgs, Object result, Method originMethod) throws Exception {
         if (Objects.isNull(clazz) || Objects.isNull(allArgs) || allArgs.length == 0 || Objects.isNull(allArgs[0])) {
             return result;
         }

@@ -11,14 +11,14 @@ import java.lang.reflect.Method;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
- * Xxl Job Interceptor
- *
+ * Xxl Job 任务增强转换器
+ * <p>
  * @author Fury
  * @since 2024-03-30
- *
+ * <p>
  * All rights Reserved.
  */
-public class XxlJobScheduleTaskTransformer extends AbsDelegateTransformer.Instance {
+public class XxlJobSchdTaskTransformer extends AbsDelegateTransformer.Instance {
 
     /**
      * {@inheritDoc}
@@ -36,7 +36,7 @@ public class XxlJobScheduleTaskTransformer extends AbsDelegateTransformer.Instan
      * {@inheritDoc}
      */
     @Override
-    public ElementMatcher<? super MethodDescription> methodMatcher() {
+    protected ElementMatcher<? super MethodDescription> methodMatcher() {
         return isAnnotatedWith(named("com.xxl.job.core.handler.annotation.XxlJob"))
                 .or(named("execute").and(takesNoArguments()))
                 .or(named("execute").and(takesArgument(0, String.class)));
@@ -46,7 +46,7 @@ public class XxlJobScheduleTaskTransformer extends AbsDelegateTransformer.Instan
      * {@inheritDoc}
      */
     @Override
-    public void onMethodEnter(Object obj, Object[] allArgs, Method originMethod) throws Exception {
+    protected void onMethodEnter(Object obj, Object[] allArgs, Method originMethod) throws Exception {
         TraceContext.setTraceId(TraceContext.generate());
         TraceContext.setSpanId(TraceContext.generate());
         // There will be no parent span as this is a startup context
@@ -57,7 +57,7 @@ public class XxlJobScheduleTaskTransformer extends AbsDelegateTransformer.Instan
      * {@inheritDoc}
      */
     @Override
-    public Object onMethodExit(Object obj, Object[] allArgs, Object result, Method originMethod) throws Exception {
+    protected Object onMethodExit(Object obj, Object[] allArgs, Object result, Method originMethod) throws Exception {
         TraceContext.removeAll();
         return result;
     }

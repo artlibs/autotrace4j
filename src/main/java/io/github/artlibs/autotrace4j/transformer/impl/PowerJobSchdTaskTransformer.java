@@ -11,13 +11,13 @@ import java.lang.reflect.Method;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
- * PowerJob Interceptor
- *
+ * PowerJob增强转换器
+ * <p>
  * @author orangewest
  * @since 2024-07-30
  * <p>
  */
-public class PowerJobScheduleTaskTransformer extends AbsDelegateTransformer.Instance {
+public class PowerJobSchdTaskTransformer extends AbsDelegateTransformer.Instance {
 
     /**
      * {@inheritDoc}
@@ -32,7 +32,7 @@ public class PowerJobScheduleTaskTransformer extends AbsDelegateTransformer.Inst
      * {@inheritDoc}
      */
     @Override
-    public ElementMatcher<? super MethodDescription> methodMatcher() {
+    protected ElementMatcher<? super MethodDescription> methodMatcher() {
         return named("process")
                 .and(takesArgument(0, named("tech.powerjob.worker.core.processor.TaskContext")));
     }
@@ -41,7 +41,7 @@ public class PowerJobScheduleTaskTransformer extends AbsDelegateTransformer.Inst
      * {@inheritDoc}
      */
     @Override
-    public void onMethodEnter(Object obj, Object[] allArgs, Method originMethod) throws Exception {
+    protected void onMethodEnter(Object obj, Object[] allArgs, Method originMethod) throws Exception {
         TraceContext.setTraceId(TraceContext.generate());
         TraceContext.setSpanId(TraceContext.generate());
         // There will be no parent span as this is a startup context
@@ -52,7 +52,7 @@ public class PowerJobScheduleTaskTransformer extends AbsDelegateTransformer.Inst
      * {@inheritDoc}
      */
     @Override
-    public Object onMethodExit(Object obj, Object[] allArgs, Object result, Method originMethod) throws Exception {
+    protected Object onMethodExit(Object obj, Object[] allArgs, Object result, Method originMethod) throws Exception {
         TraceContext.removeAll();
         return result;
     }

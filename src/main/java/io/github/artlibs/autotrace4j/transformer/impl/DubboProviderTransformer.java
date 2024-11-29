@@ -16,8 +16,8 @@ import static net.bytebuddy.matcher.ElementMatchers.named;
 import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 
 /**
- * Dubbo Provider Interceptor
- *
+ * Dubbo Provider增强转换器
+ * <p>
  * @author orangewest
  * @since 2024-07-30
  */
@@ -35,7 +35,7 @@ public class DubboProviderTransformer extends AbsDelegateTransformer.Instance {
      * {@inheritDoc}
      */
     @Override
-    public ElementMatcher<? super MethodDescription> methodMatcher() {
+    protected ElementMatcher<? super MethodDescription> methodMatcher() {
         return ElementMatchers.isPublic()
                 .and(named("invoke")
                         .and(takesArgument(0, named("org.apache.dubbo.rpc.Invoker")))
@@ -47,7 +47,7 @@ public class DubboProviderTransformer extends AbsDelegateTransformer.Instance {
      * {@inheritDoc}
      */
     @Override
-    public void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
+    protected void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
         MethodWrapper methodWrapper = ReflectUtils.getMethodWrapper(allArgs[1]
                 , "getAttachment", String.class);
         final String traceId = methodWrapper.invoke(TraceContext.ATO_TRACE_ID);

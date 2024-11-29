@@ -15,11 +15,11 @@ import java.util.Objects;
 import static net.bytebuddy.matcher.ElementMatchers.named;
 
 /**
- * Apache HttpComponents client
- *
+ * ApacheHttpClient增强转换器
+ * <p>
  * @author Fury
  * @since 2024-03-30
- *
+ * <p>
  * All rights Reserved.
  */
 public class ApacheHttpClientTransformer extends AbsDelegateTransformer.Instance {
@@ -38,7 +38,7 @@ public class ApacheHttpClientTransformer extends AbsDelegateTransformer.Instance
      * {@inheritDoc}
      */
     @Override
-    public ElementMatcher<? super MethodDescription> methodMatcher() {
+    protected ElementMatcher<? super MethodDescription> methodMatcher() {
         return named("doExecute");
     }
 
@@ -46,7 +46,7 @@ public class ApacheHttpClientTransformer extends AbsDelegateTransformer.Instance
      * {@inheritDoc}
      */
     @Override
-    public void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
+    protected void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
         final String traceId = TraceContext.getTraceId();
         if (Objects.nonNull(traceId)) {
             MethodWrapper methodWrapper = ReflectUtils.getMethodWrapper(allArgs[1]

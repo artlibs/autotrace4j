@@ -13,7 +13,7 @@
 
     <properties>
         <premain.class>io.github.artlibs.autotrace4j.AutoTrace4j</premain.class>
-        <buddy.shaded.patten>io.github.artlibs.autotrace4j.bytebuddy</buddy.shaded.patten>
+        <buddy.shaded.patten>io.github.artlibs.autotrace4j.jar.bytebuddy</buddy.shaded.patten>
         <junit-jupiter-engine.version>5.8.1</junit-jupiter-engine.version>
         <bytebuddy.version>1.14.13</bytebuddy.version>
         <maven-jar.version>2.3.2</maven-jar.version>

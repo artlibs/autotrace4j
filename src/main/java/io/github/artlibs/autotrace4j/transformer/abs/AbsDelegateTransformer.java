@@ -3,6 +3,8 @@ package io.github.artlibs.autotrace4j.transformer.abs;
 import io.github.artlibs.autotrace4j.AutoTrace4j;
 import io.github.artlibs.autotrace4j.context.ReflectUtils;
 import io.github.artlibs.autotrace4j.context.TraceContext;
+import io.github.artlibs.autotrace4j.logger.Logger;
+import io.github.artlibs.autotrace4j.logger.LoggerFactory;
 import io.github.artlibs.autotrace4j.support.Constants;
 import io.github.artlibs.autotrace4j.transformer.At4jTransformer;
 import io.github.artlibs.autotrace4j.transformer.MorphCallable;
@@ -13,6 +15,8 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.bind.annotation.*;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.utility.JavaModule;
+import net.bytebuddy.utility.nullability.MaybeNull;
+import net.bytebuddy.utility.nullability.NeverNull;
 
 import java.lang.reflect.Method;
 import java.security.ProtectionDomain;
@@ -24,23 +28,27 @@ import static net.bytebuddy.matcher.ElementMatchers.isMethod;
 /**
  * 走方法代理模式的转换器
  * <p>
+ * @param <T> 类或对象泛型
+ * <p>
  * @author Fury
  * @since 2024-03-30
-
- * @param <T> delegate type
+ * <p>
  * All rights Reserved.
  */
 public abstract class AbsDelegateTransformer<T> implements At4jTransformer {
+    private final Logger logger = LoggerFactory.getLogger(AbsDelegateTransformer.class);
+
     /**
      * {@inheritDoc}
      */
     @Override
+    @NeverNull
     public final DynamicType.Builder<?> transform(
-            DynamicType.Builder<?> builder,
-            TypeDescription typeDescription,
-            ClassLoader classLoader,
-            JavaModule javaModule,
-            ProtectionDomain protectionDomain
+            @NeverNull DynamicType.Builder<?> builder,
+            @NeverNull TypeDescription typeDescription,
+            @MaybeNull ClassLoader classLoader,
+            @MaybeNull JavaModule javaModule,
+            @MaybeNull ProtectionDomain protectionDomain
     ) {
         // 使用方法代理方式进行增强时支持为目标类增加成员属性
         return transformType(builder, typeDescription, javaModule, classLoader)
@@ -63,13 +71,12 @@ public abstract class AbsDelegateTransformer<T> implements At4jTransformer {
      */
     protected abstract ElementMatcher<? super MethodDescription> methodMatcher();
 
-
     /**
      * 当进入目标方法时需要执行的动作
      * <p>
-     * @param obj thiz or class
-     * @param allArgs argument list
-     * @param originMethod original method
+     * @param obj 被增强目标的实例或者类
+     * @param allArgs 被增强方法的参数列表
+     * @param originMethod 被增强方法
      * @throws Exception -
      */
     protected void onMethodEnter(T obj, Object[] allArgs, Method originMethod) throws Exception {
@@ -79,46 +86,50 @@ public abstract class AbsDelegateTransformer<T> implements At4jTransformer {
     /**
      * 当退出目标方法时需要执行的动作
      * <p>
-     * @param obj thiz or class
-     * @param allArgs argument list
-     * @param result method result
-     * @param originMethod original method
-     * @return Object - result
+     * @param obj 被增强目标的实例或者类
+     * @param allArgs 被增强方法的参数列表
+     * @param result 被增强方法的执行结果
+     * @param originMethod 被增强方法
+     * @return Object 动态方法返回值
      * @throws Exception -
      */
     protected Object onMethodExit(T obj, Object[] allArgs, Object result, Method originMethod) throws Exception {
         return result;
     }
 
-    protected ElementMatcher.Junction<TypeDescription> bizScopeJunction() {
+    /**
+     * 获取业务范围判断器
+     * <p>
+     * @return Junction
+     */
+    protected final ElementMatcher.Junction<TypeDescription> bizScopeJunction() {
         return AutoTrace4j.Transformer.getBizScopeJunction();
     }
 
     /**
-     * do intercept
-     * @param obj class or thiz
-     * @param zuper morph super
-     * @param args argument list
-     * @param method original method
-     * @return result
+     * 方法的增强处理
+     * <p>
+     * @param obj 被增强目标的实例或者类
+     * @param zuper Morph super
+     * @param args 被增强方法的参数列表
+     * @param method 被增强方法
+     * @return Object 动态方法返回值
      */
-    protected Object doIntercept(T obj, MorphCallable zuper, Object[] args, Method method) {
+    protected final Object doIntercept(T obj, MorphCallable zuper, Object[] args, Method method) {
         try {
             this.onMethodEnter(obj, args, method);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Exception occur on onMethodEnter:\n%s", e.getMessage(), e);
         }
 
         Object result = null;
         try {
             result = zuper.call(args);
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             try {
                 result = this.onMethodExit(obj, args, result, method);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Exception occur on onMethodExit:\n%s", e.getMessage(), e);
             }
         }
 
@@ -133,18 +144,26 @@ public abstract class AbsDelegateTransformer<T> implements At4jTransformer {
         return super.hashCode() + methodMatcher().hashCode() + typeMatcher().hashCode();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
     public abstract static class Instance extends AbsDelegateTransformer<Object> {
         /**
-         * transform instance method
+         * 增强代理入口
          * <p>
-         * @param thiz the object
-         * @param zuper the original object
-         * @param args argument list
-         * @param originMethod original method
-         * @return result
+         * @param thiz 被增强对象
+         * @param zuper 被增强的原始对象
+         * @param args 被增强方法列表
+         * @param originMethod 被增强方法
+         * @return 动态方法结果
          */
         @RuntimeType
-        public Object intercept(@This Object thiz, @Morph MorphCallable zuper
+        public final Object intercept(@This Object thiz, @Morph MorphCallable zuper
                 , @AllArguments Object[] args, @Origin Method originMethod) {
             return this.doIntercept(thiz, zuper, args, originMethod);
         }
@@ -152,16 +171,16 @@ public abstract class AbsDelegateTransformer<T> implements At4jTransformer {
 
     public abstract static class Static extends AbsDelegateTransformer<Class<?>> {
         /**
-         * transform class method
+         * 增强代理入口
          * <p>
-         * @param clazz the class object
-         * @param zuper the original object
-         * @param args argument list
-         * @param originMethod original method
-         * @return result
+         * @param clazz 被增强类
+         * @param zuper 被增强的原始类
+         * @param args 被增强方法列表
+         * @param originMethod 被增强方法
+         * @return 动态方法结果
          */
         @RuntimeType
-        public Object intercept(@Origin Class<?> clazz, @Morph MorphCallable zuper
+        public final Object intercept(@Origin Class<?> clazz, @Morph MorphCallable zuper
                 , @AllArguments Object[] args, @Origin Method originMethod) {
             return this.doIntercept(clazz, zuper, args, originMethod);
         }
@@ -172,7 +191,7 @@ public abstract class AbsDelegateTransformer<T> implements At4jTransformer {
          * {@inheritDoc}
          */
         @Override
-        public void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
+        protected void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
             Class<?> httpReqClazz;
             Class<?> httpRespClazz;
             try {
@@ -183,7 +202,7 @@ public abstract class AbsDelegateTransformer<T> implements At4jTransformer {
                         "javax.servlet.http.HttpServletResponse", false, Thread.currentThread().getContextClassLoader()
                 );
             } catch (ClassNotFoundException e) {
-                // warning that we can't intercept the servlet
+                // Warning that we can't intercept the servlet
                 return;
             }
             Class<?> argServletReqClazz = allArgs[0].getClass();
@@ -244,6 +263,5 @@ public abstract class AbsDelegateTransformer<T> implements At4jTransformer {
                 }
             }
         }
-
     }
 }

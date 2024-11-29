@@ -7,6 +7,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static io.github.artlibs.autotrace4j.support.Constants.concat;
+
 /**
  * 功能：java模块工具类
  *

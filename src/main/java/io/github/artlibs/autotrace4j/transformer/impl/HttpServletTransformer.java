@@ -9,7 +9,7 @@ import static net.bytebuddy.matcher.ElementMatchers.named;
 import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 
 /**
- * Http Servlet
+ * Http Servlet 增强转换器
  *
  * @author Fury
  * @since 2024-03-30
@@ -30,7 +30,7 @@ public class HttpServletTransformer extends AbsDelegateTransformer.Servlet {
      * {@inheritDoc}
      */
     @Override
-    public ElementMatcher<? super MethodDescription> methodMatcher() {
+    protected ElementMatcher<? super MethodDescription> methodMatcher() {
         return named("service")
             .and(takesArgument(0, named("javax.servlet.http.HttpServletRequest")))
             .and(takesArgument(1, named("javax.servlet.http.HttpServletResponse")));

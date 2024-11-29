@@ -8,8 +8,8 @@ import net.bytebuddy.matcher.ElementMatcher;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
- * HTTP Filter Interceptor
- *
+ * HTTP Filter 增强转换器
+ * <p>
  * @author suopovate
  * @since 2024-03-30
  * <p>
@@ -30,7 +30,7 @@ public class HttpFilterTransformer extends AbsDelegateTransformer.Servlet {
      * {@inheritDoc}
      */
     @Override
-    public ElementMatcher<? super MethodDescription> methodMatcher() {
+    protected ElementMatcher<? super MethodDescription> methodMatcher() {
         return named("doFilter")
             .and(takesArgument(
                 0,

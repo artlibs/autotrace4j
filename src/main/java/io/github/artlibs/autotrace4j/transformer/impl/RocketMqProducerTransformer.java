@@ -16,14 +16,16 @@ import static net.bytebuddy.matcher.ElementMatchers.named;
 import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 
 /**
- * RocketMq Producer Interceptor
- *
+ * RocketMq Producer增强转换器
+ * <p>
  * @author Fury
  * @since 2024-03-30
- *
+ * <p>
  * All rights Reserved.
  */
 public class RocketMqProducerTransformer extends AbsDelegateTransformer.Instance {
+    private static final String SEND_CB_TYPE = "org.apache.rocketmq.common.message.Message";
+    private static final String MESSAGE_TYPE = "org.apache.rocketmq.client.producer.SendCallback";
 
     /**
      * {@inheritDoc}
@@ -37,23 +39,23 @@ public class RocketMqProducerTransformer extends AbsDelegateTransformer.Instance
      * {@inheritDoc}
      */
     @Override
-    public ElementMatcher<? super MethodDescription> methodMatcher() {
+    protected ElementMatcher<? super MethodDescription> methodMatcher() {
         return ElementMatchers.isPublic()
                 // only rocket mq client have these three
                 .and(named("send")
-                        .and(takesArgument(0, named("org.apache.rocketmq.common.message.Message")))
-                        .and(takesArgument(1, named("org.apache.rocketmq.client.producer.SendCallback")))
+                        .and(takesArgument(0, named(SEND_CB_TYPE)))
+                        .and(takesArgument(1, named(MESSAGE_TYPE)))
                         .and(takesArgument(2, long.class))
                 ).or(named("send")
-                                .and(takesArgument(0, named("org.apache.rocketmq.common.message.Message")))
+                                .and(takesArgument(0, named(SEND_CB_TYPE)))
                                 .and(takesArgument(1, named("org.apache.rocketmq.common.message.MessageQueue")))
-                                .and(takesArgument(2, named("org.apache.rocketmq.client.producer.SendCallback")))
+                                .and(takesArgument(2, named(MESSAGE_TYPE)))
                                 .and(takesArgument(3, long.class))
                 ).or(named("send")
-                                .and(takesArgument(0, named("org.apache.rocketmq.common.message.Message")))
+                                .and(takesArgument(0, named(SEND_CB_TYPE)))
                                 .and(takesArgument(1, named("org.apache.rocketmq.client.producer.MessageQueueSelector")))
                                 .and(takesArgument(2, Object.class))
-                                .and(takesArgument(3, named("org.apache.rocketmq.client.producer.SendCallback")))
+                                .and(takesArgument(3, named(MESSAGE_TYPE)))
                                 .and(takesArgument(4, long.class))
                 ).or(named("sendKernelImpl"));
     }
@@ -62,7 +64,7 @@ public class RocketMqProducerTransformer extends AbsDelegateTransformer.Instance
      * {@inheritDoc}
      */
     @Override
-    public void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
+    protected void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
         Map<String, String> properties = ReflectUtils.getFieldValue(allArgs[0], "properties", true);
         if (Objects.nonNull(properties)) {
             String spanId = properties.get(TraceContext.SPAN_KEY);

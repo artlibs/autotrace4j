@@ -17,7 +17,7 @@ import static net.bytebuddy.matcher.ElementMatchers.named;
 import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 
 /**
- * ThreadPoolExecutor Interceptor
+ * ThreadPoolExecutor增强转换器
  *
  * @author Fury
  * @since 2024-03-30
@@ -38,7 +38,7 @@ public class ThreadPoolExecutorTransformer extends AbsVisitorTransformer {
      * {@inheritDoc}
      */
     @Override
-    public Map<Class<?>, ElementMatcher<? super MethodDescription>> methodMatchers() {
+    protected MethodMatcherHolder methodMatchers() {
         return ofMatcher(named("execute").and(takesArgument(0, Runnable.class)));
     }
 
@@ -46,7 +46,7 @@ public class ThreadPoolExecutorTransformer extends AbsVisitorTransformer {
      * advice
      */
     @Advice.OnMethodEnter
-    public static void adviceOnMethodEnter(@Advice.Argument(value = 0, readOnly = false
+    private static void adviceOnMethodEnter(@Advice.Argument(value = 0, readOnly = false
         , typing = Assigner.Typing.DYNAMIC) Runnable task) {
         try {
             if (Objects.nonNull(task)) {

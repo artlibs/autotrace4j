@@ -12,8 +12,8 @@ import java.util.Objects;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
- * Logback Encoder Interceptor
- *
+ * Logback Encoder增强转换器
+ * <p>
  * @author Fury
  * @since 2024-03-30
  *
@@ -37,7 +37,7 @@ public class LogbackEncoderTransformer extends AbsDelegateTransformer.Instance {
      * {@inheritDoc}
      */
     @Override
-    public ElementMatcher<? super MethodDescription> methodMatcher() {
+    protected ElementMatcher<? super MethodDescription> methodMatcher() {
         return named("encode").and(
                 isOverriddenFrom(named(LAYOUT_WRAPPING_ENCODER)).or(
                 isDeclaredBy(named(LAYOUT_WRAPPING_ENCODER)) )
@@ -48,7 +48,7 @@ public class LogbackEncoderTransformer extends AbsDelegateTransformer.Instance {
      * {@inheritDoc}
      */
     @Override
-    public Object onMethodExit(Object thiz, Object[] allArgs, Object result, Method originMethod) {
+    protected Object onMethodExit(Object thiz, Object[] allArgs, Object result, Method originMethod) {
         if (Objects.isNull(result) || !(result instanceof byte[]) || Objects.isNull(TraceContext.getTraceId())) {
             return result;
         }

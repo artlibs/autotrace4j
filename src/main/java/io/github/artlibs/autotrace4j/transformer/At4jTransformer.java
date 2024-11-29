@@ -9,10 +9,10 @@ import net.bytebuddy.utility.JavaModule;
 
 /**
  * AutoTrace Transformer
- *
+ * <p>
  * @author Fury
  * @since 2024-03-30
- *
+ * <p>
  * All rights Reserved.
  */
 public interface At4jTransformer extends AgentBuilder.Transformer {
@@ -29,13 +29,13 @@ public interface At4jTransformer extends AgentBuilder.Transformer {
      * @param builder origin DynamicType.Builder
      * @param typeDescription TypeDescription
      * @param classLoader ClassLoader
-     * @param module JavaModule
-     * @return new DynamicType.Builder
+     * @param javaModule JavaModule
+     * @return 一个新的 DynamicType.Builder 对象
      */
     default DynamicType.Builder<?> transformType(
             DynamicType.Builder<?> builder,
             TypeDescription typeDescription,
-            JavaModule module,
+            JavaModule javaModule,
             ClassLoader classLoader) {
         return builder;
     }

@@ -16,8 +16,8 @@ import java.util.concurrent.RunnableScheduledFuture;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
- * ScheduledThreadPool Interceptor
- *
+ * ScheduledThreadPool增强转换器
+ * <p>
  * @author Fury
  * @since 2024-03-30
  * <p>
@@ -37,7 +37,7 @@ public class SchdThreadPoolTransformer extends AbsVisitorTransformer {
      * {@inheritDoc}
      */
     @Override
-    public Map<Class<?>, ElementMatcher<? super MethodDescription>> methodMatchers() {
+    protected MethodMatcherHolder methodMatchers() {
         return ofMatcher(isPrivate()
                 .and(named("delayedExecute"))
                 .and(takesArgument(0, named("java.util.concurrent.RunnableScheduledFuture")))

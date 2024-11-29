@@ -14,16 +14,15 @@ import java.util.Objects;
 import static net.bytebuddy.matcher.ElementMatchers.named;
 
 /**
- * RocketMq Listener Interceptor
- *
+ * RocketMq Listener增强转换器
+ * <p>
  * @author Fury
  * @since 2024-03-30
- *
+ * <p>
  * All rights Reserved.
  */
 public class RocketMqListenerTransformer extends AbsDelegateTransformer.Instance {
     private static final String GUP = "getUserProperty";
-
 
     /**
      * {@inheritDoc}
@@ -37,7 +36,7 @@ public class RocketMqListenerTransformer extends AbsDelegateTransformer.Instance
      * {@inheritDoc}
      */
     @Override
-    public ElementMatcher<? super MethodDescription> methodMatcher() {
+    protected ElementMatcher<? super MethodDescription> methodMatcher() {
         return named("doConvertMessage");
     }
 
@@ -45,7 +44,7 @@ public class RocketMqListenerTransformer extends AbsDelegateTransformer.Instance
      * {@inheritDoc}
      */
     @Override
-    public void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
+    protected void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
         MethodWrapper methodWrapper = ReflectUtils.getMethodWrapper(allArgs[0], GUP, String.class);
 
         String traceId = methodWrapper.invoke(TraceContext.TRACE_KEY);

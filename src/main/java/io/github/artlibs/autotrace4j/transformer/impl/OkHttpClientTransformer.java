@@ -13,15 +13,14 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * OkHttp Client Interceptor
- *
+ * OkHttp Client增强转换器
+ * <p>
  * @author Fury
  * @since 2024-03-30
- *
+ * <p>
  * All rights Reserved.
  */
 public class OkHttpClientTransformer extends AbsDelegateTransformer.Instance {
-
 
     /**
      * {@inheritDoc}
@@ -35,7 +34,7 @@ public class OkHttpClientTransformer extends AbsDelegateTransformer.Instance {
      * {@inheritDoc}
      */
     @Override
-    public ElementMatcher<? super MethodDescription> methodMatcher() {
+    protected ElementMatcher<? super MethodDescription> methodMatcher() {
         return ElementMatchers.named("build");
     }
 
@@ -43,7 +42,7 @@ public class OkHttpClientTransformer extends AbsDelegateTransformer.Instance {
      * {@inheritDoc}
      */
     @Override
-    public void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) {
+    protected void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) {
         final String traceId = TraceContext.getTraceId();
         if (Objects.isNull(traceId) || Objects.isNull(thiz)) {
             return;

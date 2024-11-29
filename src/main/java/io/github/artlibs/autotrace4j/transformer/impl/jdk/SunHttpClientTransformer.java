@@ -18,8 +18,8 @@ import static net.bytebuddy.matcher.ElementMatchers.named;
 import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 
 /**
- * Sun HttpClient Interceptor
- *
+ * Sun HttpClient 增强转换器
+ * <p>
  * @author Fury
  * @since 2024-03-30
  * <p>
@@ -43,7 +43,7 @@ public class SunHttpClientTransformer extends AbsVisitorTransformer {
      * {@inheritDoc}
      */
     @Override
-    public Map<Class<?>, ElementMatcher<? super MethodDescription>> methodMatchers() {
+    protected MethodMatcherHolder methodMatchers() {
         return ofMatcher(named(WRITE_REQUESTS)
                 .and(takesArgument(0, named(MESSAGE_HEADER_CLS)))
                 .or(

@@ -8,8 +8,8 @@ import net.bytebuddy.matcher.ElementMatcher;
 import static net.bytebuddy.matcher.ElementMatchers.named;
 
 /**
- * 功能：ForkJoinTaskInterceptor
- *
+ * ForkJoinTask增强转换器
+ * <p>
  * @author Fury
  * @author suopovate
  * @since 2024-03-30

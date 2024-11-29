@@ -16,8 +16,8 @@ import static net.bytebuddy.matcher.ElementMatchers.named;
 import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 
 /**
- * Dubbo Consumer Interceptor
- *
+ * Dubbo Consumer增强转换器
+ * <p>
  * @author orangewest
  * @since 2024-07-30
  */
@@ -35,7 +35,7 @@ public class DubboConsumerTransformer extends AbsDelegateTransformer.Instance {
      * {@inheritDoc}
      */
     @Override
-    public ElementMatcher<? super MethodDescription> methodMatcher() {
+    protected ElementMatcher<? super MethodDescription> methodMatcher() {
         return ElementMatchers.isPublic()
                 .and(named("invoke")
                         .and(takesArgument(0, named("org.apache.dubbo.rpc.Invoker")))
@@ -47,7 +47,7 @@ public class DubboConsumerTransformer extends AbsDelegateTransformer.Instance {
      * {@inheritDoc}
      */
     @Override
-    public void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
+    protected void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
         String traceId = TraceContext.getTraceId();
         if (Objects.nonNull(traceId)) {
             MethodWrapper methodWrapper = ReflectUtils.getMethodWrapper(allArgs[1]

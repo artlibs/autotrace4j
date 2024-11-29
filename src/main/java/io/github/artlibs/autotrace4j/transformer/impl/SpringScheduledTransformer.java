@@ -11,11 +11,11 @@ import java.lang.reflect.Method;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
- * Spring Task @Scheduled Interceptor
- *
+ * Spring Task @Scheduled 增强转换器
+ * <p>
  * @author Fury
  * @since 2024-03-30
- *
+ * <p>
  * All rights Reserved.
  */
 public class SpringScheduledTransformer extends AbsDelegateTransformer.Instance {
@@ -25,8 +25,7 @@ public class SpringScheduledTransformer extends AbsDelegateTransformer.Instance 
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return bizScopeJunction()
-                .and(not(isAnnotation()))
+        return bizScopeJunction().and(not(isAnnotation()))
                 .and(not(isInterface()))
                 .and(not(nameContains("$")))
                 .and(declaresMethod(isAnnotatedWith(named("org.springframework.scheduling.annotation.Scheduled"))));
@@ -36,7 +35,7 @@ public class SpringScheduledTransformer extends AbsDelegateTransformer.Instance 
      * {@inheritDoc}
      */
     @Override
-    public ElementMatcher<? super MethodDescription> methodMatcher() {
+    protected ElementMatcher<? super MethodDescription> methodMatcher() {
         return isAnnotatedWith(named("org.springframework.scheduling.annotation.Scheduled"));
     }
 
@@ -44,7 +43,7 @@ public class SpringScheduledTransformer extends AbsDelegateTransformer.Instance 
      * {@inheritDoc}
      */
     @Override
-    public void onMethodEnter(Object obj, Object[] allArgs, Method originMethod) throws Exception {
+    protected void onMethodEnter(Object obj, Object[] allArgs, Method originMethod) throws Exception {
         TraceContext.setSpanId(TraceContext.generate());
         TraceContext.setTraceId(TraceContext.generate());
         // There will be no parent span as this is a startup context
@@ -55,7 +54,7 @@ public class SpringScheduledTransformer extends AbsDelegateTransformer.Instance 
      * {@inheritDoc}
      */
     @Override
-    public Object onMethodExit(Object obj, Object[] allArgs, Object result, Method originMethod) throws Exception {
+    protected Object onMethodExit(Object obj, Object[] allArgs, Object result, Method originMethod) throws Exception {
         TraceContext.removeAll();
         return result;
     }

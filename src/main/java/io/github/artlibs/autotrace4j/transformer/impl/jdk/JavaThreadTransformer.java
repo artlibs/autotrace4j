@@ -16,18 +16,17 @@ import java.util.Objects;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
- * 功能：JdkThreadInterceptor
- *
+ * Thread 增强转换器
+ * <p>
  * @author suopovate
  * @since 2024-04-13
  * <p>
  * All rights Reserved.
  */
 public class JavaThreadTransformer extends AbsVisitorTransformer {
-
-    public static final String RUNNABLE_CLS = "java.lang.Runnable";
-    public static final String THREAD_GROUP_CLS = "java.lang.ThreadGroup";
-    public static final String STRING_CLS = "java.lang.String";
+    private static final String RUNNABLE_CLS = "java.lang.Runnable";
+    private static final String THREAD_GROUP_CLS = "java.lang.ThreadGroup";
+    private static final String STRING_CLS = "java.lang.String";
 
     /**
      * {@inheritDoc}
@@ -43,11 +42,11 @@ public class JavaThreadTransformer extends AbsVisitorTransformer {
      * {@inheritDoc}
      */
     @Override
-    public Map<Class<?>, ElementMatcher<? super MethodDescription>> methodMatchers() {
-        return newMmHolder()
-            .put(AdviceConstructor.class, isConstructor().and(isPackagePrivate())
+    protected MethodMatcherHolder methodMatchers() {
+        return ofMatcher(AdviceConstructor.class, isConstructor()
+                .and(isPackagePrivate())
                 .and(takesArgument(3, named(RUNNABLE_CLS)))
-            ).put(AdviceInit.class, named("init").and(isPrivate())
+        ).ofMatcher(AdviceInit.class, named("init").and(isPrivate())
                 .and(new ElementMatcher.Junction.Conjunction<>(
                          Arrays.asList(
                              takesArgument(0, named(THREAD_GROUP_CLS)),
@@ -58,8 +57,8 @@ public class JavaThreadTransformer extends AbsVisitorTransformer {
                              takesArgument(5, boolean.class),
                              returns(void.class)
                          )
-                     )
-                )).get();
+                ))
+        );
     }
 
     public static class AdviceConstructor {
