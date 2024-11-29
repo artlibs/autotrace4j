@@ -3,10 +3,7 @@ package io.github.artlibs.autotrace4j;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import io.github.artlibs.autotrace4j.context.TraceContext;
-import io.github.artlibs.testsupport.Injected;
-import io.github.artlibs.testsupport.PowerJobCase;
-import io.github.artlibs.testsupport.ScheduledCase;
-import io.github.artlibs.testsupport.TupleResult;
+import io.github.artlibs.testsupport.*;
 import io.github.artlibs.testsupport.XxlJobCase.*;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import okhttp3.*;
@@ -28,6 +25,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.logging.Logger;
 
 public class At4jTest {
 
@@ -101,7 +99,22 @@ public class At4jTest {
     }
 
     @Test
-    void testJavaThread() throws InterruptedException, ExecutionException {
+    void testJavaUtilLogging() {
+        // 01.Prepare
+        JavaLogging.InMemoryLogger inMemoryLogger = JavaLogging.getInMemoryLogger(At4jTest.class);
+
+        // 02.When
+        inMemoryLogger.getLogger().info("This is a logging message");
+        long count = inMemoryLogger.getMessages().stream().filter(m -> m.contains(initTraceId) &&
+                m.contains(initSpanId) && m.contains(initParentSpanId)).count();
+
+        // 03.Verify
+        Assertions.assertEquals(1, inMemoryLogger.getMessages().size());
+        Assertions.assertEquals(inMemoryLogger.getMessages().size(), count);
+    }
+
+    @Test
+    void testJavaThread() throws InterruptedException {
         // 01.Prepare
         int cases = 5;
         ConcurrentLinkedDeque<TupleResult> results = new ConcurrentLinkedDeque<>();

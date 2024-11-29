@@ -12,6 +12,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
 
+import static net.bytebuddy.matcher.ElementMatchers.named;
+
 /**
  * OkHttp Client增强转换器
  * <p>
@@ -27,7 +29,7 @@ public class OkHttpClientTransformer extends AbsDelegateTransformer.Instance {
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return ElementMatchers.named("okhttp3.Headers$Builder");
+        return named("okhttp3.Headers$Builder");
     }
 
     /**
@@ -35,7 +37,7 @@ public class OkHttpClientTransformer extends AbsDelegateTransformer.Instance {
      */
     @Override
     protected ElementMatcher<? super MethodDescription> methodMatcher() {
-        return ElementMatchers.named("build");
+        return named("build");
     }
 
     /**

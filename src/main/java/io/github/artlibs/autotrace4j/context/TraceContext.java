@@ -1,5 +1,6 @@
 package io.github.artlibs.autotrace4j.context;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -15,10 +16,8 @@ public final class TraceContext {
 
     /** TraceId Context */
     private static final ThreadLocal<String> TRACE_ID_CTX = new ThreadLocal<>();
-
     /** SpanId Context */
     private static final ThreadLocal<String> SPAN_ID_CTX = new ThreadLocal<>();
-
     /** ParentSpanId Context */
     private static final ThreadLocal<String> PARENT_SPAN_ID_CTX = new ThreadLocal<>();
 
@@ -137,5 +136,63 @@ public final class TraceContext {
             .toString()
             .substring(18)
             .replace("-", "");
+    }
+
+    private static final String SEPARATOR = " - ";
+    private static final String QUOTE_COLON = "\":\"";
+
+    /**
+     * Inject trace id into log message
+     * @param message String
+     * @return result
+     */
+    public static String injectTraceId(String message) {
+        try {
+            final boolean newLine = message.endsWith("\n");
+
+            String trimMessage = message.trim();
+            final boolean jsonFormat = trimMessage.startsWith("{") && trimMessage.endsWith("}");
+
+            if (jsonFormat) {
+                return injectJsonFormat(message, trimMessage, newLine);
+            } else {
+                if (message.contains(TraceContext.getTraceId() + SEPARATOR)) {
+                    return message;
+                }
+
+                String preTrimMessage = "[TraceId]" + TraceContext.getTraceId() + SEPARATOR;
+                if (Objects.nonNull(TraceContext.getSpanId())) {
+                    preTrimMessage += "[SpanId]" + TraceContext.getSpanId() + SEPARATOR;
+                }
+                if (Objects.nonNull(TraceContext.getParentSpanId())) {
+                    preTrimMessage += "[P-SpanId]" + TraceContext.getParentSpanId() + SEPARATOR;
+                }
+                trimMessage = preTrimMessage + trimMessage;
+            }
+            return newLine ? trimMessage + "\n" : trimMessage;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return message;
+    }
+
+    private static String injectJsonFormat(String message, String trimMessage, boolean newLine) {
+        if (message.contains(TraceContext.ATO_TRACE_ID) && message.contains(TraceContext.getTraceId())) {
+            return message;
+        }
+
+        String injectedTraceFields = "\"" + TraceContext.ATO_TRACE_ID + QUOTE_COLON + TraceContext.getTraceId() + "\",";
+        if (Objects.nonNull(TraceContext.getSpanId())) {
+            injectedTraceFields = injectedTraceFields
+                    + "\"" + TraceContext.ATO_SPAN_ID + QUOTE_COLON + TraceContext.getSpanId() + "\",";
+        }
+        if (Objects.nonNull(TraceContext.getParentSpanId())) {
+            injectedTraceFields = injectedTraceFields
+                    + "\"" + TraceContext.ATO_PARENT_SPAN_ID + QUOTE_COLON + TraceContext.getParentSpanId() + "\",";
+        }
+        trimMessage = "{" + injectedTraceFields + trimMessage.substring(1);
+
+        return newLine ? trimMessage + "\n" : trimMessage;
     }
 }

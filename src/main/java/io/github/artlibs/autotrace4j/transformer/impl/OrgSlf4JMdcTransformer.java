@@ -10,6 +10,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
+import static net.bytebuddy.matcher.ElementMatchers.isStatic;
 import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 
 /**
@@ -39,7 +40,7 @@ public class OrgSlf4JMdcTransformer extends AbsDelegateTransformer.Static {
      */
     @Override
     protected ElementMatcher<? super MethodDescription> methodMatcher() {
-        return ElementMatchers.isStatic().and(ElementMatchers.named("get")
+        return isStatic().and(ElementMatchers.named("get")
                 .and(takesArgument(0, String.class)));
     }
 

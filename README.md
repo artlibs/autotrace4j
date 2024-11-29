@@ -70,7 +70,7 @@ $ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-dom
 
 ### 6、Scheduled Task
 
-​	已支持XXL Job和Spring的Scheduled定时任务在产生时生成TraceId：
+​	支持XXL Job、Spring Scheduled定时任务、PowerJob在产生时生成TraceId：
 
 -   XxlJob Handler：`com.handler.com.xxl.job.core.IJobHandler`
 - Spring Schedule Task：`org.springframework.scheduling.annotation.Scheduled`
@@ -78,9 +78,17 @@ $ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-dom
 
 ### 7、Logging
 
-​	目前支持在logback中输出日志时注入trace id进行输出：
+​	支持在logback中输出日志时注入trace id进行输出：
 
 -   logback：`ch.qos.logback:logback-core`
+-   Java loggin：`java.util.logging`
+
+### 8、Middleware
+
+​	支持如下中间件的增强
+
+-   Dubbo：`org.apache.dubbo.rpc.protocol.dubbo.filter.TraceFilter`
+                   `org.apache.dubbo.rpc.protocol.dubbo.filter.FutureFilter`
 
 ## Contribute
 

@@ -12,8 +12,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
 
-import static net.bytebuddy.matcher.ElementMatchers.named;
-import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
+import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
  * RocketMq Producer增强转换器
@@ -40,7 +39,7 @@ public class RocketMqProducerTransformer extends AbsDelegateTransformer.Instance
      */
     @Override
     protected ElementMatcher<? super MethodDescription> methodMatcher() {
-        return ElementMatchers.isPublic()
+        return isPublic()
                 // only rocket mq client have these three
                 .and(named("send")
                         .and(takesArgument(0, named(SEND_CB_TYPE)))
