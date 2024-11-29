@@ -71,20 +71,9 @@ public class JavaThreadTransformer extends AbsVisitorTransformer {
          */
         @Advice.OnMethodEnter
         private static void adviceOnMethodEnter(
-            @Advice.Argument(value = 3
-                , typing = Assigner.Typing.DYNAMIC, optional = false
-                , readOnly = false) Runnable runnable
-        ) {
-            try {
-                if (Objects.nonNull(runnable)) {
-                    String traceId = TraceContext.getTraceId();
-                    if (Objects.nonNull(traceId) && !(runnable instanceof ThreadPoolTask)) {
-                        runnable = new ThreadPoolTask(runnable, traceId, TraceContext.getSpanId());
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            @Advice.Argument(value = 3, typing = Assigner.Typing.DYNAMIC
+                    , readOnly = false) Runnable runnable) {
+            runnable = wrapRunnable(runnable);
         }
     }
 
@@ -98,20 +87,28 @@ public class JavaThreadTransformer extends AbsVisitorTransformer {
          */
         @Advice.OnMethodEnter
         private static void adviceOnMethodEnter(
-            @Advice.Argument(value = 1
-                , typing = Assigner.Typing.DYNAMIC, optional = false
-                , readOnly = false) Runnable runnable
-        ) {
-            try {
-                if (Objects.nonNull(runnable)) {
-                    String traceId = TraceContext.getTraceId();
-                    if (Objects.nonNull(traceId) && !(runnable instanceof ThreadPoolTask)) {
-                        runnable = new ThreadPoolTask(runnable, traceId, TraceContext.getSpanId());
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            @Advice.Argument(value = 1, typing = Assigner.Typing.DYNAMIC
+                    , readOnly = false) Runnable runnable) {
+            runnable = wrapRunnable(runnable);
         }
+    }
+
+    private static Runnable wrapRunnable(Runnable runnable) {
+        try {
+            if (Objects.nonNull(runnable)) {
+                String traceId = TraceContext.getTraceId();
+                if (Objects.isNull(traceId) || traceId.isEmpty()) {
+                    traceId = TraceContext.generate();
+                }
+
+                if (!(runnable instanceof ThreadPoolTask)) {
+                    return new ThreadPoolTask(runnable, traceId, TraceContext.getSpanId());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return runnable;
     }
 }
