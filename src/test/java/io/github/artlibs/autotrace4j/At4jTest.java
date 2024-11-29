@@ -25,7 +25,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.logging.Logger;
+import java.util.logging.Formatter;
 
 public class At4jTest {
 
@@ -100,17 +100,20 @@ public class At4jTest {
 
     @Test
     void testJavaUtilLogging() {
-        // 01.Prepare
-        JavaLogging.InMemoryLogger inMemoryLogger = JavaLogging.getInMemoryLogger(At4jTest.class);
+        for (Formatter formatter : JavaLoggingCase.formatters) {
+            // 01.Prepare
+            JavaLoggingCase.InMemoryLogger inMemoryLogger = JavaLoggingCase
+                    .getInMemoryLogger(At4jTest.class, formatter);
 
-        // 02.When
-        inMemoryLogger.getLogger().info("This is a logging message");
-        long count = inMemoryLogger.getMessages().stream().filter(m -> m.contains(initTraceId) &&
-                m.contains(initSpanId) && m.contains(initParentSpanId)).count();
+            // 02.When
+            inMemoryLogger.getLogger().info("This is a logging message");
+            long count = inMemoryLogger.getMessages().stream().filter(m -> m.contains(initTraceId) &&
+                    m.contains(initSpanId) && m.contains(initParentSpanId)).count();
 
-        // 03.Verify
-        Assertions.assertEquals(1, inMemoryLogger.getMessages().size());
-        Assertions.assertEquals(inMemoryLogger.getMessages().size(), count);
+            // 03.Verify
+            Assertions.assertEquals(1, inMemoryLogger.getMessages().size());
+            Assertions.assertEquals(inMemoryLogger.getMessages().size(), count);
+        }
     }
 
     @Test
