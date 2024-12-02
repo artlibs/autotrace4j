@@ -19,6 +19,7 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 
 /**
  * Sun HttpClient 增强转换器
+ *      发出请求时，如果当前Thread上下文存在trace id则将其设置到请求头当中进行传递
  * <p>
  * @author Fury
  * @since 2024-03-30

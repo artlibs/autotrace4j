@@ -37,9 +37,6 @@ public class JavaUtilLoggingTransformer extends AbsVisitorTransformer {
                 .or(named("formatMessage").and(takesArgument(0, named(RECORD_CLS)))));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Advice.OnMethodExit
     private static void adviceOnMethodExit(@Advice.Return(readOnly = false
             , typing = Assigner.Typing.DYNAMIC) String result) {

@@ -16,9 +16,9 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 /**
  * 增强SLF4J的MDC,支持通过其获取到三个Trace ID
  * <p>
- * MDC.get("X-ATO-SPAN-ID") return SpanId
- * MDC.get("X-ATO-P-SPAN-ID") return ParentSpanId
- * MDC.get("X-ATO-TRACE-ID") return TraceId
+ *      MDC.get("X-ATO-SPAN-ID") return SpanId
+ *      MDC.get("X-ATO-P-SPAN-ID") return ParentSpanId
+ *      MDC.get("X-ATO-TRACE-ID") return TraceId
  * <p>
  * @author Fury
  * @since 2024-03-30

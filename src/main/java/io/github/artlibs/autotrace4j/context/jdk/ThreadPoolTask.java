@@ -6,10 +6,11 @@ import java.util.Objects;
 
 /**
  * Thread Pool Task
- *
+ *      执行一个任务时如果存在Trace ID传递则取出设置，否则生成新的Trace ID
+ * <p>
  * @author Fury
  * @since 2024-03-30
- *
+ * <p>
  * All rights Reserved.
  */
 public class ThreadPoolTask implements Runnable {
@@ -52,15 +53,17 @@ public class ThreadPoolTask implements Runnable {
         }
 
         try {
-            TraceContext.setSpanId(TraceContext.generate());
-
             if (Objects.nonNull(traceId)) {
                 TraceContext.setTraceId(traceId);
+            } else {
+                TraceContext.setTraceId(TraceContext.generate());
             }
-
             if (Objects.nonNull(spanId)) {
                 TraceContext.setParentSpanId(spanId);
             }
+
+            // Always start a new span with a new span id
+            TraceContext.setSpanId(TraceContext.generate());
 
             this.rawTask.run();
         } finally {

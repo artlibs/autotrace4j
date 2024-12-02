@@ -18,7 +18,7 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 
 /**
  * ThreadPoolExecutor增强转换器
- *
+ *      提交一个任务时如果当前上下文存在Trace ID则传递
  * @author Fury
  * @since 2024-03-30
  *
@@ -42,9 +42,6 @@ public class ThreadPoolExecutorTransformer extends AbsVisitorTransformer {
         return ofMatcher(named("execute").and(takesArgument(0, Runnable.class)));
     }
 
-    /**
-     * advice
-     */
     @Advice.OnMethodEnter
     private static void adviceOnMethodEnter(@Advice.Argument(value = 0, readOnly = false
         , typing = Assigner.Typing.DYNAMIC) Runnable task) {

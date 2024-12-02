@@ -101,7 +101,6 @@ public final class AutoTrace4j {
             // init trace for main thread.
             TraceContext.setTraceId(TraceContext.generate());
             TraceContext.setSpanId(TraceContext.generate());
-            TraceContext.setParentSpanId(TraceContext.getTraceId());
         }
 
         /**

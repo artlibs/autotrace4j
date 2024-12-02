@@ -48,10 +48,9 @@ public class LogbackEncoderTransformer extends AbsDelegateTransformer.Instance {
      */
     @Override
     protected Object onMethodExit(Object thiz, Object[] allArgs, Object result, Method originMethod) {
-        if (Objects.isNull(result) || !(result instanceof byte[]) || Objects.isNull(TraceContext.getTraceId())) {
+        if (Objects.isNull(result) || !(result instanceof byte[])) {
             return result;
         }
-
         return injectTraceId(new String((byte[])result)).getBytes();
     }
 }

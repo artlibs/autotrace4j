@@ -15,6 +15,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
  * Thread 增强转换器
+ *      上下文有Trace ID时传递
  * <p>
  * @author suopovate
  * @since 2024-04-13
@@ -63,8 +64,7 @@ public class JavaThreadTransformer extends AbsVisitorTransformer {
         private AdviceConstructor() {}
 
         /**
-         * 注：各Advice的代码相同, 不能去冗余
-         *
+         * OnMethodEnter
          * @param runnable -
          */
         @Advice.OnMethodEnter

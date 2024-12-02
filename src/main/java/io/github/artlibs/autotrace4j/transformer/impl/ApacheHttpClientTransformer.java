@@ -15,7 +15,8 @@ import java.util.Objects;
 import static net.bytebuddy.matcher.ElementMatchers.named;
 
 /**
- * ApacheHttpClient增强转换器
+ * ApacheHttpClient增强转换器：
+ *      发出请求时，如果当前Thread上下文存在trace id则将其设置到请求头当中进行传递
  * <p>
  * @author Fury
  * @since 2024-03-30
@@ -49,13 +50,12 @@ public class ApacheHttpClientTransformer extends AbsDelegateTransformer.Instance
     protected void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
         final String traceId = TraceContext.getTraceId();
         if (Objects.nonNull(traceId)) {
-            MethodWrapper methodWrapper = ReflectUtils.getMethodWrapper(allArgs[1]
+            MethodWrapper setHeaderMethod = ReflectUtils.getMethodWrapper(allArgs[1]
                     , Constants.SET_HEADER, String.class, String.class);
-
-            methodWrapper.invoke(TraceContext.ATO_TRACE_ID, traceId);
+            setHeaderMethod.invoke(TraceContext.ATO_TRACE_ID, traceId);
             final String spanId = TraceContext.getSpanId();
             if (Objects.nonNull(spanId)) {
-                methodWrapper.invoke(TraceContext.ATO_SPAN_ID, spanId);
+                setHeaderMethod.invoke(TraceContext.ATO_SPAN_ID, spanId);
             }
         }
     }

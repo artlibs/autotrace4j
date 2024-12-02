@@ -148,6 +148,9 @@ public final class TraceContext {
      */
     public static String injectTraceId(String message) {
         try {
+            if (Objects.isNull(TraceContext.getTraceId())) {
+                return message;
+            }
             final boolean newLine = message.endsWith("\n");
 
             String trimMessage = message.trim();
@@ -156,7 +159,7 @@ public final class TraceContext {
             if (jsonFormat) {
                 return injectJsonFormat(message, trimMessage, newLine);
             } else {
-                if (message.contains(TraceContext.getTraceId() + SEPARATOR)) {
+                if (message.contains("[TraceId]" + TraceContext.getTraceId())) {
                     return message;
                 }
 
