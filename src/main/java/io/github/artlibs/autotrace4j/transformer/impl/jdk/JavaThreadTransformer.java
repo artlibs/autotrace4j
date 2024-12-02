@@ -4,13 +4,11 @@ import io.github.artlibs.autotrace4j.context.TraceContext;
 import io.github.artlibs.autotrace4j.context.jdk.ThreadPoolTask;
 import io.github.artlibs.autotrace4j.transformer.abs.AbsVisitorTransformer;
 import net.bytebuddy.asm.Advice;
-import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.matcher.ElementMatcher;
 
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Objects;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
@@ -73,7 +71,7 @@ public class JavaThreadTransformer extends AbsVisitorTransformer {
         private static void adviceOnMethodEnter(
             @Advice.Argument(value = 3, typing = Assigner.Typing.DYNAMIC
                     , readOnly = false) Runnable runnable) {
-            runnable = wrapRunnable(runnable);
+            runnable = wrappedRunnable(runnable);
         }
     }
 
@@ -89,19 +87,15 @@ public class JavaThreadTransformer extends AbsVisitorTransformer {
         private static void adviceOnMethodEnter(
             @Advice.Argument(value = 1, typing = Assigner.Typing.DYNAMIC
                     , readOnly = false) Runnable runnable) {
-            runnable = wrapRunnable(runnable);
+            runnable = wrappedRunnable(runnable);
         }
     }
 
-    private static Runnable wrapRunnable(Runnable runnable) {
+    private static Runnable wrappedRunnable(Runnable runnable) {
         try {
             if (Objects.nonNull(runnable)) {
                 String traceId = TraceContext.getTraceId();
-                if (Objects.isNull(traceId) || traceId.isEmpty()) {
-                    traceId = TraceContext.generate();
-                }
-
-                if (!(runnable instanceof ThreadPoolTask)) {
+                if (Objects.nonNull(traceId) && !(runnable instanceof ThreadPoolTask)) {
                     return new ThreadPoolTask(runnable, traceId, TraceContext.getSpanId());
                 }
             }

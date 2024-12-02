@@ -1,5 +1,6 @@
 package io.github.artlibs.autotrace4j;
 
+import io.github.artlibs.autotrace4j.context.TraceContext;
 import io.github.artlibs.autotrace4j.exception.LoadInterceptorException;
 import io.github.artlibs.autotrace4j.transformer.At4jTransformer;
 import io.github.artlibs.autotrace4j.transformer.TransformListener;
@@ -96,6 +97,11 @@ public final class AutoTrace4j {
                         .transform(transformer);
             }
             builder.installOn(instrument);
+
+            // init trace for main thread.
+            TraceContext.setTraceId(TraceContext.generate());
+            TraceContext.setSpanId(TraceContext.generate());
+            TraceContext.setParentSpanId(TraceContext.getTraceId());
         }
 
         /**

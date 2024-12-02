@@ -57,10 +57,7 @@ public class SchdThreadPoolTransformer extends AbsVisitorTransformer {
         try {
             if (Objects.nonNull(task)) {
                 String traceId = TraceContext.getTraceId();
-                if (Objects.isNull(traceId) || traceId.isEmpty()) {
-                    traceId = TraceContext.generate();
-                }
-                if (!(task instanceof ScheduledTask)) {
+                if (Objects.nonNull(traceId) && !(task instanceof ScheduledTask)) {
                     task = new ScheduledTask<>(task, traceId, TraceContext.getSpanId());
                 }
             }
