@@ -17,7 +17,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  * @since 2024-07-30
  * <p>
  */
-public class PowerJobSchdTaskTransformer extends AbsDelegateTransformer.Instance {
+public class PowerJobSchdTaskTransformer extends AbsDelegateTransformer.AbsInstance {
 
     /**
      * {@inheritDoc}

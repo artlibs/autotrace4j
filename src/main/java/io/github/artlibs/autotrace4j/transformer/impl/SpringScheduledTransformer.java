@@ -18,7 +18,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  * <p>
  * All rights Reserved.
  */
-public class SpringScheduledTransformer extends AbsDelegateTransformer.Instance {
+public class SpringScheduledTransformer extends AbsDelegateTransformer.AbsInstance {
 
     /**
      * {@inheritDoc}

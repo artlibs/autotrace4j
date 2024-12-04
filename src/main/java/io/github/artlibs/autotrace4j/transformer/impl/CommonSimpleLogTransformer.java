@@ -6,25 +6,25 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.matcher.ElementMatcher;
 
-import static io.github.artlibs.autotrace4j.context.TraceContext.injectTraceId;
+import static io.github.artlibs.autotrace4j.context.TraceContext.injectPreString;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
- * Logback 增强转换器
+ * Commons Logging SimpleLog 增强转换器
  * <p>
  * @author Fury
  * @since 2024-03-30
  *
  * All rights Reserved.
  */
-public class LogbackOutStreamTransformer extends AbsVisitorTransformer {
+public class CommonSimpleLogTransformer extends AbsVisitorTransformer {
 
     /**
      * {@inheritDoc}
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return hasSuperType(named("ch.qos.logback.core.OutputStreamAppender"));
+        return hasSuperType(named("org.apache.commons.logging.impl.SimpleLog"));
     }
 
     /**
@@ -32,21 +32,22 @@ public class LogbackOutStreamTransformer extends AbsVisitorTransformer {
      */
     @Override
     protected MethodMatcherHolder methodMatchers() {
-        return ofMatcher(isPrivate()
-                .and(named("writeBytes"))
-                .and(takesArgument(0, byte[].class))
+        return ofMatcher(isProtected()
+                .and(named("write"))
+                .and(takesArgument(0, StringBuffer.class))
                 .and(returns(void.class)));
     }
 
     /**
      * OnMethodEnter
-     * @param byteArray -
+     * @param buffer -
      */
     @Advice.OnMethodEnter
     public static void adviceOnMethodEnter(
             @Advice.Argument(value = 0, typing = Assigner.Typing.DYNAMIC
-                    , readOnly = false) byte[] byteArray) {
-        byteArray = injectTraceId(new String(byteArray)).getBytes();
+                    , readOnly = false) StringBuffer buffer) {
+        String preInject = injectPreString(buffer.toString());
+        buffer.insert(0, preInject);
     }
 
 }

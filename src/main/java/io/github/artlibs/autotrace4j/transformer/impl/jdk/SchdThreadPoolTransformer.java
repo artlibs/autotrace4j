@@ -50,7 +50,7 @@ public class SchdThreadPoolTransformer extends AbsVisitorTransformer {
      * @param task the raw runnable task
      */
     @Advice.OnMethodEnter
-    private static void adviceOnMethodEnter(
+    public static void adviceOnMethodEnter(
         @Advice.Argument(value = 0, readOnly = false
             , typing = Assigner.Typing.DYNAMIC) RunnableScheduledFuture<?> task
     ) {

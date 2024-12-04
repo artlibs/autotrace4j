@@ -53,17 +53,16 @@ public class ThreadPoolTask implements Runnable {
         }
 
         try {
-            if (Objects.nonNull(traceId)) {
-                TraceContext.setTraceId(traceId);
-            } else {
-                TraceContext.setTraceId(TraceContext.generate());
+            if (Objects.isNull(traceId)) {
+                traceId = TraceContext.generate();
             }
+            TraceContext.setTraceId(traceId);
+            // Always start a new span with a new span id
+            TraceContext.setSpanId(TraceContext.generate());
+
             if (Objects.nonNull(spanId)) {
                 TraceContext.setParentSpanId(spanId);
             }
-
-            // Always start a new span with a new span id
-            TraceContext.setSpanId(TraceContext.generate());
 
             this.rawTask.run();
         } finally {

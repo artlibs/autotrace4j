@@ -67,7 +67,7 @@ public class SunHttpClientTransformer extends AbsVisitorTransformer {
      * @param msgHeader http message header
      */
     @Advice.OnMethodEnter
-    private static void adviceOnMethodEnter(
+    public static void adviceOnMethodEnter(
         @Advice.Argument(value = 0, readOnly = false
             , typing = Assigner.Typing.DYNAMIC) Object msgHeader
     ) {

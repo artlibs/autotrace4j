@@ -6,7 +6,6 @@ import io.github.artlibs.autotrace4j.transformer.abs.AbsDelegateTransformer;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatchers;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -23,7 +22,7 @@ import static net.bytebuddy.matcher.ElementMatchers.named;
  * <p>
  * All rights Reserved.
  */
-public class OkHttpClientTransformer extends AbsDelegateTransformer.Instance {
+public class OkHttpClientTransformer extends AbsDelegateTransformer.AbsInstance {
 
     /**
      * {@inheritDoc}

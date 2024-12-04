@@ -8,6 +8,7 @@ import net.bytebuddy.description.modifier.Visibility;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.FieldAccessor;
+import net.bytebuddy.matcher.BooleanMatcher;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
@@ -17,6 +18,8 @@ import net.bytebuddy.utility.nullability.NeverNull;
 import java.security.ProtectionDomain;
 import java.util.HashMap;
 import java.util.Map;
+
+import static net.bytebuddy.matcher.ElementMatchers.none;
 
 /**
  * ASM访问器模式转换器，用来增强JVM启动时就已经加载的JDK类
@@ -74,6 +77,15 @@ public abstract class AbsVisitorTransformer implements At4jTransformer {
     }
 
     /**
+     * 构建类-方法匹配器
+     * <p>
+     * @return 类-方法匹配器Holder
+     */
+    protected final MethodMatcherHolder ofNone() {
+        return new MethodMatcherHolder();
+    }
+
+    /**
      * 获取类-方法匹配器Map
      * <p>
      * @return 类-方法匹配器Holder
@@ -81,7 +93,7 @@ public abstract class AbsVisitorTransformer implements At4jTransformer {
     protected abstract MethodMatcherHolder methodMatchers();
 
     /**
-     * MethodMatcherHolder
+     * ASM Visitor类与方法匹配器持有者
      */
     protected static class MethodMatcherHolder {
         /** just a holder map */
@@ -108,17 +120,11 @@ public abstract class AbsVisitorTransformer implements At4jTransformer {
         }
     }
 
-    public abstract static class Task extends AbsVisitorTransformer {
-        protected abstract ElementMatcher<? super MethodDescription> methodMatcher();
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected MethodMatcherHolder methodMatchers() {
-            return ofMatcher(Task.class, methodMatcher());
-        }
-
+    /**
+     * 为typeMatch匹配的对象注入Trace ID属性,记录当前上下文的Trace信息
+     * 以便于当该属性被传递到另外一个上下文时可以获取到原上下文的Trace信息
+     */
+    public abstract static class AbsConstructor extends AbsVisitorTransformer {
         /**
          * {@inheritDoc}
          */
@@ -127,8 +133,7 @@ public abstract class AbsVisitorTransformer implements At4jTransformer {
                 DynamicType.Builder<?> builder,
                 TypeDescription typeDescription,
                 JavaModule module,
-                ClassLoader classLoader
-        ) {
+                ClassLoader classLoader) {
             return builder
                     // add field
                     .defineField(TraceContext.TRACE_KEY, String.class, Visibility.PRIVATE)
@@ -153,37 +158,52 @@ public abstract class AbsVisitorTransformer implements At4jTransformer {
                     .intercept(FieldAccessor.ofField(TraceContext.PARENT_SPAN_KEY))
                     // intercept constructor, any constructor
                     .constructor(ElementMatchers.any())
-                    .intercept(Advice.to(ConstructorVisitor.class));
+                    .intercept(Advice.to(AbsConstructor.class));
         }
 
-        private static class ConstructorVisitor {
-            private ConstructorVisitor(){}
+        @Override
+        protected MethodMatcherHolder methodMatchers() {
+            return ofNone();
+        }
 
-            @Advice.OnMethodExit
-            public static void adviceOnMethodExit(
-                    @Advice.FieldValue(value = TraceContext.TRACE_KEY, readOnly = false) String traceId,
-                    @Advice.FieldValue(value = TraceContext.SPAN_KEY, readOnly = false) String spanId,
-                    @Advice.FieldValue(value = TraceContext.PARENT_SPAN_KEY, readOnly = false) String parentSpanId
-            ) {
-                try {
-                    // setup defined field on method exit
-                    traceId = TraceContext.getTraceId();
-                    spanId = TraceContext.getSpanId();
-                    parentSpanId = TraceContext.getParentSpanId();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        @Advice.OnMethodExit
+        public static void adviceOnMethodExit(
+                @Advice.FieldValue(value = TraceContext.TRACE_KEY, readOnly = false) String traceId,
+                @Advice.FieldValue(value = TraceContext.SPAN_KEY, readOnly = false) String spanId,
+                @Advice.FieldValue(value = TraceContext.PARENT_SPAN_KEY, readOnly = false) String parentSpanId
+        ) {
+            try {
+                // setup defined field on method exit
+                traceId = TraceContext.getTraceId();
+                spanId = TraceContext.getSpanId();
+                parentSpanId = TraceContext.getParentSpanId();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 适用于Thread任务对象及其执行方法
+     * 1.增强该typeMatcher匹配的对象，注入属性
+     * 2.在匹配的方法进入时从对象属性取Trace ID设置到上下文
+     * 3.在匹配的方法结束时清空上下文的Trace信息
+     */
+    public abstract static class AbsTask extends AbsConstructor {
+        protected abstract ElementMatcher<? super MethodDescription> methodMatcher();
 
         /**
-         * advice on method enter
+         * {@inheritDoc}
          */
+        @Override
+        protected MethodMatcherHolder methodMatchers() {
+            return ofMatcher(AbsTask.class, methodMatcher());
+        }
+
         @Advice.OnMethodEnter
-        private static void adviceOnMethodEnter(
+        public static void adviceOnMethodEnter(
                 @Advice.FieldValue(value = TraceContext.TRACE_KEY, readOnly = false) String traceId,
-                @Advice.FieldValue(value = TraceContext.SPAN_KEY, readOnly = false) String spanId
-        ) {
+                @Advice.FieldValue(value = TraceContext.SPAN_KEY, readOnly = false) String spanId) {
             try {
                 // setup defined field on method exit
                 TraceContext.setTraceId(traceId);
@@ -194,11 +214,8 @@ public abstract class AbsVisitorTransformer implements At4jTransformer {
             }
         }
 
-        /**
-         * advice on method exit: remove trace id
-         */
         @Advice.OnMethodExit
-        private static void adviceOnMethodExit() {
+        public static void adviceOnMethodExit() {
             TraceContext.removeAll();
         }
     }

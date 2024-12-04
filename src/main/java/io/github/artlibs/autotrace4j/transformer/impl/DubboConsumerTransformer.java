@@ -21,7 +21,7 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
  * @author orangewest
  * @since 2024-07-30
  */
-public class DubboConsumerTransformer extends AbsDelegateTransformer.Instance {
+public class DubboConsumerTransformer extends AbsDelegateTransformer.AbsInstance {
 
     /**
      * {@inheritDoc}

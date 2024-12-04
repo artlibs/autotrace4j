@@ -68,7 +68,7 @@ public class JavaThreadTransformer extends AbsVisitorTransformer {
          * @param runnable -
          */
         @Advice.OnMethodEnter
-        private static void adviceOnMethodEnter(
+        public static void adviceOnMethodEnter(
             @Advice.Argument(value = 3, typing = Assigner.Typing.DYNAMIC
                     , readOnly = false) Runnable runnable) {
             runnable = wrappedRunnable(runnable);
@@ -79,19 +79,18 @@ public class JavaThreadTransformer extends AbsVisitorTransformer {
         private AdviceInit() {}
 
         /**
-         * 注：各Advice的代码相同, 不能去冗余
-         *
+         * OnMethodEnter
          * @param runnable -
          */
         @Advice.OnMethodEnter
-        private static void adviceOnMethodEnter(
+        public static void adviceOnMethodEnter(
             @Advice.Argument(value = 1, typing = Assigner.Typing.DYNAMIC
                     , readOnly = false) Runnable runnable) {
             runnable = wrappedRunnable(runnable);
         }
     }
 
-    private static Runnable wrappedRunnable(Runnable runnable) {
+    protected static Runnable wrappedRunnable(Runnable runnable) {
         try {
             if (Objects.nonNull(runnable)) {
                 String traceId = TraceContext.getTraceId();

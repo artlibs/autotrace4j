@@ -15,7 +15,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  * <p>
  * All rights Reserved.
  */
-public class HttpFilterTransformer extends AbsDelegateTransformer.Servlet {
+public class HttpFilterTransformer extends AbsDelegateTransformer.AbsServlet {
 
     /**
      * {@inheritDoc}

@@ -38,7 +38,7 @@ public class JavaUtilLoggingTransformer extends AbsVisitorTransformer {
     }
 
     @Advice.OnMethodExit
-    private static void adviceOnMethodExit(@Advice.Return(readOnly = false
+    public static void adviceOnMethodExit(@Advice.Return(readOnly = false
             , typing = Assigner.Typing.DYNAMIC) String result) {
         result = injectTraceId(result);
     }

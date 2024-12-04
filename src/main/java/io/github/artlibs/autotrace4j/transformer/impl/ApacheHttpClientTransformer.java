@@ -23,7 +23,7 @@ import static net.bytebuddy.matcher.ElementMatchers.named;
  * <p>
  * All rights Reserved.
  */
-public class ApacheHttpClientTransformer extends AbsDelegateTransformer.Instance {
+public class ApacheHttpClientTransformer extends AbsDelegateTransformer.AbsInstance {
 
     /**
      * {@inheritDoc}

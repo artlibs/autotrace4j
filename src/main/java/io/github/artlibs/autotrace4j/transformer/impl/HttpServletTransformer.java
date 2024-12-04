@@ -16,7 +16,7 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
  * <p>
  * All rights Reserved.
  */
-public class HttpServletTransformer extends AbsDelegateTransformer.Servlet {
+public class HttpServletTransformer extends AbsDelegateTransformer.AbsServlet {
 
     /**
      * {@inheritDoc}

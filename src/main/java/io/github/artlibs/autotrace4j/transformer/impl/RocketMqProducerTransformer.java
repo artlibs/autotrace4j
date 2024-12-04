@@ -6,7 +6,6 @@ import io.github.artlibs.autotrace4j.transformer.abs.AbsDelegateTransformer;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatchers;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -22,7 +21,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  * <p>
  * All rights Reserved.
  */
-public class RocketMqProducerTransformer extends AbsDelegateTransformer.Instance {
+public class RocketMqProducerTransformer extends AbsDelegateTransformer.AbsInstance {
     private static final String SEND_CB_TYPE = "org.apache.rocketmq.common.message.Message";
     private static final String MESSAGE_TYPE = "org.apache.rocketmq.client.producer.SendCallback";
 

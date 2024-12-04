@@ -152,7 +152,10 @@ public abstract class AbsDelegateTransformer<T> implements At4jTransformer {
         return super.equals(obj);
     }
 
-    public abstract static class Instance extends AbsDelegateTransformer<Object> {
+    /**
+     * 实例方法增强代理
+     */
+    public abstract static class AbsInstance extends AbsDelegateTransformer<Object> {
         /**
          * 增强代理入口
          * <p>
@@ -169,7 +172,10 @@ public abstract class AbsDelegateTransformer<T> implements At4jTransformer {
         }
     }
 
-    public abstract static class Static extends AbsDelegateTransformer<Class<?>> {
+    /**
+     * 静态方法增强代理
+     */
+    public abstract static class AbsStatic extends AbsDelegateTransformer<Class<?>> {
         /**
          * 增强代理入口
          * <p>
@@ -186,7 +192,10 @@ public abstract class AbsDelegateTransformer<T> implements At4jTransformer {
         }
     }
 
-    public abstract static class Servlet extends Instance {
+    /**
+     * Servlet,Filter的增强代理,是实例方法增强代理的特定领域实现
+     */
+    public abstract static class AbsServlet extends AbsInstance {
         /**
          * {@inheritDoc}
          */

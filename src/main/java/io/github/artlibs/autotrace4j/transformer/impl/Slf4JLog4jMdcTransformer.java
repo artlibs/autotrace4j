@@ -5,13 +5,11 @@ import io.github.artlibs.autotrace4j.transformer.abs.AbsDelegateTransformer;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatchers;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
 
-import static net.bytebuddy.matcher.ElementMatchers.isStatic;
-import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
+import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
  * 增强SLF4J的MDC,支持通过其获取到三个Trace ID
@@ -25,14 +23,14 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
  * <p>
  * All rights Reserved.
  */
-public class OrgSlf4JMdcTransformer extends AbsDelegateTransformer.Static {
+public class Slf4JLog4jMdcTransformer extends AbsDelegateTransformer.AbsStatic {
 
     /**
      * {@inheritDoc}
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return ElementMatchers.named("org.slf4j.MDC");
+        return named("org.slf4j.MDC").or(named("org.apache.log4j.MDC"));
     }
 
     /**
@@ -40,7 +38,7 @@ public class OrgSlf4JMdcTransformer extends AbsDelegateTransformer.Static {
      */
     @Override
     protected ElementMatcher<? super MethodDescription> methodMatcher() {
-        return isStatic().and(ElementMatchers.named("get")
+        return isStatic().and(named("get")
                 .and(takesArgument(0, String.class)));
     }
 
