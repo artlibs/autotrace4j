@@ -6,7 +6,7 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.matcher.ElementMatcher;
 
-import static io.github.artlibs.autotrace4j.context.TraceContext.injectPreString;
+import static io.github.artlibs.autotrace4j.context.TraceContext.injectTraceId;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
@@ -46,8 +46,7 @@ public class CommonSimpleLogTransformer extends AbsVisitorTransformer {
     public static void adviceOnMethodEnter(
             @Advice.Argument(value = 0, typing = Assigner.Typing.DYNAMIC
                     , readOnly = false) StringBuffer buffer) {
-        String preInject = injectPreString(buffer.toString());
-        buffer.insert(0, preInject);
+        buffer = new StringBuffer(injectTraceId(buffer.toString()));
     }
 
 }

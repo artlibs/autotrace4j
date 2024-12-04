@@ -2,15 +2,13 @@ package io.github.artlibs.autotrace4j.transformer.impl.jdk;
 
 import io.github.artlibs.autotrace4j.context.TraceContext;
 import io.github.artlibs.autotrace4j.context.jdk.PriorityTask;
-import io.github.artlibs.autotrace4j.context.jdk.ThreadPoolTask;
+import io.github.artlibs.autotrace4j.context.jdk.ThreadTask;
 import io.github.artlibs.autotrace4j.transformer.abs.AbsVisitorTransformer;
 import net.bytebuddy.asm.Advice;
-import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.matcher.ElementMatcher;
 
-import java.util.Map;
 import java.util.Objects;
 
 import static net.bytebuddy.matcher.ElementMatchers.named;
@@ -48,11 +46,11 @@ public class ThreadPoolExecutorTransformer extends AbsVisitorTransformer {
         try {
             if (Objects.nonNull(task)) {
                 String traceId = TraceContext.getTraceId();
-                if (Objects.nonNull(traceId) && !(task instanceof ThreadPoolTask)) {
+                if (Objects.nonNull(traceId) && !(task instanceof ThreadTask)) {
                     if (task instanceof Comparable) {
                         task = new PriorityTask(task, traceId, TraceContext.getSpanId());
                     } else {
-                        task = new ThreadPoolTask(task, traceId, TraceContext.getSpanId());
+                        task = new ThreadTask(task, traceId, TraceContext.getSpanId());
                     }
                 }
             }

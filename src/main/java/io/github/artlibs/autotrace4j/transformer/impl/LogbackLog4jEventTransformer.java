@@ -4,7 +4,7 @@ import io.github.artlibs.autotrace4j.transformer.abs.AbsVisitorTransformer;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
-import static net.bytebuddy.matcher.ElementMatchers.named;
+import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
  * Logback/Log4j - LoggingEvent 增强转换器
@@ -22,8 +22,10 @@ public class LogbackLog4jEventTransformer extends AbsVisitorTransformer.AbsConst
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return named("ch.qos.logback.classic.spi.LoggingEvent")
-                .or(named("org.apache.log4j.spi.LoggingEvent"));
+        return not(isInterface()).and(not(isAbstract())).and(
+                  hasSuperType(named("ch.qos.logback.classic.spi.ILoggingEvent"))
+                  .or(hasSuperType(named("org.apache.log4j.spi.LoggingEvent")))
+        );
     }
 
 }

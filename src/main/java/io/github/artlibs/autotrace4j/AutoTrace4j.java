@@ -93,8 +93,7 @@ public final class AutoTrace4j {
 
             AgentBuilder builder = this.newAgentBuilder();
             for (At4jTransformer transformer : loadTransformers()) {
-                builder = builder.type(transformer.typeMatcher())
-                        .transform(transformer);
+                builder = builder.type(transformer.typeMatcher()).transform(transformer);
             }
             builder.installOn(instrument);
 

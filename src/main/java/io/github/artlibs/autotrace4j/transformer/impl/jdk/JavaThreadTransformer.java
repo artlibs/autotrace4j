@@ -1,7 +1,7 @@
 package io.github.artlibs.autotrace4j.transformer.impl.jdk;
 
 import io.github.artlibs.autotrace4j.context.TraceContext;
-import io.github.artlibs.autotrace4j.context.jdk.ThreadPoolTask;
+import io.github.artlibs.autotrace4j.context.jdk.ThreadTask;
 import io.github.artlibs.autotrace4j.transformer.abs.AbsVisitorTransformer;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.type.TypeDescription;
@@ -53,7 +53,7 @@ public class JavaThreadTransformer extends AbsVisitorTransformer {
                              takesArgument(2, named(STRING_CLS)),
                              takesArgument(3, long.class),
                              takesArgument(4, named("java.security.AccessControlContext")),
-                             takesArgument(5, boolean.class),
+                            // takesArgument(5, boolean.class),
                              returns(void.class)
                          )
                 ))
@@ -64,14 +64,18 @@ public class JavaThreadTransformer extends AbsVisitorTransformer {
         private AdviceConstructor() {}
 
         /**
-         * OnMethodEnter
+         * 里面调用的其他方法需要在运行时能访问到
          * @param runnable -
          */
         @Advice.OnMethodEnter
         public static void adviceOnMethodEnter(
             @Advice.Argument(value = 3, typing = Assigner.Typing.DYNAMIC
                     , readOnly = false) Runnable runnable) {
-            runnable = wrappedRunnable(runnable);
+            // Wrap only when there is trace info in the context
+            String traceId = TraceContext.getTraceId();
+            if (Objects.nonNull(traceId) && Objects.nonNull(runnable) && !(runnable instanceof ThreadTask)) {
+                runnable = new ThreadTask(runnable, traceId, TraceContext.getSpanId());
+            }
         }
     }
 
@@ -79,29 +83,19 @@ public class JavaThreadTransformer extends AbsVisitorTransformer {
         private AdviceInit() {}
 
         /**
-         * OnMethodEnter
+         * 里面调用的其他方法需要在运行时能访问到
          * @param runnable -
          */
         @Advice.OnMethodEnter
         public static void adviceOnMethodEnter(
             @Advice.Argument(value = 1, typing = Assigner.Typing.DYNAMIC
                     , readOnly = false) Runnable runnable) {
-            runnable = wrappedRunnable(runnable);
-        }
-    }
-
-    protected static Runnable wrappedRunnable(Runnable runnable) {
-        try {
-            if (Objects.nonNull(runnable)) {
-                String traceId = TraceContext.getTraceId();
-                if (Objects.nonNull(traceId) && !(runnable instanceof ThreadPoolTask)) {
-                    return new ThreadPoolTask(runnable, traceId, TraceContext.getSpanId());
-                }
+            // Wrap only when there is trace info in the context
+            String traceId = TraceContext.getTraceId();
+            if (Objects.isNull(traceId) || Objects.isNull(runnable) || runnable instanceof ThreadTask) {
+                return;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            runnable = new ThreadTask(runnable, traceId, TraceContext.getSpanId());
         }
-
-        return runnable;
     }
 }

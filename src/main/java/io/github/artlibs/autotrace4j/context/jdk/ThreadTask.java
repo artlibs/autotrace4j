@@ -13,13 +13,13 @@ import java.util.Objects;
  * <p>
  * All rights Reserved.
  */
-public class ThreadPoolTask implements Runnable {
+public class ThreadTask implements Runnable {
     private String spanId;
     private String traceId;
     private Runnable rawTask;
     private long callerThreadId;
 
-    private ThreadPoolTask() {}
+    private ThreadTask() {}
 
     public Runnable getRawTask() {
         return this.rawTask;
@@ -31,7 +31,7 @@ public class ThreadPoolTask implements Runnable {
      * @param traceId traceId for binding to this task
      * @param spanId current context spanId，as the parent span id of the next context
      */
-    public ThreadPoolTask(Runnable rawTask, String traceId, String spanId) {
+    public ThreadTask(Runnable rawTask, String traceId, String spanId) {
         this.spanId = spanId;
         this.traceId = traceId;
         this.rawTask = rawTask;

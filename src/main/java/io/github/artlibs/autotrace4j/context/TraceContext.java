@@ -147,7 +147,7 @@ public final class TraceContext {
      * @return result
      */
     public static String injectTraceId(String message) {
-        if (Objects.isNull(TraceContext.getTraceId())) {
+        if (Objects.isNull(message) || Objects.isNull(TraceContext.getTraceId())) {
             return message;
         }
 
@@ -163,7 +163,7 @@ public final class TraceContext {
 
             // TODO: HTML FORMAT
 
-            return injectPreString(message) + message;
+            return injectString(message);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -171,9 +171,9 @@ public final class TraceContext {
         return message;
     }
 
-    public static String injectPreString(String message) {
-        if (message.contains("[TraceId]" + TraceContext.getTraceId())) {
-            return "";
+    private static String injectString(String message) {
+        if (message.trim().isEmpty() || message.contains("[TraceId]" + TraceContext.getTraceId())) {
+            return message;
         }
 
         String preTrimMessage = "[TraceId]" + TraceContext.getTraceId() + SEPARATOR;
@@ -184,7 +184,7 @@ public final class TraceContext {
             preTrimMessage += "[P-SpanId]" + TraceContext.getParentSpanId() + SEPARATOR;
         }
 
-        return preTrimMessage;
+        return preTrimMessage + message;
     }
 
     private static String injectJsonString(String message, String trimMessage) {

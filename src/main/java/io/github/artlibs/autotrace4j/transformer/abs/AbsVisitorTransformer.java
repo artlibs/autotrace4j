@@ -8,7 +8,6 @@ import net.bytebuddy.description.modifier.Visibility;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.FieldAccessor;
-import net.bytebuddy.matcher.BooleanMatcher;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
@@ -18,8 +17,7 @@ import net.bytebuddy.utility.nullability.NeverNull;
 import java.security.ProtectionDomain;
 import java.util.HashMap;
 import java.util.Map;
-
-import static net.bytebuddy.matcher.ElementMatchers.none;
+import java.util.Objects;
 
 /**
  * ASM访问器模式转换器，用来增强JVM启动时就已经加载的JDK类
@@ -170,8 +168,7 @@ public abstract class AbsVisitorTransformer implements At4jTransformer {
         public static void adviceOnMethodExit(
                 @Advice.FieldValue(value = TraceContext.TRACE_KEY, readOnly = false) String traceId,
                 @Advice.FieldValue(value = TraceContext.SPAN_KEY, readOnly = false) String spanId,
-                @Advice.FieldValue(value = TraceContext.PARENT_SPAN_KEY, readOnly = false) String parentSpanId
-        ) {
+                @Advice.FieldValue(value = TraceContext.PARENT_SPAN_KEY, readOnly = false) String parentSpanId) {
             try {
                 // setup defined field on method exit
                 traceId = TraceContext.getTraceId();
@@ -204,13 +201,10 @@ public abstract class AbsVisitorTransformer implements At4jTransformer {
         public static void adviceOnMethodEnter(
                 @Advice.FieldValue(value = TraceContext.TRACE_KEY, readOnly = false) String traceId,
                 @Advice.FieldValue(value = TraceContext.SPAN_KEY, readOnly = false) String spanId) {
-            try {
-                // setup defined field on method exit
+            if (Objects.nonNull(traceId)) {
                 TraceContext.setTraceId(traceId);
                 TraceContext.setParentSpanId(spanId);
                 TraceContext.setSpanId(TraceContext.generate());
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
 

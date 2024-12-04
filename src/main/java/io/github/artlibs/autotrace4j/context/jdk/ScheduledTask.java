@@ -10,7 +10,7 @@ import java.util.concurrent.*;
  *
  * All rights Reserved.
  */
-public class ScheduledTask<T> extends ThreadPoolTask implements RunnableScheduledFuture<T> {
+public class ScheduledTask<T> extends ThreadTask implements RunnableScheduledFuture<T> {
     private final RunnableScheduledFuture<T> rawTask;
 
     public ScheduledTask(RunnableScheduledFuture<T> rawTask, String traceId, String spanId) {

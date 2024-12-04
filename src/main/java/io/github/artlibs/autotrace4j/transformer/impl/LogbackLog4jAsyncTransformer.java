@@ -2,13 +2,12 @@ package io.github.artlibs.autotrace4j.transformer.impl;
 
 import io.github.artlibs.autotrace4j.context.ReflectUtils;
 import io.github.artlibs.autotrace4j.context.TraceContext;
-import io.github.artlibs.autotrace4j.transformer.abs.AbsDelegateTransformer;
 import io.github.artlibs.autotrace4j.transformer.abs.AbsVisitorTransformer;
-import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.matcher.ElementMatcher;
 
-import java.lang.reflect.Method;
 import java.util.Objects;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
@@ -22,10 +21,8 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  * <p>
  * All rights Reserved.
  */
-public class LogbackLog4jAsyncTransformer extends AbsDelegateTransformer.AbsInstance {
+public class LogbackLog4jAsyncTransformer extends AbsVisitorTransformer {
     /**
-     * 只往类注入属性
-     * <p>
      * {@inheritDoc}
      */
     @Override
@@ -34,27 +31,26 @@ public class LogbackLog4jAsyncTransformer extends AbsDelegateTransformer.AbsInst
                 .or(named("org.apache.log4j.helpers.AppenderAttachableImpl"));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected ElementMatcher<? super MethodDescription> methodMatcher() {
-        return isPublic().and(named("appendLoopOnAppenders"))
-                .and(returns(int.class));
+    protected MethodMatcherHolder methodMatchers() {
+        return ofMatcher(isPublic().and(named("appendLoopOnAppenders"))
+                .and(returns(int.class)));
     }
 
-    @Override
-    protected void onMethodEnter(Object obj, Object[] allArgs, Method originMethod) throws Exception {
-        if (Objects.isNull(allArgs) || allArgs.length < 1) {
-            return;
-        }
-
-        Object logEventObj = allArgs[0];
-        String traceId = ReflectUtils.getFieldValue(logEventObj, TraceContext.TRACE_KEY);
+    @Advice.OnMethodEnter
+    public static void adviceOnMethodEnter(
+            @Advice.Argument(value = 0, typing = Assigner.Typing.DYNAMIC
+                    , readOnly = false) Object logEvent) {
+        String traceId = ReflectUtils.getMethodWrapper(logEvent, TraceContext.TRACE_KEY_GETTER).invoke();
+        String spanId = ReflectUtils.getMethodWrapper(logEvent, TraceContext.SPAN_KEY_GETTER).invoke();
+        // 异步的情况下Worker只有一个线程，上一次设置之后并未清空，需要通过重复覆盖设置才能覆盖上一次的值
         if (Objects.nonNull(traceId)) {
             TraceContext.setTraceId(traceId);
-            TraceContext.setSpanId(TraceContext.generate());
-        }
-        String spanId = ReflectUtils.getFieldValue(logEventObj, TraceContext.SPAN_KEY);
-        if (Objects.nonNull(spanId)) {
             TraceContext.setParentSpanId(spanId);
+            TraceContext.setSpanId(TraceContext.generate());
         }
     }
 }
