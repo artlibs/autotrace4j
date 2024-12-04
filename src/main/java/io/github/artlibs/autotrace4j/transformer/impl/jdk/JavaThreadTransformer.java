@@ -53,7 +53,6 @@ public class JavaThreadTransformer extends AbsVisitorTransformer {
                              takesArgument(2, named(STRING_CLS)),
                              takesArgument(3, long.class),
                              takesArgument(4, named("java.security.AccessControlContext")),
-                            // takesArgument(5, boolean.class),
                              returns(void.class)
                          )
                 ))
