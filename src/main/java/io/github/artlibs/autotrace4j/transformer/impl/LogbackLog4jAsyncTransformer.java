@@ -46,11 +46,21 @@ public class LogbackLog4jAsyncTransformer extends AbsVisitorTransformer {
                     , readOnly = false) Object logEvent) {
         String traceId = ReflectUtils.getMethodWrapper(logEvent, TraceContext.TRACE_KEY_GETTER).invoke();
         String spanId = ReflectUtils.getMethodWrapper(logEvent, TraceContext.SPAN_KEY_GETTER).invoke();
-        // 异步的情况下Worker只有一个线程，上一次设置之后并未清空，需要通过重复覆盖设置才能覆盖上一次的值
-        if (Objects.nonNull(traceId)) {
+        String parentSpanId = ReflectUtils.getMethodWrapper(logEvent, TraceContext.PARENT_SPAN_KEY_GETTER).invoke();
+
+        // 异步的情况下：上下文没有traceId或者traceId对不上
+        String ctxTraceId = TraceContext.getTraceId();
+        String ctxSpanId = TraceContext.getSpanId();
+        String ctxParentSpanId = TraceContext.getParentSpanId();
+        boolean isSyncLogger = Objects.equals(ctxTraceId, traceId) &&
+                Objects.equals(ctxSpanId, spanId) &&
+                Objects.equals(ctxParentSpanId, parentSpanId);
+
+        // Worker只有一个线程，上一次设置之后并未清空，需要通过重复覆盖设置才能覆盖上一次的值
+        if (Objects.nonNull(traceId) && !isSyncLogger) {
             TraceContext.setTraceId(traceId);
-            TraceContext.setParentSpanId(spanId);
-            TraceContext.setSpanId(TraceContext.generate());
+            TraceContext.setSpanId(spanId);
+            TraceContext.setParentSpanId(parentSpanId);
         }
     }
 }
