@@ -162,7 +162,7 @@ public final class ModuleUtils {
             Object bootLayer = mBoot.invoke(null);
             Class<?> cOptional = Class.forName("java.util.Optional");
             Method mFindModule = cModuleLayer.getDeclaredMethod("findModule", String.class);
-            Object oCompilerO = mFindModule.invoke(bootLayer, "java.abs");
+            Object oCompilerO = mFindModule.invoke(bootLayer, "java.base");
             return cOptional.getDeclaredMethod("get").invoke(oCompilerO);
         } catch (Exception e) {
             return null;
