@@ -21,9 +21,9 @@
 $ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-domain.biz2.pkg2 -jar YourJar.jar  # 省略其他无关参数
 ```
 
-#### 关于`org.slf4j.MDC`
+#### 关于`MDC`
 
-可通过slf4j的MDC获取当前上下文的TraceID：
+可通过`slf4j`或者`log4j`的`MDC`获取当前上下文的Trace ID：
 
 -   当通过 `MDC.get("X-Ato-Span-Id")`时返回当前上下文的 `SpanId`
 -   当通过 `MDC.get("X-Ato-P-Span-Id")`时返回当前上下文的 `ParentSpanId`
@@ -33,9 +33,7 @@ $ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-dom
 
 ### 1、Thread
 
-​	针对Thread进行了增强，在创建线程时支持自动Trace跟踪:
-
--   `java.lang.Thread`
+​	针对Thread进行了增强，在创建线程时支持自动Trace跟踪: `java.lang.Thread`
 
 ### 2、Thread Pool
 
@@ -80,6 +78,7 @@ $ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-dom
 
 ​	支持在logback中输出日志时注入trace id进行输出：
 
+-   Log4j：`log4j:log4j`
 -   logback：`ch.qos.logback:logback-core`
 -   Java loggin：`java.util.logging`
 
