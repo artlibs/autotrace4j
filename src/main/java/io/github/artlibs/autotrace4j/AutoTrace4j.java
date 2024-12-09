@@ -88,6 +88,7 @@ public final class AutoTrace4j {
         public void on(Instrumentation instrument) throws IOException, URISyntaxException {
             String contextPackage = AutoTrace4j.class.getPackage().getName() + ".context";
             ClassUtils.injectClassToBootStrap(instrument, contextPackage);
+
             // note: this method must be called after injectClassToBootStrap, don't move it forward
             ModuleUtils.compatibleJavaModule(contextPackage);
 

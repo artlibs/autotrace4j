@@ -38,8 +38,10 @@ public final class ModuleUtils {
         }
 
         final String[] agentNecessaryJavaBasePackages = {
-                "sun.net.www.protocol.http",
                 "sun.net.www",
+                "sun.net.www.http",
+                "sun.net.www.protocol.http",
+                "sun.net.www.protocol.https",
                 "java.logging",
                 "jdk.internal.loader",
         };
