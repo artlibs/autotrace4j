@@ -10,7 +10,7 @@ import static io.github.artlibs.autotrace4j.context.TraceContext.injectTraceId;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
- * Log4j 增强转换器
+ * Log4j的输出注入
  * <p>
  * @author Fury
  * @since 2024-03-30

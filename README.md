@@ -3,8 +3,6 @@
 
 ​	`autotrace4j`是一个基于ByteBuddy编写的轻量级日志跟踪工具，其基本逻辑是在各个上下文当中通过代码增强关键节点来传递`trace id`，最后在日志输出时注入到输出结果当中，以实现日志的跟踪串联。
 
-​	我们借鉴了SkyWalking的实现原理，使用ByteBuddy在各个上下文环节进行关键点增强来传递Trace ID。
-
 #### 易使用
 
 ​	基于Agent的方式来使用该工具，对业务代码无侵入。
@@ -33,7 +31,7 @@ $ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-dom
 
 ### 1、Thread
 
-​	针对Thread进行了增强，在创建线程时支持自动Trace跟踪: `java.lang.Thread`
+​	针对Thread进行了增强，在创建线程时支持自动传递当前Trace: `java.lang.Thread`
 
 ### 2、Thread Pool
 
@@ -58,17 +56,18 @@ $ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-dom
 -   `javax.servlet.Filter`
 -   `javax.servlet.http.HttpServlet`
 
-### 5、MessageQunue
+### 5、Middleware
 
-​	目前支持阿里云ONS和RocketMQ在生产和消费时带上TraceId：
+​	支持阿里云ONS和RocketMQ在生产和消费时传递trace，支持Dubbo：
 
 -   RocektMQ：`Producer` & `Consumer`
 -   Aliyun ONS：`Producer` & `Consumer`
--   Kafka：comming soon....
+-   Dubbo：`org.apache.dubbo.rpc.protocol.dubbo.filter.TraceFilter`
+                   `org.apache.dubbo.rpc.protocol.dubbo.filter.FutureFilter`
 
-### 6、Scheduled Task
+### 6、Scheduled
 
-​	支持XXL Job、Spring Scheduled定时任务、PowerJob在产生时生成TraceId：
+​	支持XXL Job、Spring Scheduled定时任务、PowerJob在产生时传递TraceId：
 
 -   XxlJob Handler：`com.handler.com.xxl.job.core.IJobHandler`
 - Spring Schedule Task：`org.springframework.scheduling.annotation.Scheduled`
@@ -76,19 +75,26 @@ $ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-dom
 
 ### 7、Logging
 
-​	支持在logback中输出日志时注入trace id进行输出：
+​	支持几个主流日志框架的最终输出，自动加入trace信息(主要针对Stream和RollingFile的字符串和JSON格式)：
 
--   Log4j：`log4j:log4j`
--   logback：`ch.qos.logback:logback-core`
--   Java loggin：`java.util.logging`
-
-### 8、Middleware
-
-​	支持如下中间件的增强
-
--   Dubbo：`org.apache.dubbo.rpc.protocol.dubbo.filter.TraceFilter`
-                   `org.apache.dubbo.rpc.protocol.dubbo.filter.FutureFilter`
+-   `JUL`、`Log4j`、`Logback`、`Log4j2`
 
 ## Contribute
 
-欢迎贡献你的代码，一起完善`autotrace4j`库！
+欢迎贡献你的代码(`Fork` & `Pull Request`)，一起完善`autotrace4j`库！
+
+-   如何增加支持：
+
+    在`io.github.artlibs.autotrace4j.transformer`下仿照其他转换器新增
+
+-   关于单元测试：
+
+    在`io.github.artlibs.autotrace4j.At4jTest`中参考其他案例增加单元测试
+
+本地单测：
+
+```shell
+$ export JAVA_HOME=/path/to/your/jdk21/home
+$ make test
+```
+
