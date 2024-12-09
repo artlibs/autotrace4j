@@ -26,15 +26,15 @@ public final class ThrowableUtils {
     private static void extract(List<String> strList, Throwable t, StackTraceElement[] parentSTE) {
 
         StackTraceElement[] ste = t.getStackTrace();
-        final int numberOfcommonFrames = findNumberOfCommonFrames(ste, parentSTE);
+        final int numberOfCommonFrames = findNumberOfCommonFrames(ste, parentSTE);
 
         strList.add(formatFirstLine(t, parentSTE));
-        for (int i = 0; i < (ste.length - numberOfcommonFrames); i++) {
+        for (int i = 0; i < (ste.length - numberOfCommonFrames); i++) {
             strList.add("\tat " + ste[i].toString());
         }
 
-        if (numberOfcommonFrames != 0) {
-            strList.add("\t... " + numberOfcommonFrames + " common frames omitted");
+        if (numberOfCommonFrames != 0) {
+            strList.add("\t... " + numberOfCommonFrames + " common frames omitted");
         }
 
         Throwable cause = t.getCause();

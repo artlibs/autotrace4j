@@ -1,10 +1,9 @@
 package io.github.artlibs.autotrace4j.context;
 
-import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Trace context for SpanId, ParentSpanId, TraceId
+ * Trace context
  *
  * @author Fury
  * @since 2024-03-30
@@ -138,71 +137,4 @@ public final class TraceContext {
             .replace("-", "");
     }
 
-    private static final String SEPARATOR = " - ";
-    private static final String QUOTE_COLON = "\":\"";
-
-    /**
-     * Inject trace id into log message
-     * @param message String
-     * @return result
-     */
-    public static String injectTraceId(String message) {
-        if (Objects.isNull(message) || Objects.isNull(TraceContext.getTraceId())) {
-            return message;
-        }
-
-        try {
-            String trimMessage = message.trim();
-
-            // JSON FORMAT
-            if (trimMessage.startsWith("{") && trimMessage.endsWith("}")) {
-                return injectJsonString(message, trimMessage);
-            }
-
-            // TODO: XML FORMAT
-
-            // TODO: HTML FORMAT
-
-            return injectString(message);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return message;
-    }
-
-    private static String injectString(String message) {
-        if (message.trim().isEmpty() || message.contains("[TraceId]" + TraceContext.getTraceId())) {
-            return message;
-        }
-
-        String preTrimMessage = "[TraceId]" + TraceContext.getTraceId() + SEPARATOR;
-        if (Objects.nonNull(TraceContext.getSpanId())) {
-            preTrimMessage += "[SpanId]" + TraceContext.getSpanId() + SEPARATOR;
-        }
-        if (Objects.nonNull(TraceContext.getParentSpanId())) {
-            preTrimMessage += "[P-SpanId]" + TraceContext.getParentSpanId() + SEPARATOR;
-        }
-
-        return preTrimMessage + message;
-    }
-
-    private static String injectJsonString(String message, String trimMessage) {
-        if (message.contains(TraceContext.ATO_TRACE_ID) && message.contains(TraceContext.getTraceId())) {
-            return message;
-        }
-
-        String injectedTraceFields = "\"" + TraceContext.ATO_TRACE_ID + QUOTE_COLON + TraceContext.getTraceId() + "\",";
-        if (Objects.nonNull(TraceContext.getSpanId())) {
-            injectedTraceFields = injectedTraceFields
-                    + "\"" + TraceContext.ATO_SPAN_ID + QUOTE_COLON + TraceContext.getSpanId() + "\",";
-        }
-        if (Objects.nonNull(TraceContext.getParentSpanId())) {
-            injectedTraceFields = injectedTraceFields
-                    + "\"" + TraceContext.ATO_PARENT_SPAN_ID + QUOTE_COLON + TraceContext.getParentSpanId() + "\",";
-        }
-        trimMessage = "{" + injectedTraceFields + trimMessage.substring(1);
-
-        return message.endsWith("\n") ? trimMessage + "\n" : trimMessage;
-    }
 }

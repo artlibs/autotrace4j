@@ -16,12 +16,12 @@ import java.util.Objects;
  * <p>
  * All rights Reserved.
  */
-public class DefaultPrintStreamAppender extends AsyncAppender<LogEvent> {
+public class ConsoleAppender extends AsyncAppender<LogEvent> {
     Layout<LogEvent> layout;
     private final PrintStream outPrintStream;
     private final PrintStream errPrintStream;
 
-    public DefaultPrintStreamAppender(
+    public ConsoleAppender(
         Layout<LogEvent> layout,
         PrintStream outPrintStream,
         PrintStream errPrintStream

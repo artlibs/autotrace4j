@@ -1,15 +1,18 @@
 package io.github.artlibs.autotrace4j.logger;
 
 import io.github.artlibs.autotrace4j.logger.appender.AppenderCombiner;
-import io.github.artlibs.autotrace4j.logger.appender.DefaultFileAppender;
-import io.github.artlibs.autotrace4j.logger.appender.DefaultPrintStreamAppender;
+import io.github.artlibs.autotrace4j.logger.appender.FileAppender;
+import io.github.artlibs.autotrace4j.logger.appender.ConsoleAppender;
 import io.github.artlibs.autotrace4j.logger.event.Level;
 import io.github.artlibs.autotrace4j.logger.event.LogEvent;
 import io.github.artlibs.autotrace4j.logger.layout.DefaultLayout;
 import io.github.artlibs.autotrace4j.support.SystemUtils;
 
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static io.github.artlibs.autotrace4j.logger.LogConstants.*;
 
 /**
  * 功能：日志工厂
@@ -35,35 +38,50 @@ public final class LoggerFactory {
     static {
         // appender set
         APPENDER_COMBINER = new AppenderCombiner<>();
-        DefaultPrintStreamAppender defaultPrintStreamAppender = new DefaultPrintStreamAppender(new DefaultLayout(), System.out, System.err);
-        defaultPrintStreamAppender.start();
-        APPENDER_COMBINER.addAppender(defaultPrintStreamAppender);
-        SystemUtils.getSysPropertyPath(LogConstants.SYSTEM_PROPERTY_LOG_DIR)
-            .ifPresent(path -> {
-                DefaultFileAppender defaultFileAppender = new DefaultFileAppender(
-                    new DefaultLayout(),
-                    path,
-                    SystemUtils
-                        .getSysPropertyInteger(LogConstants.SYSTEM_PROPERTY_LOG_FILE_RETENTION)
-                        .orElse(LogConstants.DEFAULT_LOG_FILE_RETENTION),
-                    SystemUtils
-                        .getSysPropertyInteger(LogConstants.SYSTEM_PROPERTY_LOG_FILE_SIZE)
-                        .orElse(LogConstants.DEFAULT_LOG_FILE_SIZE)
-                );
-                defaultFileAppender.start();
-                APPENDER_COMBINER.addAppender(defaultFileAppender);
-            });
+
+        if (loggerEnabled()) {
+            ConsoleAppender consoleAppender = new ConsoleAppender(new DefaultLayout(), System.out, System.err);
+            consoleAppender.start();
+            APPENDER_COMBINER.addAppender(consoleAppender);
+
+            FileAppender fileAppender = new FileAppender(
+                    new DefaultLayout(), getLogFileDirectory(),
+                    SystemUtils.getSysPropertyInteger(SYSTEM_PROPERTY_LOG_FILE_RETENTION)
+                            .orElse(DEFAULT_LOG_FILE_RETENTION),
+                    SystemUtils.getSysPropertyInteger(SYSTEM_PROPERTY_LOG_FILE_SIZE)
+                            .orElse(DEFAULT_LOG_FILE_SIZE)
+            );
+            fileAppender.start();
+            APPENDER_COMBINER.addAppender(fileAppender);
+        }
+
         APPENDER_COMBINER.start();
+
         // level set
         LEVEL = getLevelConfig();
     }
 
+    public static boolean loggerEnabled() {
+        return Boolean.TRUE.equals(SystemUtils.getSysPropertyBool(SYSTEM_PROPERTY_LOG_ENABLE)
+                .orElse(Boolean.FALSE));
+    }
+
+    public static Path getLogFileDirectory() {
+        Path directory = SystemUtils.getSysPropertyPath(SYSTEM_PROPERTY_LOG_DIR)
+                .orElse(SystemUtils.getSysTempDir());
+        if (!directory.endsWith("autotrace4j")) {
+            directory = directory.resolve("autotrace4j");
+        }
+
+        return directory;
+    }
+
     private static Level getLevelConfig() {
         return Optional
-            .ofNullable(System.getProperty(LogConstants.SYSTEM_PROPERTY_LOG_LEVEL))
+            .ofNullable(System.getProperty(SYSTEM_PROPERTY_LOG_LEVEL))
             .map(String::toUpperCase)
             .map(Level::valueOf)
-            .orElse(Level.INFO);
+            .orElse(Level.DEBUG);
     }
 
     public static Logger getLogger(Class<?> clazz) {

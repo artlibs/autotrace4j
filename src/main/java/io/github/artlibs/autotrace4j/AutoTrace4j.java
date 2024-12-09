@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static io.github.artlibs.autotrace4j.logger.LoggerFactory.getLogFileDirectory;
+import static io.github.artlibs.autotrace4j.logger.LoggerFactory.loggerEnabled;
 import static net.bytebuddy.matcher.ElementMatchers.nameStartsWith;
 
 /**
@@ -87,10 +89,16 @@ public final class AutoTrace4j {
          */
         public void on(Instrumentation instrument) throws IOException, URISyntaxException {
             String contextPackage = AutoTrace4j.class.getPackage().getName() + ".context";
+
+            // inject context class into bootstrap loader
             ClassUtils.injectClassToBootStrap(instrument, contextPackage);
 
-            // note: this method must be called after injectClassToBootStrap, don't move it forward
+            // note: this method must be called after injectClassToBootStrap
             ModuleUtils.compatibleJavaModule(contextPackage);
+
+            if (loggerEnabled()) {
+                System.err.println("已开启[autotrace4j]日志：" + getLogFileDirectory());
+            }
 
             AgentBuilder builder = this.newAgentBuilder();
             for (At4jTransformer transformer : loadTransformers()) {
@@ -99,8 +107,8 @@ public final class AutoTrace4j {
             builder.installOn(instrument);
 
             // init trace for main thread.
-            TraceContext.setTraceId(TraceContext.generate());
             TraceContext.setSpanId(TraceContext.generate());
+            TraceContext.setTraceId(TraceContext.generate());
         }
 
         /**

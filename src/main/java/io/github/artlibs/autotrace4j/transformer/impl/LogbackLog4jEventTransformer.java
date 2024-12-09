@@ -7,7 +7,7 @@ import net.bytebuddy.matcher.ElementMatcher;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
- * Logback/Log4j - LoggingEvent 增强转换器
+ * Logback/Log4j/Log4j2 - LoggingEvent 增强转换器
  * <p>
  * @author Fury
  * @since 2024-03-30
@@ -23,8 +23,12 @@ public class LogbackLog4jEventTransformer extends AbsVisitorTransformer.AbsConst
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
         return not(isInterface()).and(not(isAbstract())).and(
-                  hasSuperType(named("ch.qos.logback.classic.spi.ILoggingEvent"))
-                  .or(hasSuperType(named("org.apache.log4j.spi.LoggingEvent")))
+                // logback
+                  hasSuperType(named("ch.qos.logback.classic.spi.ILoggingEvent")).or(
+                          // log4j
+                          hasSuperType(named("org.apache.log4j.spi.LoggingEvent"))
+                          // log4j2
+                  ).or( hasSuperType(named("org.apache.logging.log4j.core.LogEvent")) )
         );
     }
 

@@ -1,12 +1,12 @@
 package io.github.artlibs.autotrace4j.transformer.impl;
 
+import io.github.artlibs.autotrace4j.context.TraceInjector;
 import io.github.artlibs.autotrace4j.transformer.abs.AbsVisitorTransformer;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.matcher.ElementMatcher;
 
-import static io.github.artlibs.autotrace4j.context.TraceContext.injectTraceId;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
@@ -24,6 +24,7 @@ public class LogbackOutStreamTransformer extends AbsVisitorTransformer {
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
+        // Supports FileAppender, RollingFileAppender, ConsoleAppender e.g.
         return hasSuperType(named("ch.qos.logback.core.OutputStreamAppender"));
     }
 
@@ -46,7 +47,7 @@ public class LogbackOutStreamTransformer extends AbsVisitorTransformer {
     public static void adviceOnMethodEnter(
             @Advice.Argument(value = 0, typing = Assigner.Typing.DYNAMIC
                     , readOnly = false) byte[] byteArray) {
-        byteArray = injectTraceId(new String(byteArray)).getBytes();
+        byteArray = TraceInjector.DF.injectTrace(new String(byteArray)).getBytes();
     }
 
 }

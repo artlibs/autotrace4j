@@ -21,7 +21,7 @@ import static io.github.artlibs.autotrace4j.logger.LogConstants.*;
  */
 public class DefaultLayout implements Layout<LogEvent> {
 
-    public static final String UN_DEFINE = "unDefine";
+    public static final String UNDEFINE = "undefine";
 
     @Override
     public String format(LogEvent event) {
@@ -33,12 +33,12 @@ public class DefaultLayout implements Layout<LogEvent> {
                     .ofNullable(event.getEventTime())
                     .map(eventTime -> LocalDateTime.ofInstant(Instant.ofEpochMilli(event.getEventTime()), ZoneId.systemDefault()))
                     .map(LocalDateTime::toString)
-                    .orElse(UN_DEFINE),
+                    .orElse(UNDEFINE),
                 sb
             );
-            appendItem(Optional.ofNullable(event.getThreadName()).orElse(UN_DEFINE), sb);
-            appendItem(Optional.ofNullable(event.getLevel()).map(Enum::name).orElse(UN_DEFINE), sb);
-            appendItem(Optional.ofNullable(logger).map(Logger::getName).orElse(UN_DEFINE), sb);
+            appendItem(Optional.ofNullable(event.getThreadName()).orElse(UNDEFINE), sb);
+            appendItem(Optional.ofNullable(event.getLevel()).map(Enum::name).orElse(UNDEFINE), sb);
+            appendItem(Optional.ofNullable(logger).map(Logger::getName).orElse(UNDEFINE), sb);
             sb.append("-");
             sb.append(SPACE);
             sb.append(String.format(event.getMessage(), event.getArguments()));

@@ -29,7 +29,7 @@ public abstract class AsyncAppender<E> extends AbstractAppender<E> {
 
     @Override
     public boolean start() {
-        new Thread(() -> {
+        Thread async = new Thread(() -> {
             while (true) {
                 try {
                     if (started()) {
@@ -40,7 +40,13 @@ public abstract class AsyncAppender<E> extends AbstractAppender<E> {
                     System.err.println(ThrowableUtils.throwableToStr(e));
                 }
             }
-        }).start();
+        });
+
+        // Fix: 设置成守护线程以防止主线程退出时阻止JVM的停止
+        async.setDaemon(true);
+
+        async.start();
+
         return super.start();
     }
 

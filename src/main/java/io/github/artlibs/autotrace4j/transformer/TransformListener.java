@@ -6,6 +6,8 @@ import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.utility.JavaModule;
+import net.bytebuddy.utility.nullability.MaybeNull;
+import net.bytebuddy.utility.nullability.NeverNull;
 
 
 /**
@@ -18,46 +20,50 @@ import net.bytebuddy.utility.JavaModule;
  */
 public final class TransformListener implements AgentBuilder.Listener {
     private static final Logger logger = LoggerFactory.getLogger(TransformListener.class);
+    private static final String FORMAT = "\n>>> Type: %s\n>>> ClassLoader: %s\n>>> Module: %s, Loaded: %s";
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onDiscovery(String typeName, ClassLoader classLoader, JavaModule module, boolean loaded) {
-        logger.trace("typeName: %s\n classLoader: %s\n module: %s\nloaded: %s", typeName, classLoader, module, loaded);
+    public void onDiscovery(@NeverNull String type, @MaybeNull ClassLoader classLoader
+            , @MaybeNull JavaModule module, boolean loaded) {
+        logger.trace(FORMAT, type, classLoader, module, loaded);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onTransformation(
-        TypeDescription typeDescription, ClassLoader classLoader, JavaModule module, boolean loaded, DynamicType dynamicType
-    ) {
-        logger.trace("typeDescription: %s\n classLoader: %s\n module: %s\nloaded: %s\ndynamicType: %s", typeDescription, classLoader, module, loaded, dynamicType);
+    public void onTransformation(@NeverNull TypeDescription type, @MaybeNull ClassLoader classLoader
+            , @MaybeNull JavaModule module, boolean loaded, @NeverNull DynamicType dynamicType) {
+        logger.debug(FORMAT + "\n>>> DynamicType: %s", type, classLoader, module, loaded, dynamicType);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onIgnored(TypeDescription typeDescription, ClassLoader classLoader, JavaModule module, boolean loaded) {
-        logger.trace("typeDescription: %s\n classLoader: %s\n module: %s\nloaded: %s", typeDescription, classLoader, module, loaded);
+    public void onIgnored(@NeverNull TypeDescription type, @MaybeNull ClassLoader classLoader
+            , @MaybeNull JavaModule module, boolean loaded) {
+        logger.trace(FORMAT, type, classLoader, module, loaded);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onError(String typeName, ClassLoader classLoader, JavaModule module, boolean loaded, Throwable throwable) {
-        logger.error("TypeName: %s\n classLoader: %s\n module: %s\n", typeName, classLoader, module, throwable);
+    public void onError(@NeverNull String type, @MaybeNull ClassLoader classLoader
+            , @MaybeNull JavaModule module, boolean loaded, @NeverNull Throwable throwable) {
+        logger.error(FORMAT, type, classLoader, module, loaded, throwable);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onComplete(String typeName, ClassLoader classLoader, JavaModule module, boolean loaded) {
-        logger.trace("TypeName: %s\n classLoader: %s\n module: %s\nloaded: %s", typeName, classLoader, module, loaded);
+    public void onComplete(@NeverNull String type, @MaybeNull ClassLoader classLoader
+            , @MaybeNull JavaModule module, boolean loaded) {
+        logger.trace(FORMAT, type, classLoader, module, loaded);
     }
 }
