@@ -87,9 +87,11 @@ public final class AutoTrace4j {
          */
         public void on(Instrumentation instrument) throws IOException, URISyntaxException {
             String contextPackage = AutoTrace4j.class.getPackage().getName() + ".context";
+
+            // inject context class into bootstrap loader
             ClassUtils.injectClassToBootStrap(instrument, contextPackage);
 
-            // note: this method must be called after injectClassToBootStrap, don't move it forward
+            // note: this method must be called after injectClassToBootStrap
             ModuleUtils.compatibleJavaModule(contextPackage);
 
             AgentBuilder builder = this.newAgentBuilder();
@@ -99,8 +101,8 @@ public final class AutoTrace4j {
             builder.installOn(instrument);
 
             // init trace for main thread.
-            TraceContext.setTraceId(TraceContext.generate());
             TraceContext.setSpanId(TraceContext.generate());
+            TraceContext.setTraceId(TraceContext.generate());
         }
 
         /**

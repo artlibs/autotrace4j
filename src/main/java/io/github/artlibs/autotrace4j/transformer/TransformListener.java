@@ -7,6 +7,8 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.utility.JavaModule;
 
+import java.security.PublicKey;
+
 
 /**
  * 转换过程监听器
@@ -24,17 +26,15 @@ public final class TransformListener implements AgentBuilder.Listener {
      */
     @Override
     public void onDiscovery(String typeName, ClassLoader classLoader, JavaModule module, boolean loaded) {
-        logger.trace("typeName: %s\n classLoader: %s\n module: %s\nloaded: %s", typeName, classLoader, module, loaded);
+        logger.debug("typeName: %s\n classLoader: %s\n module: %s\nloaded: %s", typeName, classLoader, module, loaded);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onTransformation(
-        TypeDescription typeDescription, ClassLoader classLoader, JavaModule module, boolean loaded, DynamicType dynamicType
-    ) {
-        logger.trace("typeDescription: %s\n classLoader: %s\n module: %s\nloaded: %s\ndynamicType: %s", typeDescription, classLoader, module, loaded, dynamicType);
+    public void onTransformation(TypeDescription typeDescription, ClassLoader classLoader, JavaModule module, boolean loaded, DynamicType dynamicType) {
+        logger.info("typeDescription: %s\n classLoader: %s\n module: %s\nloaded: %s\ndynamicType: %s", typeDescription, classLoader, module, loaded, dynamicType);
     }
 
     /**
@@ -42,7 +42,7 @@ public final class TransformListener implements AgentBuilder.Listener {
      */
     @Override
     public void onIgnored(TypeDescription typeDescription, ClassLoader classLoader, JavaModule module, boolean loaded) {
-        logger.trace("typeDescription: %s\n classLoader: %s\n module: %s\nloaded: %s", typeDescription, classLoader, module, loaded);
+        logger.debug("typeDescription: %s\n classLoader: %s\n module: %s\nloaded: %s", typeDescription, classLoader, module, loaded);
     }
 
     /**
@@ -58,6 +58,6 @@ public final class TransformListener implements AgentBuilder.Listener {
      */
     @Override
     public void onComplete(String typeName, ClassLoader classLoader, JavaModule module, boolean loaded) {
-        logger.trace("TypeName: %s\n classLoader: %s\n module: %s\nloaded: %s", typeName, classLoader, module, loaded);
+        logger.debug("TypeName: %s\n classLoader: %s\n module: %s\nloaded: %s", typeName, classLoader, module, loaded);
     }
 }

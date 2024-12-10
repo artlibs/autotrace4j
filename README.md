@@ -27,6 +27,16 @@ $ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-dom
 -   当通过 `MDC.get("X-Ato-P-Span-Id")`时返回当前上下文的 `ParentSpanId`
 -   当通过 `MDC.get("X-Ato-Trace-Id")`时返回当前上下文的 `TraceId`
 
+#### 关于日志
+
+可通过如下系统熟悉开启和设置日志来观察增强过程：
+
+-   `autotrace4j.log.enable`：是否开启autotrace4j日志，默认`false`
+-   `autotrace4j.log.dir`：autotrace4j日志文件保存路径，默认为临时目录`java.io.tmpdir`
+-   `autotrace4j.log.level`：autotrace4j日志级别，默认为`DEBUG`
+-   `autotrace4j.log.file.retention`：autotrace4j日志文件保留时间，单位天，默认为`7`天
+-   `autotrace4j.log.file.size`：autotrace4j日志文件大小限制，单位字节，默认为`0`表示不限制
+
 ## Supported Context
 
 ### 1、Thread
