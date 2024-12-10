@@ -1,12 +1,12 @@
 package io.github.artlibs.autotrace4j.transformer.impl.jdk;
 
+import io.github.artlibs.autotrace4j.context.TraceInjector;
 import io.github.artlibs.autotrace4j.transformer.abs.AbsVisitorTransformer;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.matcher.ElementMatcher;
 
-import static io.github.artlibs.autotrace4j.context.TraceContext.injectTraceId;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 
@@ -40,6 +40,6 @@ public class JavaUtilLoggingTransformer extends AbsVisitorTransformer {
     @Advice.OnMethodExit
     public static void adviceOnMethodExit(@Advice.Return(readOnly = false
             , typing = Assigner.Typing.DYNAMIC) String result) {
-        result = injectTraceId(result);
+        result = TraceInjector.DF.injectTrace(result);
     }
 }

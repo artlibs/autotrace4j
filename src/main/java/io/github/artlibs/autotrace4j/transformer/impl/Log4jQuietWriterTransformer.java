@@ -1,12 +1,12 @@
 package io.github.artlibs.autotrace4j.transformer.impl;
 
+import io.github.artlibs.autotrace4j.context.TraceInjector;
 import io.github.artlibs.autotrace4j.transformer.abs.AbsVisitorTransformer;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.matcher.ElementMatcher;
 
-import static io.github.artlibs.autotrace4j.context.TraceContext.injectTraceId;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
@@ -46,7 +46,7 @@ public class Log4jQuietWriterTransformer extends AbsVisitorTransformer {
     public static void adviceOnMethodEnter(
             @Advice.Argument(value = 0, typing = Assigner.Typing.DYNAMIC
                     , readOnly = false) String message) {
-        message = injectTraceId(message);
+        message = TraceInjector.DF.injectTrace(message);
     }
 
 }

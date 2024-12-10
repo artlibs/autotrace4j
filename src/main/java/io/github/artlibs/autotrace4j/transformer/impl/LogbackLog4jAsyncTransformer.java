@@ -27,8 +27,12 @@ public class LogbackLog4jAsyncTransformer extends AbsVisitorTransformer {
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return named("ch.qos.logback.core.spi.AppenderAttachableImpl")
-                .or(named("org.apache.log4j.helpers.AppenderAttachableImpl"));
+        return // logback - appendLoopOnAppenders
+                named("ch.qos.logback.core.spi.AppenderAttachableImpl")
+                        // log4j - appendLoopOnAppenders
+                .or(named("org.apache.log4j.helpers.AppenderAttachableImpl"))
+                        // log4j2 -
+                .or(hasSuperType(named("org.apache.logging.log4j.core.config.AppenderControl")));
     }
 
     /**
@@ -36,8 +40,11 @@ public class LogbackLog4jAsyncTransformer extends AbsVisitorTransformer {
      */
     @Override
     protected MethodMatcherHolder methodMatchers() {
-        return ofMatcher(isPublic().and(named("appendLoopOnAppenders"))
-                .and(returns(int.class)));
+        return ofMatcher(isPublic()
+                // logback & log4j
+                .and(named("appendLoopOnAppenders").and(returns(int.class)))
+                // log4j2
+                .or(named("callAppender").and(returns(void.class))));
     }
 
     @Advice.OnMethodEnter
