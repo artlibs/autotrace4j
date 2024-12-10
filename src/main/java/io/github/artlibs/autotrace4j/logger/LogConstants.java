@@ -15,7 +15,6 @@ public final class LogConstants {
     public static final String LEFT_MIDDLE_BRACKET = "[";
     public static final String RIGHT_MIDDLE_BRACKET = "]";
     public static final String CAUSED_BY = "Caused by: ";
-    public static final String SYSTEM_PROPERTY_TEMP_DIR = "java.io.tmpdir";
 
     public static final String SYSTEM_PROPERTY_LOG_ENABLE = "autotrace4j.log.enable";
     public static final String SYSTEM_PROPERTY_LOG_DIR = "autotrace4j.log.dir";

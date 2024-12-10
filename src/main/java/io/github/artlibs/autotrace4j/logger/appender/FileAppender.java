@@ -44,7 +44,7 @@ import static io.github.artlibs.autotrace4j.logger.LogConstants.DEFAULT_LOG_FILE
  * All rights Reserved.
  */
 @SuppressWarnings({"resource", "UnusedReturnValue" })
-public class DefaultFileAppender extends AsyncAppender<LogEvent> {
+public class FileAppender extends AsyncAppender<LogEvent> {
 
     public static final int MIN_FILE_SIZE = 10 * 1024 * 1024;
     private static final int WRITE_BUFFER_SIZE = 1024;
@@ -67,15 +67,15 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
 
     private final ThreadLocal<ByteBuffer> logWriteBuffer = ThreadLocal.withInitial(() -> ByteBuffer.allocateDirect(WRITE_BUFFER_SIZE));
 
-    public DefaultFileAppender(Layout<LogEvent> layout, Path directory) {
+    public FileAppender(Layout<LogEvent> layout, Path directory) {
         this(layout, directory, DEFAULT_LOG_FILE_RETENTION, DEFAULT_LOG_FILE_SIZE);
     }
 
-    public DefaultFileAppender(Layout<LogEvent> layout, Path directory, int logFileRetentionDays) {
+    public FileAppender(Layout<LogEvent> layout, Path directory, int logFileRetentionDays) {
         this(layout, directory, logFileRetentionDays, DEFAULT_LOG_FILE_SIZE);
     }
 
-    public DefaultFileAppender(Layout<LogEvent> layout, Path directory, int logFileRetentionDays, int logFileSizeBytes) {
+    public FileAppender(Layout<LogEvent> layout, Path directory, int logFileRetentionDays, int logFileSizeBytes) {
         if (Objects.isNull(directory) || (Files.exists(directory) && !Files.isDirectory(directory))) {
             throw new CreateAppenderException("log directory missing, it will not record any log event");
         }
@@ -246,7 +246,7 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
                     .with(LocalTime.MIN)
                     .minusDays(logFileRetentionDays);
             Files.list(directory)
-                    .map(DefaultFileAppender::mapPathToLogFile)
+                    .map(FileAppender::mapPathToLogFile)
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .sorted(Comparator.comparing(Tuple2::getFirst))
@@ -310,17 +310,17 @@ public class DefaultFileAppender extends AsyncAppender<LogEvent> {
          * expiredDate's date and before will be deleted.
          */
         private final LocalDateTime triggerDate;
-        private final DefaultFileAppender defaultFileAppender;
+        private final FileAppender fileAppender;
 
-        public CleanerTask(LocalDateTime triggerDate, DefaultFileAppender defaultFileAppender) {
+        public CleanerTask(LocalDateTime triggerDate, FileAppender fileAppender) {
             this.triggerDate = triggerDate;
-            this.defaultFileAppender = defaultFileAppender;
+            this.fileAppender = fileAppender;
         }
 
         @Override
         public void run() {
             try {
-                defaultFileAppender.cleanExpiredFiles(triggerDate);
+                fileAppender.cleanExpiredFiles(triggerDate);
             } catch (Exception e) {
                 System.err.println("[DefaultFileAppender] clean expired log files failed.");
                 System.err.println(ThrowableUtils.throwableToStr(e));

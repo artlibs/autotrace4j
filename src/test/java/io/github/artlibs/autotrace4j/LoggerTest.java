@@ -1,7 +1,6 @@
 package io.github.artlibs.autotrace4j;
 
 import io.github.artlibs.autotrace4j.context.ReflectUtils;
-import io.github.artlibs.autotrace4j.logger.LogConstants;
 import io.github.artlibs.autotrace4j.logger.Logger;
 import io.github.artlibs.autotrace4j.logger.LoggerFactory;
 import io.github.artlibs.autotrace4j.logger.appender.*;
@@ -34,6 +33,8 @@ import java.util.stream.Stream;
 
 import static io.github.artlibs.autotrace4j.context.ReflectUtils.getField;
 import static io.github.artlibs.autotrace4j.context.ReflectUtils.getFieldValue;
+import static io.github.artlibs.autotrace4j.logger.LogConstants.*;
+import static io.github.artlibs.autotrace4j.logger.event.Level.DEBUG;
 import static io.github.artlibs.autotrace4j.logger.event.Level.INFO;
 import static io.github.artlibs.autotrace4j.support.FileUtils.deleteDirectoryRecursively;
 
@@ -47,13 +48,14 @@ import static io.github.artlibs.autotrace4j.support.FileUtils.deleteDirectoryRec
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class LoggerTest {
-
-    protected static final Level TEST_DEFAULT_LEVEL = INFO;
-    protected static final Path LOG_DIR = SystemUtils.getSysTempDir().resolve("test").resolve(LoggerTest.class.getSimpleName());
+    protected static final Level TEST_DEFAULT_LEVEL = DEBUG;
+    protected static final Path LOG_DIR = SystemUtils.getSysTempDir().resolve("test")
+            .resolve(LoggerTest.class.getSimpleName());
 
     @BeforeAll
     public static void beforeAll() throws IOException {
         deleteDirectoryRecursively(LOG_DIR);
+        System.setProperty(SYSTEM_PROPERTY_LOG_ENABLE, "true");
     }
 
     @BeforeEach
@@ -76,7 +78,6 @@ public class LoggerTest {
         long endTime = System.currentTimeMillis();
         System.out.println("toast: " + (endTime - startTime));
     }
-
 
     @Test
     @Order(1)
@@ -107,30 +108,19 @@ public class LoggerTest {
         );
     }
 
-    private static Logger newLogger(String name, Appender<?> appender, Level level) {
-        try {
-            Constructor<Logger> declaredConstructor = Logger.class.getDeclaredConstructor(String.class, Appender.class, Level.class);
-            declaredConstructor.setAccessible(true);
-            return declaredConstructor
-                .newInstance(name, appender, level);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Test
     @Order(2)
     void logConsole() throws IOException, InterruptedException, IllegalAccessException {
         for (Level limitLevel : Level.values()) {
             ByteArrayOutputStream logCollectStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(logCollectStream);
-            DefaultPrintStreamAppender defaultPrintStreamAppender = new DefaultPrintStreamAppender(
+            ConsoleAppender consoleAppender = new ConsoleAppender(
                 new DefaultLayout(),
                 printStream,
                 printStream
             );
-            defaultPrintStreamAppender.start();
-            Logger logger = newLogger(LoggerTest.class.getCanonicalName(), defaultPrintStreamAppender, limitLevel);
+            consoleAppender.start();
+            Logger logger = newLogger(LoggerTest.class.getCanonicalName(), consoleAppender, limitLevel);
             // test every limit level log print
             Assertions.assertNotNull(logger);
 
@@ -141,14 +131,14 @@ public class LoggerTest {
                     .invoke(level.name(), new Object[0]);
             }
             // waiting for log collect,its async write.
-            waitingForAsyncAppend(defaultPrintStreamAppender);
+            waitingForAsyncAppend(consoleAppender);
             // check console log
             checkLogContents(
                 logCollectStream.toString(StandardCharsets.UTF_8.name()).split(System.lineSeparator()),
                 logger.getLevel()
             );
 
-            defaultPrintStreamAppender.stop();
+            consoleAppender.stop();
         }
     }
 
@@ -159,9 +149,9 @@ public class LoggerTest {
         Files.createDirectories(logPath);
         for (Level limitLevel : Level.values()) {
             // don't clean file
-            DefaultFileAppender defaultFileAppender = new DefaultFileAppender(new DefaultLayout(), logPath, 0);
-            defaultFileAppender.start();
-            Logger logger = newLogger(LoggerTest.class.getCanonicalName(), defaultFileAppender, limitLevel);
+            FileAppender fileAppender = new FileAppender(new DefaultLayout(), logPath, 0);
+            fileAppender.start();
+            Logger logger = newLogger(LoggerTest.class.getCanonicalName(), fileAppender, limitLevel);
             // test every limit level log print
             // make all level's log
             for (Level level : Level.values()) {
@@ -170,9 +160,9 @@ public class LoggerTest {
                     .invoke(level.name(), new Object[0]);
             }
             // waiting for log collect,its async write.
-            waitingForAsyncAppend(defaultFileAppender);
+            waitingForAsyncAppend(fileAppender);
             // check file log
-            Path logFile = logPath.resolve(DefaultFileAppender.dateToLogFileName(LocalDateTime.now()));
+            Path logFile = logPath.resolve(FileAppender.dateToLogFileName(LocalDateTime.now()));
             checkLogContents(
                 new String(Files.readAllBytes(logFile), StandardCharsets.UTF_8).split(System.lineSeparator()),
                 logger.getLevel()
@@ -181,7 +171,7 @@ public class LoggerTest {
                 // 将文件大小截断至0字节，相当于清空文件内容
                 fileChannel.truncate(0);
             }
-            defaultFileAppender.stop();
+            fileAppender.stop();
         }
     }
 
@@ -193,28 +183,28 @@ public class LoggerTest {
         Path cleanExpiredFileDir = LOG_DIR.resolve("cleanExpiredFile");
         Files.createDirectories(cleanExpiredFileDir);
         int logFileRetentionDays = 7;
-        DefaultFileAppender defaultFileAppender = new DefaultFileAppender(
+        FileAppender fileAppender = new FileAppender(
             new DefaultLayout(),
             cleanExpiredFileDir,
             logFileRetentionDays
         );
         // make expired log file, here we needn't create file,because the appender will create it.
-        Path unExpiredFile1 = cleanExpiredFileDir.resolve(DefaultFileAppender.dateToLogFileName(now));
+        Path unExpiredFile1 = cleanExpiredFileDir.resolve(FileAppender.dateToLogFileName(now));
         Path unExpiredFile2 = cleanExpiredFileDir
-            .resolve(DefaultFileAppender.dateToLogFileName(now.minusDays(logFileRetentionDays - 1)));
+            .resolve(FileAppender.dateToLogFileName(now.minusDays(logFileRetentionDays - 1)));
         Files.createFile(unExpiredFile2);
         Path expiredFile1 = cleanExpiredFileDir
-            .resolve(DefaultFileAppender.dateToLogFileName(now.minusDays(logFileRetentionDays)));
+            .resolve(FileAppender.dateToLogFileName(now.minusDays(logFileRetentionDays)));
         Files.createFile(expiredFile1);
         Path expiredFile2 = cleanExpiredFileDir
-            .resolve(DefaultFileAppender.dateToLogFileName(now.minusDays(logFileRetentionDays + 1)));
+            .resolve(FileAppender.dateToLogFileName(now.minusDays(logFileRetentionDays + 1)));
         Files.createFile(expiredFile2);
 
         System.out.println("before clean,log files: ");
         printDirectory(cleanExpiredFileDir);
 
         ScheduledFuture<?> future = ReflectUtils
-            .getMethodWrapper(defaultFileAppender, "triggerCleanTask", true, LocalDateTime.class)
+            .getMethodWrapper(fileAppender, "triggerCleanTask", true, LocalDateTime.class)
             .invoke(now);
 
         // waiting task finish
@@ -238,9 +228,9 @@ public class LoggerTest {
         Files.createDirectories(rollingFileDir);
 
         DefaultLayout defaultLayout = new DefaultLayout();
-        DefaultFileAppender defaultFileAppender = new DefaultFileAppender(defaultLayout, rollingFileDir, 0, 0);
-        defaultFileAppender.start();
-        Logger logger = newLogger(LoggerTest.class.getCanonicalName(), defaultFileAppender, INFO);
+        FileAppender fileAppender = new FileAppender(defaultLayout, rollingFileDir, 0, 0);
+        fileAppender.start();
+        Logger logger = newLogger(LoggerTest.class.getCanonicalName(), fileAppender, INFO);
 
         String message = "test";
         String log = defaultLayout.format(buildLogEvent(logger, message, new Object[0]));
@@ -249,9 +239,9 @@ public class LoggerTest {
         System.out.println("before files: ");
         printDirectory(rollingFileDir);
         // 刚好消息跟文件大小相同
-        ReflectUtils.setFieldValue(defaultFileAppender, "logFileSizeBytes", logSize, true);
+        ReflectUtils.setFieldValue(fileAppender, "logFileSizeBytes", logSize, true);
         logger.info(message);
-        waitingForAsyncAppend(defaultFileAppender);
+        waitingForAsyncAppend(fileAppender);
         try (Stream<Path> s = Files.list(rollingFileDir)) {
             Assertions.assertEquals(1, s.count());
         }
@@ -259,9 +249,9 @@ public class LoggerTest {
         printDirectory(rollingFileDir);
 
         // 消息超过文件大小的情况,直接追加在当前文件后
-        ReflectUtils.setFieldValue(defaultFileAppender, "logFileSizeBytes", logSize - 1, true);
+        ReflectUtils.setFieldValue(fileAppender, "logFileSizeBytes", logSize - 1, true);
         logger.info(message);
-        waitingForAsyncAppend(defaultFileAppender);
+        waitingForAsyncAppend(fileAppender);
         try (Stream<Path> s = Files.list(rollingFileDir)) {
             Assertions.assertEquals(1, s.count());
         }
@@ -269,25 +259,25 @@ public class LoggerTest {
         printDirectory(rollingFileDir);
 
         // 文件剩余空间不足以填充当前消息 且 消息大小小于文件大小时 roll 到下一个文件
-        ReflectUtils.setFieldValue(defaultFileAppender, "logFileSizeBytes", logSize * 2 + 1, true);
+        ReflectUtils.setFieldValue(fileAppender, "logFileSizeBytes", logSize * 2 + 1, true);
         logger.info(message);
         logger.info(message);
         logger.info(message);
-        waitingForAsyncAppend(defaultFileAppender);
+        waitingForAsyncAppend(fileAppender);
         try (Stream<Path> s = Files.list(rollingFileDir)) {
             Assertions.assertEquals(3, s.count());
         }
         System.out.println("after files: ");
         printDirectory(rollingFileDir);
 
-        defaultFileAppender.stop();
+        fileAppender.stop();
     }
 
     @Test
     @Order(6)
     void getLogger() {
         // test systemProperty set
-        System.setProperty(LogConstants.SYSTEM_PROPERTY_LOG_LEVEL, TEST_DEFAULT_LEVEL.name());
+        System.setProperty(SYSTEM_PROPERTY_LOG_LEVEL, TEST_DEFAULT_LEVEL.name());
 
         Logger byName = LoggerFactory.getLogger(LoggerTest.class.getCanonicalName());
         Logger byClass = LoggerFactory.getLogger(LoggerTest.class);
@@ -295,29 +285,41 @@ public class LoggerTest {
         Assertions.assertSame(byName, byClass);
 
         Assertions.assertNotNull(byName);
-        Assertions.assertEquals(INFO, byName.getLevel());
+        Assertions.assertEquals(DEBUG, byName.getLevel());
         Assertions.assertEquals(LoggerTest.class.getCanonicalName(), byName.getName());
         AppenderCombiner<LogEvent> appenderCombiner = getFieldValue(byName, "appender", true);
         Assertions.assertSame(
             getFieldValue(LoggerFactory.class, "APPENDER_COMBINER", true),
             appenderCombiner
         );
-        boolean defaultPrintStreamAppendExists = false;
-        boolean defaultFileAppendExists = false;
+        boolean fileAppendExists = false;
+        boolean consoleAppendExists = false;
         List<Appender<?>> appenderList = getFieldValue(appenderCombiner, "appenderList", true);
         Assertions.assertNotNull(appenderList);
         for (Appender<?> appender : appenderList) {
-            if (appender instanceof DefaultPrintStreamAppender) {
-                defaultPrintStreamAppendExists = true;
+            if (appender instanceof FileAppender) {
+                fileAppendExists = true;
             }
-            if (appender instanceof DefaultFileAppender) {
-                defaultFileAppendExists = true;
+            if (appender instanceof ConsoleAppender) {
+                consoleAppendExists = true;
             }
         }
-        boolean logDirPresent = SystemUtils.getSysPropertyPath(LogConstants.SYSTEM_PROPERTY_LOG_DIR).isPresent();
-        Assertions.assertTrue(defaultPrintStreamAppendExists);
+        // LoggerFactory加载比这个类早，所以appenderList一定是空
+        boolean logDirPresent = SystemUtils.getSysPropertyPath(SYSTEM_PROPERTY_LOG_DIR).isPresent();
+        Assertions.assertFalse(consoleAppendExists);
         if (logDirPresent){
-            Assertions.assertTrue(defaultFileAppendExists);
+            Assertions.assertFalse(fileAppendExists);
+        }
+    }
+
+    private static Logger newLogger(String name, Appender<?> appender, Level level) {
+        try {
+            Constructor<Logger> declaredConstructor = Logger.class.getDeclaredConstructor(String.class, Appender.class, Level.class);
+            declaredConstructor.setAccessible(true);
+            return declaredConstructor
+                    .newInstance(name, appender, level);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -368,7 +370,7 @@ public class LoggerTest {
         for (int i = 0; i < allowLevelNum; i++) {
             // [2024-04-24T16:13:15.027] [main] [INFO] [io.github.artlibs.autotrace4j.LoggerTest] - INFO
             System.out.printf("check log content pass: %s%n", logs[i]);
-            String[] logItems = logs[i].split(LogConstants.SPACE);
+            String[] logItems = logs[i].split(SPACE);
             Level level = allowLevels.get(i);
             Assertions.assertEquals(logItems[1], buildItem(Thread.currentThread().getName()));
             Assertions.assertEquals(logItems[2], buildItem(level.name()));
@@ -378,7 +380,7 @@ public class LoggerTest {
     }
 
     private static String buildItem(String item) {
-        return LogConstants.LEFT_MIDDLE_BRACKET + item + LogConstants.RIGHT_MIDDLE_BRACKET;
+        return LEFT_MIDDLE_BRACKET + item + RIGHT_MIDDLE_BRACKET;
     }
 
     private static void printDirectory(Path rollingFileDir) throws IOException {
