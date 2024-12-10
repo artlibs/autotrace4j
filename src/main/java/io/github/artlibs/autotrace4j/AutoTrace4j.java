@@ -97,7 +97,7 @@ public final class AutoTrace4j {
             ModuleUtils.compatibleJavaModule(contextPackage);
 
             if (loggerEnabled()) {
-                System.err.println("[autotrace4j]日志已开启，路径：" + getLogFileDirectory());
+                System.err.println("已开启[autotrace4j]日志：" + getLogFileDirectory());
             }
 
             AgentBuilder builder = this.newAgentBuilder();

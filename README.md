@@ -16,8 +16,25 @@
 ​	`autotrace4j`的使用非常简单，只需从[release](https://github.com/artlibs/autotrace4j/releases)中下载最新的agent jar包，在启动脚本中以agent方式运行：
 
 ```shell
-$ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-domain.biz2.pkg2 -jar YourJar.jar  # 省略其他无关参数
+$ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-domain.biz2.pkg2 -Dautotrace4j.log.enable=true  -jar YourJar.jar  # 省略其他无关参数
 ```
+
+-   一般情况下不需要开启autotrace4j内部日志，即***不需要***`-Dautotrace4j.log.enable=true`，如果需要观测到增强过程增强了哪些类，或在调试autotrace4j时有需要，可开启该日志选项，其他选项可使用默认参数：
+    -   `-Dautotrace4j.log.enable=true` 设置开启autotrace4j内部日志
+    -   `-Dautotrace4j.log.dir=/path/to/your/log/dir` 修改autotrace4j内部日志保存路径
+    -   `-Dautotrace4j.log.level=TRACE` （可选`TRACE`, `DEBUG`, `INFO`, `WARN`, `ERROR`）修改日志级别
+    -   `-Dautotrace4j.log.file.retention=5` 设置autotrace4j内部日志保留天数为5天
+    -   `-Dautotrace4j.log.file.size=10485760`设置单个文件大小为10M(`10*1024*1024=10485760`)
+
+#### 关于日志
+
+可通过如下系统属性开启和设置日志来观察增强过程：
+
+-   `autotrace4j.log.enable`：是否开启autotrace4j日志，默认`false`
+-   `autotrace4j.log.dir`：autotrace4j日志文件保存路径，默认为临时目录`java.io.tmpdir`
+-   `autotrace4j.log.level`：autotrace4j日志级别，默认为`DEBUG`
+-   `autotrace4j.log.file.retention`：autotrace4j日志文件保留时间，单位天，默认为`7`天
+-   `autotrace4j.log.file.size`：autotrace4j日志文件大小限制，单位字节(`B`)，默认为`0`表示不限制
 
 #### 关于`MDC`
 
@@ -26,16 +43,6 @@ $ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-dom
 -   当通过 `MDC.get("X-Ato-Span-Id")`时返回当前上下文的 `SpanId`
 -   当通过 `MDC.get("X-Ato-P-Span-Id")`时返回当前上下文的 `ParentSpanId`
 -   当通过 `MDC.get("X-Ato-Trace-Id")`时返回当前上下文的 `TraceId`
-
-#### 关于日志
-
-可通过如下系统熟悉开启和设置日志来观察增强过程：
-
--   `autotrace4j.log.enable`：是否开启autotrace4j日志，默认`false`
--   `autotrace4j.log.dir`：autotrace4j日志文件保存路径，默认为临时目录`java.io.tmpdir`
--   `autotrace4j.log.level`：autotrace4j日志级别，默认为`DEBUG`
--   `autotrace4j.log.file.retention`：autotrace4j日志文件保留时间，单位天，默认为`7`天
--   `autotrace4j.log.file.size`：autotrace4j日志文件大小限制，单位字节，默认为`0`表示不限制
 
 ## Supported Context
 
