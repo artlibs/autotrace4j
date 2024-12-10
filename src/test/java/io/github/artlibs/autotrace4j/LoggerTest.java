@@ -49,7 +49,8 @@ import static io.github.artlibs.autotrace4j.support.FileUtils.deleteDirectoryRec
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class LoggerTest {
     protected static final Level TEST_DEFAULT_LEVEL = DEBUG;
-    protected static final Path LOG_DIR = SystemUtils.getSysTempDir().resolve("test")
+    protected static final Path LOG_DIR = SystemUtils.getSysTempDir()
+            .resolve("autotrace4j-test")
             .resolve(LoggerTest.class.getSimpleName());
 
     @BeforeAll
@@ -162,7 +163,7 @@ public class LoggerTest {
             // waiting for log collect,its async write.
             waitingForAsyncAppend(fileAppender);
             // check file log
-            Path logFile = logPath.resolve(FileAppender.dateToLogFileName(LocalDateTime.now()));
+            Path logFile = logPath.resolve(FileAppender.dateToLogFileName(LocalDateTime.now()) + ".log");
             checkLogContents(
                 new String(Files.readAllBytes(logFile), StandardCharsets.UTF_8).split(System.lineSeparator()),
                 logger.getLevel()
@@ -189,15 +190,15 @@ public class LoggerTest {
             logFileRetentionDays
         );
         // make expired log file, here we needn't create file,because the appender will create it.
-        Path unExpiredFile1 = cleanExpiredFileDir.resolve(FileAppender.dateToLogFileName(now));
-        Path unExpiredFile2 = cleanExpiredFileDir
-            .resolve(FileAppender.dateToLogFileName(now.minusDays(logFileRetentionDays - 1)));
+        Path unExpiredFile1 = cleanExpiredFileDir.resolve(FileAppender.dateToLogFileName(now) + ".log");
+
+        Path unExpiredFile2 = cleanExpiredFileDir.resolve(FileAppender.dateToLogFileName(now.minusDays(logFileRetentionDays - 1)) + ".log");
         Files.createFile(unExpiredFile2);
         Path expiredFile1 = cleanExpiredFileDir
-            .resolve(FileAppender.dateToLogFileName(now.minusDays(logFileRetentionDays)));
+            .resolve(FileAppender.dateToLogFileName(now.minusDays(logFileRetentionDays)) + ".log");
         Files.createFile(expiredFile1);
         Path expiredFile2 = cleanExpiredFileDir
-            .resolve(FileAppender.dateToLogFileName(now.minusDays(logFileRetentionDays + 1)));
+            .resolve(FileAppender.dateToLogFileName(now.minusDays(logFileRetentionDays + 1)) + ".log");
         Files.createFile(expiredFile2);
 
         System.out.println("before clean,log files: ");

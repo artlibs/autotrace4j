@@ -48,6 +48,7 @@ public class FileAppender extends AsyncAppender<LogEvent> {
 
     public static final int MIN_FILE_SIZE = 10 * 1024 * 1024;
     private static final int WRITE_BUFFER_SIZE = 1024;
+    private static final String FILE_SUFFIX = ".log";
 
     private final Layout<LogEvent> layout;
     private final Path directory;
@@ -65,7 +66,8 @@ public class FileAppender extends AsyncAppender<LogEvent> {
     @SuppressWarnings("FieldMayBeFinal")
     private int logFileSizeBytes;
 
-    private final ThreadLocal<ByteBuffer> logWriteBuffer = ThreadLocal.withInitial(() -> ByteBuffer.allocateDirect(WRITE_BUFFER_SIZE));
+    private final ThreadLocal<ByteBuffer> logWriteBuffer = ThreadLocal.withInitial(
+            () -> ByteBuffer.allocateDirect(WRITE_BUFFER_SIZE));
 
     public FileAppender(Layout<LogEvent> layout, Path directory) {
         this(layout, directory, DEFAULT_LOG_FILE_RETENTION, DEFAULT_LOG_FILE_SIZE);
@@ -110,10 +112,9 @@ public class FileAppender extends AsyncAppender<LogEvent> {
 
     private int computeFileIndex(LocalDateTime date, boolean increment) throws IOException {
         String todayFileNamePrefix = dateToLogFileName(date);
-        return Files
-            .list(directory)
+        return Files.list(directory).filter(p -> p.toString().endsWith(FILE_SUFFIX))
             .map(path -> {
-                String fileName = path.getFileName().toString();
+                String fileName = path.getFileName().toString().replace(FILE_SUFFIX, "");
                 int prefixIndex = fileName.lastIndexOf(todayFileNamePrefix);
                 if (prefixIndex != -1) {
                     if (fileName.length() == todayFileNamePrefix.length()) {
@@ -168,7 +169,6 @@ public class FileAppender extends AsyncAppender<LogEvent> {
         } catch (Exception e) {
             System.err.println(ThrowableUtils.throwableToStr(e));
         }
-
     }
 
     private Tuple2<Path, FileChannel> getLogFile(int messageLength) throws IOException {
@@ -208,7 +208,7 @@ public class FileAppender extends AsyncAppender<LogEvent> {
     }
 
     private Tuple2<Path, FileChannel> openLogFile(String logFileNamePrefix, int fileIndex) throws IOException {
-        Path path = directory.resolve(logFileNamePrefix + (fileIndex == 0 ? "" : "-" + fileIndex));
+        Path path = directory.resolve(logFileNamePrefix + (fileIndex == 0 ? "" : "_" + fileIndex) + FILE_SUFFIX);
         FileChannel fileChannel = FileChannel.open(path, StandardOpenOption.APPEND, StandardOpenOption.CREATE);
         return new Tuple2<>(path, fileChannel);
     }
@@ -245,7 +245,7 @@ public class FileAppender extends AsyncAppender<LogEvent> {
             LocalDateTime expiredTime = triggerDate
                     .with(LocalTime.MIN)
                     .minusDays(logFileRetentionDays);
-            Files.list(directory)
+            Files.list(directory).filter(p -> p.toString().endsWith(FILE_SUFFIX))
                     .map(FileAppender::mapPathToLogFile)
                     .filter(Optional::isPresent)
                     .map(Optional::get)

@@ -44,10 +44,8 @@ public final class LoggerFactory {
             consoleAppender.start();
             APPENDER_COMBINER.addAppender(consoleAppender);
 
-            Path logFilePath = SystemUtils.getSysPropertyPath(SYSTEM_PROPERTY_LOG_DIR)
-                    .orElse(SystemUtils.getSysTempDir());
             FileAppender fileAppender = new FileAppender(
-                    new DefaultLayout(), logFilePath,
+                    new DefaultLayout(), getLogFileDirectory(),
                     SystemUtils.getSysPropertyInteger(SYSTEM_PROPERTY_LOG_FILE_RETENTION)
                             .orElse(DEFAULT_LOG_FILE_RETENTION),
                     SystemUtils.getSysPropertyInteger(SYSTEM_PROPERTY_LOG_FILE_SIZE)
@@ -66,6 +64,16 @@ public final class LoggerFactory {
     public static boolean loggerEnabled() {
         return Boolean.TRUE.equals(SystemUtils.getSysPropertyBool(SYSTEM_PROPERTY_LOG_ENABLE)
                 .orElse(Boolean.FALSE));
+    }
+
+    public static Path getLogFileDirectory() {
+        Path directory = SystemUtils.getSysPropertyPath(SYSTEM_PROPERTY_LOG_DIR)
+                .orElse(SystemUtils.getSysTempDir());
+        if (!directory.endsWith("autotrace4j")) {
+            directory = directory.resolve("autotrace4j");
+        }
+
+        return directory;
     }
 
     private static Level getLevelConfig() {

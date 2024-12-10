@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static io.github.artlibs.autotrace4j.logger.LoggerFactory.getLogFileDirectory;
+import static io.github.artlibs.autotrace4j.logger.LoggerFactory.loggerEnabled;
 import static net.bytebuddy.matcher.ElementMatchers.nameStartsWith;
 
 /**
@@ -93,6 +95,10 @@ public final class AutoTrace4j {
 
             // note: this method must be called after injectClassToBootStrap
             ModuleUtils.compatibleJavaModule(contextPackage);
+
+            if (loggerEnabled()) {
+                System.err.println("[autotrace4j]日志已开启，路径：" + getLogFileDirectory());
+            }
 
             AgentBuilder builder = this.newAgentBuilder();
             for (At4jTransformer transformer : loadTransformers()) {
