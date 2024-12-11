@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 
 import static io.github.artlibs.autotrace4j.context.ReflectUtils.getField;
 import static io.github.artlibs.autotrace4j.context.ReflectUtils.getFieldValue;
-import static io.github.artlibs.autotrace4j.logger.LogConstants.*;
+import static io.github.artlibs.autotrace4j.support.Constants.*;
 import static io.github.artlibs.autotrace4j.logger.event.Level.DEBUG;
 import static io.github.artlibs.autotrace4j.logger.event.Level.INFO;
 import static io.github.artlibs.autotrace4j.support.FileUtils.deleteDirectoryRecursively;

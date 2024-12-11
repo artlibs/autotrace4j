@@ -2,7 +2,7 @@ package io.github.artlibs.autotrace4j.logger.appender;
 
 import io.github.artlibs.autotrace4j.logger.event.Level;
 import io.github.artlibs.autotrace4j.logger.event.LogEvent;
-import io.github.artlibs.autotrace4j.logger.exception.CreateAppenderException;
+import io.github.artlibs.autotrace4j.exception.CreateAppenderException;
 import io.github.artlibs.autotrace4j.logger.layout.Layout;
 
 import java.io.PrintStream;
@@ -16,7 +16,7 @@ import java.util.Objects;
  * <p>
  * All rights Reserved.
  */
-public class ConsoleAppender extends AsyncAppender<LogEvent> {
+public final class ConsoleAppender extends AsyncAppender<LogEvent> {
     Layout<LogEvent> layout;
     private final PrintStream outPrintStream;
     private final PrintStream errPrintStream;

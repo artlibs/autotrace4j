@@ -1,9 +1,7 @@
 package io.github.artlibs.autotrace4j.support;
 
-import java.util.Objects;
-
 /**
- * Constants
+ * Constants definition
  *
  * @author Fury
  * @since 2024-03-30
@@ -23,14 +21,16 @@ public final class Constants {
     public static final String INJECT_DIR_BOOTSTRAP = "bootstrap";
     public static final String INTERCEPT_METHOD_NAME = "intercept";
 
-    public static String concat(String source, String... appends) {
-        Objects.requireNonNull(source);
-        StringBuilder sb = new StringBuilder(appends.length)
-                .append(source);
-        for (String append : appends) {
-            sb.append(append);
-        }
-
-        return sb.toString();
-    }
+    /* --------------- logging support --------------- */
+    public static final String SPACE = " ";
+    public static final String LEFT_MIDDLE_BRACKET = "[";
+    public static final String RIGHT_MIDDLE_BRACKET = "]";
+    public static final String CAUSED_BY = "Caused by: ";
+    public static final String SYSTEM_PROPERTY_LOG_ENABLE = "autotrace4j.log.enable";
+    public static final String SYSTEM_PROPERTY_LOG_DIR = "autotrace4j.log.dir";
+    public static final String SYSTEM_PROPERTY_LOG_LEVEL = "autotrace4j.log.level";
+    public static final String SYSTEM_PROPERTY_LOG_FILE_RETENTION = "autotrace4j.log.file.retention";
+    public static final String SYSTEM_PROPERTY_LOG_FILE_SIZE = "autotrace4j.log.file.size";
+    public static final int DEFAULT_LOG_FILE_RETENTION = 7;
+    public static final int DEFAULT_LOG_FILE_SIZE = 0;
 }

@@ -1,19 +1,19 @@
-package io.github.artlibs.autotrace4j.support.exception;
+package io.github.artlibs.autotrace4j.exception;
 
 /**
- * Unlock Method Exception
+ * Walk Class File Exception
  *
  * @author Fury
  * @since 2024-03-30
  * <p>
  * All rights Reserved.
  */
-public class UnlockMethodException extends RuntimeException {
+public final class WalkClassFileException extends RuntimeException {
     /** Constructs a new runtime exception with {@code null} as its
      * detail message.  The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause}.
      */
-    public UnlockMethodException() {
+    public WalkClassFileException() {
         super();
     }
 
@@ -24,7 +24,7 @@ public class UnlockMethodException extends RuntimeException {
      * @param   message   the detail message. The detail message is saved for
      *          later retrieval by the {@link #getMessage()} method.
      */
-    public UnlockMethodException(String message) {
+    public WalkClassFileException(String message) {
         super(message);
     }
 
@@ -42,7 +42,7 @@ public class UnlockMethodException extends RuntimeException {
      *         unknown.)
      * @since  1.4
      */
-    public UnlockMethodException(String message, Throwable cause) {
+    public WalkClassFileException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -58,7 +58,7 @@ public class UnlockMethodException extends RuntimeException {
      *         unknown.)
      * @since  1.4
      */
-    public UnlockMethodException(Throwable cause) {
+    public WalkClassFileException(Throwable cause) {
         super(cause);
     }
 
@@ -77,9 +77,9 @@ public class UnlockMethodException extends RuntimeException {
      *
      * @since 1.7
      */
-    protected UnlockMethodException(String message, Throwable cause,
-                                    boolean enableSuppression,
-                                    boolean writableStackTrace) {
+    protected WalkClassFileException(String message, Throwable cause,
+                                     boolean enableSuppression,
+                                     boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

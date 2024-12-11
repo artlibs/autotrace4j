@@ -10,7 +10,7 @@ import io.github.artlibs.autotrace4j.logger.Logger;
  * <p>
  * All rights Reserved.
  */
-public class DefaultLogEvent extends AbstractLogEvent {
+public final class DefaultLogEvent extends AbstractLogEvent {
 
     public DefaultLogEvent(Level level, String threadName, Long eventTime, Logger logger, String message, Object[] arguments) {
         super(level, threadName, eventTime, logger, message, arguments);

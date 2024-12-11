@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
 
-import static io.github.artlibs.autotrace4j.logger.LogConstants.*;
+import static io.github.artlibs.autotrace4j.support.Constants.*;
 
 /**
  * 功能：默认日志格式化器
@@ -19,7 +19,7 @@ import static io.github.artlibs.autotrace4j.logger.LogConstants.*;
  * <p>
  * All rights Reserved.
  */
-public class DefaultLayout implements Layout<LogEvent> {
+public final class DefaultLayout implements Layout<LogEvent> {
 
     public static final String UNDEFINE = "undefine";
 
