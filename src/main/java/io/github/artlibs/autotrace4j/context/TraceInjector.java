@@ -169,7 +169,7 @@ public interface TraceInjector {
          * @param trimMsg -
          * @return -
          */
-        abstract boolean detect(String trimMsg);
+        public abstract boolean detect(String trimMsg);
 
         /**
          * 注入trace到log消息中
@@ -177,7 +177,7 @@ public interface TraceInjector {
          * @param trimMsg -
          * @return -
          */
-        abstract String inject(String logMsg, String trimMsg);
+        public abstract String inject(String logMsg, String trimMsg);
 
         private static final String SEPARATOR = " - ";
         private static final String QUOTE_COLON = "\":\"";
