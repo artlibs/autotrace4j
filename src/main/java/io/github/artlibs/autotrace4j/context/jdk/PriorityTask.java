@@ -8,7 +8,7 @@ package io.github.artlibs.autotrace4j.context.jdk;
  *
  * All rights Reserved.
  */
-public class PriorityTask extends ThreadPoolTask implements Comparable<PriorityTask> {
+public class PriorityTask extends ThreadTask implements Comparable<PriorityTask> {
     public PriorityTask(Runnable rawTask, String traceId, String spanId) {
         super(rawTask, traceId, spanId);
     }

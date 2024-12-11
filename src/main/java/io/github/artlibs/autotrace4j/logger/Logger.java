@@ -14,9 +14,9 @@ import io.github.artlibs.autotrace4j.logger.event.LogEvent;
  * All rights Reserved.
  */
 public final class Logger {
+    private Level level;
     private final String name;
     private final Appender<LogEvent> appender;
-    private Level level;
 
     Logger(String name, Appender<LogEvent> appender, Level level) {
         this.name = name;

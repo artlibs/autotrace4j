@@ -38,8 +38,7 @@ public final class LoggerFactory {
         DefaultPrintStreamAppender defaultPrintStreamAppender = new DefaultPrintStreamAppender(new DefaultLayout(), System.out, System.err);
         defaultPrintStreamAppender.start();
         APPENDER_COMBINER.addAppender(defaultPrintStreamAppender);
-        SystemUtils
-            .getSysPropertyPath(LogConstants.SYSTEM_PROPERTY_LOG_DIR)
+        SystemUtils.getSysPropertyPath(LogConstants.SYSTEM_PROPERTY_LOG_DIR)
             .ifPresent(path -> {
                 DefaultFileAppender defaultFileAppender = new DefaultFileAppender(
                     new DefaultLayout(),
