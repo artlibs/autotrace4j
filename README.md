@@ -75,10 +75,12 @@ $ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-dom
 
 ### 5、Middleware
 
-​	支持阿里云ONS和RocketMQ在生产和消费时传递trace，支持Dubbo：
+​	支持Dubbo、Kafka、阿里云ONS、RocketMQ在生产和消费时传递trace：
 
--   RocektMQ：`Producer` & `Consumer`
--   Aliyun ONS：`Producer` & `Consumer`
+-   Spring Kafka：`Producer` & `Consumer`
+    -   如果消息没有trace信息，则生成新的trace信息
+    -   📢：如果是批量消费消息，traceId取第一条消息的traceId，parentSpanId取第一条消息的spanId
+-   Spring RocektMQ & Aliyun ONS：`Producer` & `Consumer`
 -   Dubbo：`org.apache.dubbo.rpc.protocol.dubbo.filter.TraceFilter`
                    `org.apache.dubbo.rpc.protocol.dubbo.filter.FutureFilter`
 

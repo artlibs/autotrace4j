@@ -33,6 +33,7 @@ public class RocketMqListenerTransformer extends AbsDelegateTransformer.AbsInsta
     }
 
     /**
+     * 由于是在转换消息时设置的信息，所以不能在方法结束时清空trace上下文
      * {@inheritDoc}
      */
     @Override
