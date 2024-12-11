@@ -1,5 +1,5 @@
 ## Auto Trace for Java
-[![Run Tests](https://github.com/artlibs/autotrace4j/actions/workflows/testing.yml/badge.svg)](https://github.com/artlibs/autotrace4j/actions/workflows/testing.yml)  [![Release](https://img.shields.io/github/release/artlibs/autotrace4j.svg?style=flat-square)](https://github.com/artlibs/autotrace4j/releases)  [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Run Tests](https://github.com/artlibs/autotrace4j/actions/workflows/testing.yml/badge.svg)](https://github.com/artlibs/autotrace4j/actions/workflows/testing.yml)  [![Maven Central Version](https://img.shields.io/maven-central/v/io.github.artlibs/autotrace4j)](https://central.sonatype.com/artifact/io.github.artlibs/autotrace4j)  [![Release](https://img.shields.io/github/release/artlibs/autotrace4j.svg?style=flat-square)](https://github.com/artlibs/autotrace4j/releases)  [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
 
 ​	`autotrace4j`是一个基于ByteBuddy编写的轻量级日志跟踪工具，其基本逻辑是在各个上下文当中通过代码增强关键节点来传递`trace id`，最后在日志输出时注入到输出结果当中，以实现日志的跟踪串联。
 
