@@ -98,7 +98,7 @@ $ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-dom
 
 ## Contribute
 
-欢迎贡献你的代码(`Fork` & `Pull Request`)，一起完善`autotrace4j`库！
+欢迎贡献你的代码(`Fork` & `Pull Request`)，一起完善`autotrace4j`库：
 
 -   如何增加支持：
 
