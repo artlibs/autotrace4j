@@ -2,6 +2,8 @@ package io.github.artlibs.autotrace4j;
 
 import io.github.artlibs.autotrace4j.context.TraceContext;
 import io.github.artlibs.autotrace4j.exception.LoadInterceptorException;
+import io.github.artlibs.autotrace4j.logger.Logger;
+import io.github.artlibs.autotrace4j.logger.LoggerFactory;
 import io.github.artlibs.autotrace4j.transformer.At4jTransformer;
 import io.github.artlibs.autotrace4j.transformer.TransformListener;
 import io.github.artlibs.autotrace4j.support.ClassUtils;
@@ -36,6 +38,7 @@ import static net.bytebuddy.matcher.ElementMatchers.nameStartsWith;
  */
 public final class AutoTrace4j {
     private AutoTrace4j(){}
+    private static final Logger logger = LoggerFactory.getLogger(AutoTrace4j.class);
 
     /**
      * Java Agent 入口
@@ -97,7 +100,7 @@ public final class AutoTrace4j {
             ModuleUtils.compatibleJavaModule(contextPackage);
 
             if (loggerEnabled()) {
-                System.err.println("已开启[autotrace4j]日志：" + getLogFileDirectory());
+                logger.debug("已开启[autotrace4j]日志：" + getLogFileDirectory());
             }
 
             AgentBuilder builder = this.newAgentBuilder();
