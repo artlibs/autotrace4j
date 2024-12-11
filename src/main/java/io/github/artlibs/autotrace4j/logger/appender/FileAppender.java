@@ -203,6 +203,14 @@ public class FileAppender extends AsyncAppender<LogEvent> {
         return fileAndChannel;
     }
 
+    /**
+     * 清理工作只在记录日志时'顺带'触发，而转换只在加载时触发，因此在系统启动一段时间之后便大概率不会
+     * 再有日志，因此如果系统长期不重启，那么日志清理将不会被触发，真正的清理工作将在下一次系统重启时
+     * 进行（这个效果也是挺好，即启动时的增强日志被'长期保留' —— 除非在临时目录被系统清理）；另一种做
+     * 法是使用<code>scheduleAtFixedRate</code>方法定时清理，但鉴于上诉的'良好效果'，不做此修改。
+     * @param date -
+     * @return -
+     */
     private ScheduledFuture<?> triggerCleanTask(LocalDateTime date) {
         return scheduledExecutorService.schedule(new CleanerTask(date, this), 0, TimeUnit.MILLISECONDS);
     }
