@@ -23,7 +23,8 @@ public final class SystemUtils {
      *                                            path (see {@link java.nio.file.FileSystem#getPath FileSystem.getPath})
      */
     public static Optional<Path> getSysPropertyPath(String name) {
-        return Optional.ofNullable(System.getProperty(name)).map(path -> new File(System.getProperty(name)).toPath());
+        return Optional.ofNullable(System.getProperty(name))
+                .map(path -> new File(System.getProperty(name)).toPath());
     }
 
     public static Optional<Boolean> getSysPropertyBool(String name) {

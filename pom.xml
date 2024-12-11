@@ -6,14 +6,15 @@
 
     <groupId>io.github.artlibs</groupId>
     <artifactId>autotrace4j</artifactId>
-    <version>0.1.3</version>
+    <version>0.2.0</version>
     <packaging>jar</packaging>
+
     <url>https://github.com/artlibs/autotrace4j</url>
     <description>An auto trace agent base on byte-buddy for Java.</description>
 
     <properties>
         <premain.class>io.github.artlibs.autotrace4j.AutoTrace4j</premain.class>
-        <buddy.shaded.patten>io.github.artlibs.autotrace4j.bytebuddy</buddy.shaded.patten>
+        <buddy.shaded.patten>io.github.artlibs.autotrace4j.jar.bytebuddy</buddy.shaded.patten>
         <junit-jupiter-engine.version>5.8.1</junit-jupiter-engine.version>
         <bytebuddy.version>1.14.13</bytebuddy.version>
         <maven-jar.version>2.3.2</maven-jar.version>
@@ -59,7 +60,7 @@
             <version>2.0.32</version>
             <scope>test</scope>
         </dependency>
-        <!-- for interceptor testing -->
+        <!-- for transformer testing -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
@@ -108,7 +109,7 @@
             <email>i36.lib@gmail.com</email>
             <url>https://github.com/i36lib</url>
             <roles>
-                <role>developer</role>
+                <role>Maintainer</role>
             </roles>
             <timezone>+8</timezone>
         </developer>
@@ -127,6 +128,16 @@
             <name>Leo</name>
             <email>414563035@qq.com</email>
             <url>https://github.com/Bedroome</url>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+8</timezone>
+        </developer>
+        <developer>
+            <id>orangewest</id>
+            <name>orangewest</name>
+            <email>jinpengcn@foxmail.com</email>
+            <url>https://github.com/orangewest</url>
             <roles>
                 <role>developer</role>
             </roles>
