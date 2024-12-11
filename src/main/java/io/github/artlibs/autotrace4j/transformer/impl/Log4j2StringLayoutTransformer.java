@@ -44,7 +44,7 @@ public class Log4j2StringLayoutTransformer extends AbsVisitorTransformer {
     }
 
     /**
-     * OnMethodExit
+     * OnMethodEnter
      * @param builder -
      */
     @Advice.OnMethodEnter
