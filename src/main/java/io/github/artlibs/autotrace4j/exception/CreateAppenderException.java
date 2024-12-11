@@ -1,4 +1,4 @@
-package io.github.artlibs.autotrace4j.logger.exception;
+package io.github.artlibs.autotrace4j.exception;
 
 /**
  * 功能：Create Appender Exception
@@ -8,7 +8,7 @@ package io.github.artlibs.autotrace4j.logger.exception;
  * <p>
  * All rights Reserved.
  */
-public class CreateAppenderException extends RuntimeException {
+public final class CreateAppenderException extends RuntimeException {
     /** Constructs a new runtime exception with {@code null} as its
      * detail message.  The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause}.

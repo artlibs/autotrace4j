@@ -1,7 +1,7 @@
 package io.github.artlibs.autotrace4j.logger.appender;
 
 import io.github.artlibs.autotrace4j.logger.event.LogEvent;
-import io.github.artlibs.autotrace4j.logger.exception.CreateAppenderException;
+import io.github.artlibs.autotrace4j.exception.CreateAppenderException;
 import io.github.artlibs.autotrace4j.logger.layout.Layout;
 import io.github.artlibs.autotrace4j.support.ThrowableUtils;
 import io.github.artlibs.autotrace4j.support.Tuple2;
@@ -30,8 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static io.github.artlibs.autotrace4j.logger.LogConstants.DEFAULT_LOG_FILE_RETENTION;
-import static io.github.artlibs.autotrace4j.logger.LogConstants.DEFAULT_LOG_FILE_SIZE;
+import static io.github.artlibs.autotrace4j.support.Constants.*;
 
 /**
  * 功能：默认日志输出-文件
@@ -44,7 +43,7 @@ import static io.github.artlibs.autotrace4j.logger.LogConstants.DEFAULT_LOG_FILE
  * All rights Reserved.
  */
 @SuppressWarnings({"resource", "UnusedReturnValue" })
-public class FileAppender extends AsyncAppender<LogEvent> {
+public final class FileAppender extends AsyncAppender<LogEvent> {
 
     public static final int MIN_FILE_SIZE = 10 * 1024 * 1024;
     private static final int WRITE_BUFFER_SIZE = 1024;
@@ -114,7 +113,7 @@ public class FileAppender extends AsyncAppender<LogEvent> {
         String todayFileNamePrefix = dateToLogFileName(date);
         return Files.list(directory).filter(p -> p.toString().endsWith(FILE_SUFFIX))
             .map(path -> {
-                String fileName = path.getFileName().toString().replace(FILE_SUFFIX, "");
+                String fileName = path.getFileName().toString().replace(FILE_SUFFIX, EMPTY);
                 int prefixIndex = fileName.lastIndexOf(todayFileNamePrefix);
                 if (prefixIndex != -1) {
                     if (fileName.length() == todayFileNamePrefix.length()) {
@@ -216,7 +215,7 @@ public class FileAppender extends AsyncAppender<LogEvent> {
     }
 
     private Tuple2<Path, FileChannel> openLogFile(String logFileNamePrefix, int fileIndex) throws IOException {
-        Path path = directory.resolve(logFileNamePrefix + (fileIndex == 0 ? "" : "_" + fileIndex) + FILE_SUFFIX);
+        Path path = directory.resolve(logFileNamePrefix + (fileIndex == 0 ? EMPTY : "_" + fileIndex) + FILE_SUFFIX);
         FileChannel fileChannel = FileChannel.open(path, StandardOpenOption.APPEND, StandardOpenOption.CREATE);
         return new Tuple2<>(path, fileChannel);
     }

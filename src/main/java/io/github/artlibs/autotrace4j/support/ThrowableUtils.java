@@ -3,7 +3,7 @@ package io.github.artlibs.autotrace4j.support;
 import java.util.LinkedList;
 import java.util.List;
 
-import static io.github.artlibs.autotrace4j.logger.LogConstants.CAUSED_BY;
+import static io.github.artlibs.autotrace4j.support.Constants.CAUSED_BY;
 
 /**
  * 功能：异常处理工具类

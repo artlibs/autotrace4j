@@ -9,5 +9,5 @@ package io.github.artlibs.autotrace4j.support;
  *
  * Example: Don't out put any log with Logger!
  *
- * 本包下的类,属于公共工具类,请不要应用任何其他包的类,包括日志类.
+ * 本包下的类,属于公共工具类,请不要引用exception包之外的任何其他包的类,包括日志类.
  * */

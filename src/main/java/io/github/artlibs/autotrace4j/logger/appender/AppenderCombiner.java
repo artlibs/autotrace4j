@@ -11,7 +11,7 @@ import java.util.List;
  * <p>
  * All rights Reserved.
  */
-public class AppenderCombiner<E> extends AbstractAppender<E> {
+public final class AppenderCombiner<E> extends AbstractAppender<E> {
 
     private volatile List<Appender<E>> appenderList = new ArrayList<>();
 

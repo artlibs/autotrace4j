@@ -12,7 +12,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static io.github.artlibs.autotrace4j.logger.LogConstants.*;
+import static io.github.artlibs.autotrace4j.support.Constants.*;
 
 /**
  * 功能：日志工厂
