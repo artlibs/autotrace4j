@@ -44,7 +44,8 @@ public class KafkaProducerTransformer extends AbsVisitorTransformer {
     public static void adviceOnMethodEnter(
             @Advice.Argument(value = 0, typing = Assigner.Typing.DYNAMIC
                     , readOnly = false) Object producerRecord) {
-        if (Objects.isNull(producerRecord) || Objects.isNull(TraceContext.getTraceId())) {
+        final String traceId = TraceContext.getTraceId();
+        if (Objects.isNull(producerRecord) || Objects.isNull(traceId)) {
             return;
         }
         Object headers = ReflectUtils.getMethodWrapper(producerRecord
@@ -54,12 +55,10 @@ public class KafkaProducerTransformer extends AbsVisitorTransformer {
         }
         MethodWrapper method = ReflectUtils.getMethodWrapper(headers
                 , "add", String.class, byte[].class);
-        method.invoke(TraceContext.TRACE_KEY, TraceContext.getTraceId());
+
+        method.invoke(TraceContext.TRACE_KEY, traceId.getBytes());
         if (Objects.nonNull(TraceContext.getSpanId())) {
-            method.invoke(TraceContext.SPAN_KEY, TraceContext.getSpanId());
-        }
-        if (Objects.nonNull(TraceContext.getParentSpanId())) {
-            method.invoke(TraceContext.PARENT_SPAN_KEY, TraceContext.getParentSpanId());
+            method.invoke(TraceContext.SPAN_KEY, TraceContext.getSpanId().getBytes());
         }
     }
 }

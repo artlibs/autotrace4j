@@ -20,7 +20,7 @@ import net.bytebuddy.utility.nullability.NeverNull;
  */
 public final class TransformListener implements AgentBuilder.Listener {
     private static final Logger logger = LoggerFactory.getLogger(TransformListener.class);
-    private static final String FORMAT_V1 = "\n>>> Type: %s\n>>> ClassLoader: %s\n>>> Module: %s. Loaded: %s";
+    private static final String FORMAT_V1 = "\n>>> [%s]\n>>> Type: %s\n>>> ClassLoader: %s\n>>> Module: %s. Loaded: %s";
     private static final String FORMAT_V2 = FORMAT_V1 + "\n";
 
     /**
@@ -29,7 +29,7 @@ public final class TransformListener implements AgentBuilder.Listener {
     @Override
     public void onDiscovery(@NeverNull String type, @MaybeNull ClassLoader classLoader
             , @MaybeNull JavaModule module, boolean loaded) {
-        logger.trace(FORMAT_V2, type, classLoader, module, loaded);
+        logger.trace(FORMAT_V2, "onDiscovery", type, classLoader, module, loaded);
     }
 
     /**
@@ -38,7 +38,8 @@ public final class TransformListener implements AgentBuilder.Listener {
     @Override
     public void onTransformation(@NeverNull TypeDescription type, @MaybeNull ClassLoader classLoader
             , @MaybeNull JavaModule module, boolean loaded, @NeverNull DynamicType dynamicType) {
-        logger.debug(FORMAT_V1 + "\n>>> DynamicType: %s\n", type, classLoader, module, loaded, dynamicType);
+        logger.debug(FORMAT_V1 + "\n>>> DynamicType: %s\n", "onTransformation"
+                , type, classLoader, module, loaded, dynamicType);
     }
 
     /**
@@ -47,7 +48,7 @@ public final class TransformListener implements AgentBuilder.Listener {
     @Override
     public void onIgnored(@NeverNull TypeDescription type, @MaybeNull ClassLoader classLoader
             , @MaybeNull JavaModule module, boolean loaded) {
-        logger.trace(FORMAT_V2, type, classLoader, module, loaded);
+        logger.trace(FORMAT_V2, "onIgnored", type, classLoader, module, loaded);
     }
 
     /**
@@ -56,7 +57,7 @@ public final class TransformListener implements AgentBuilder.Listener {
     @Override
     public void onError(@NeverNull String type, @MaybeNull ClassLoader classLoader
             , @MaybeNull JavaModule module, boolean loaded, @NeverNull Throwable throwable) {
-        logger.error(FORMAT_V2, type, classLoader, module, loaded, throwable);
+        logger.error(FORMAT_V2, "onError", type, classLoader, module, loaded, throwable);
     }
 
     /**
@@ -65,6 +66,6 @@ public final class TransformListener implements AgentBuilder.Listener {
     @Override
     public void onComplete(@NeverNull String type, @MaybeNull ClassLoader classLoader
             , @MaybeNull JavaModule module, boolean loaded) {
-        logger.trace(FORMAT_V2, type, classLoader, module, loaded);
+        logger.trace(FORMAT_V2, "onComplete", type, classLoader, module, loaded);
     }
 }
