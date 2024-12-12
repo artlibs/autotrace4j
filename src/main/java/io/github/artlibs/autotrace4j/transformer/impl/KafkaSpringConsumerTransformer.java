@@ -30,7 +30,7 @@ public class KafkaSpringConsumerTransformer extends AbsVisitorTransformer {
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
         return hasSuperType(named("org.springframework.kafka.listener." +
-                "KafkaMessageListenerContainer.ListenerConsumer"));
+                "KafkaMessageListenerContainer$ListenerConsumer"));
     }
 
     @Override
@@ -59,18 +59,23 @@ public class KafkaSpringConsumerTransformer extends AbsVisitorTransformer {
         }
         Object headers = ReflectUtils.getMethodWrapper(consumerRecord
                 , "headers").invoke();
-        MethodWrapper method = ReflectUtils.getMethodWrapper(headers
+        MethodWrapper lastHeader = ReflectUtils.getMethodWrapper(headers
                 , "lastHeader", String.class);
 
-        String traceId = method.invoke(TraceContext.TRACE_KEY);
-        if (Objects.isNull(traceId)) {
-            traceId = TraceContext.generate();
+        Object traceIdHeader = lastHeader.invoke(TraceContext.TRACE_KEY);
+        byte[] traceIdByte = ReflectUtils.getMethodWrapper(traceIdHeader
+                        , "value").invoke();
+        Object spanIdHeader = lastHeader.invoke(TraceContext.SPAN_KEY);
+        byte[] spanIdByte = ReflectUtils.getMethodWrapper(spanIdHeader
+                        , "value").invoke();
+
+        if (Objects.isNull(traceIdByte)) {
+            traceIdByte = TraceContext.generate().getBytes();
         }
-        TraceContext.setTraceId(traceId);
+        TraceContext.setTraceId(new String(traceIdByte));
         TraceContext.setSpanId(TraceContext.generate());
-        String spanId = method.invoke(TraceContext.SPAN_KEY);
-        if (Objects.nonNull(spanId)) {
-            TraceContext.setParentSpanId(spanId);
+        if (Objects.nonNull(spanIdByte)) {
+            TraceContext.setParentSpanId(new String(spanIdByte));
         }
     }
 
