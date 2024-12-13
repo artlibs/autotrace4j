@@ -1,5 +1,7 @@
 package io.github.artlibs.testsupport;
 
+import com.alibaba.fastjson.JSON;
+
 /**
  * Tuple
  *
@@ -71,5 +73,10 @@ public class TupleResult {
 
     public void setValue5(Object value5) {
         this.value5 = value5;
+    }
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this);
     }
 }

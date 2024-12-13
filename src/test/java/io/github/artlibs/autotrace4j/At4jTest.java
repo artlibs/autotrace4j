@@ -322,8 +322,7 @@ public class At4jTest {
     void testOkHttpClientAsync() throws Exception {
         // 01.Prepare
         OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(httpBinOrgUrl).build();
+        Request request = new Request.Builder().url(httpBinOrgUrl).build();
         final TupleResult[] asyncTupleHolder = new TupleResult[1];
         final Response[] responseHolder = new Response[1];
         CountDownLatch latch = new CountDownLatch(1);
@@ -332,8 +331,9 @@ public class At4jTest {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                System.err.println(e.getMessage());
                 asyncTupleHolder[0] = generateResult();
+                System.err.println(asyncTupleHolder[0]);
+                System.err.println(e.getMessage());
                 latch.countDown();
             }
 
@@ -341,6 +341,8 @@ public class At4jTest {
             public void onResponse(@NotNull Call call, @NotNull Response resp) {
                 asyncTupleHolder[0] = generateResult();
                 responseHolder[0] = resp;
+                System.err.println(asyncTupleHolder[0]);
+                System.err.println(resp);
                 latch.countDown();
             }
         });
