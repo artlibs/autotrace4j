@@ -1,6 +1,7 @@
 package io.github.artlibs.autotrace4j;
 
 import io.github.artlibs.autotrace4j.context.ReflectUtils;
+import io.github.artlibs.autotrace4j.logger.DefaultLogger;
 import io.github.artlibs.autotrace4j.logger.Logger;
 import io.github.artlibs.autotrace4j.logger.LoggerFactory;
 import io.github.artlibs.autotrace4j.logger.appender.*;
@@ -33,9 +34,9 @@ import java.util.stream.Stream;
 
 import static io.github.artlibs.autotrace4j.context.ReflectUtils.getField;
 import static io.github.artlibs.autotrace4j.context.ReflectUtils.getFieldValue;
-import static io.github.artlibs.autotrace4j.support.Constants.*;
 import static io.github.artlibs.autotrace4j.logger.event.Level.DEBUG;
 import static io.github.artlibs.autotrace4j.logger.event.Level.INFO;
+import static io.github.artlibs.autotrace4j.support.Constants.*;
 import static io.github.artlibs.autotrace4j.support.FileUtils.deleteDirectoryRecursively;
 
 /**
@@ -315,10 +316,10 @@ public class LoggerTest {
 
     private static Logger newLogger(String name, Appender<?> appender, Level level) {
         try {
-            Constructor<Logger> declaredConstructor = Logger.class.getDeclaredConstructor(String.class, Appender.class, Level.class);
+            Constructor<DefaultLogger> declaredConstructor = DefaultLogger.class
+                    .getDeclaredConstructor(String.class, Appender.class, Level.class);
             declaredConstructor.setAccessible(true);
-            return declaredConstructor
-                    .newInstance(name, appender, level);
+            return declaredConstructor.newInstance(name, appender, level);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

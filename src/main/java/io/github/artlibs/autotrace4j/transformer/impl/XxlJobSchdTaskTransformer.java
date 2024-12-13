@@ -18,6 +18,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  * <p>
  * All rights Reserved.
  */
+@SuppressWarnings("unused")
 public class XxlJobSchdTaskTransformer extends AbsDelegateTransformer.AbsInstance {
 
     /**
@@ -25,10 +26,8 @@ public class XxlJobSchdTaskTransformer extends AbsDelegateTransformer.AbsInstanc
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return bizScopeJunction().and(
-                hasSuperClass(named("com.xxl.job.core.handler.IJobHandler"))
-                // Or has functions annotated with @XxlJob
-                .or(declaresMethod(isAnnotatedWith(named(("com.xxl.job.core.handler.annotation.XxlJob")))))
+        return hasSuperClass(named("com.xxl.job.core.handler.IJobHandler")).or(
+                declaresMethod(isAnnotatedWith(named(("com.xxl.job.core.handler.annotation.XxlJob"))))
         );
     }
 

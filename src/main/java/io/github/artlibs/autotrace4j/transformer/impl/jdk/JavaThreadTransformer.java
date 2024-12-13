@@ -22,6 +22,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  * <p>
  * All rights Reserved.
  */
+@SuppressWarnings("unused")
 public class JavaThreadTransformer extends AbsVisitorTransformer {
     private static final String RUNNABLE_CLS = "java.lang.Runnable";
     private static final String THREAD_GROUP_CLS = "java.lang.ThreadGroup";

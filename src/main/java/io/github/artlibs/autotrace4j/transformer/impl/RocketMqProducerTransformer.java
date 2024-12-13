@@ -21,6 +21,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  * <p>
  * All rights Reserved.
  */
+@SuppressWarnings("unused")
 public class RocketMqProducerTransformer extends AbsDelegateTransformer.AbsInstance {
     private static final String SEND_CB_TYPE = "org.apache.rocketmq.common.message.Message";
     private static final String MESSAGE_TYPE = "org.apache.rocketmq.client.producer.SendCallback";

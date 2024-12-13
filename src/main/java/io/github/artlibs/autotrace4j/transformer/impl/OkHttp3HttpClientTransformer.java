@@ -22,7 +22,8 @@ import static net.bytebuddy.matcher.ElementMatchers.named;
  * <p>
  * All rights Reserved.
  */
-public class OkHttpClientTransformer extends AbsDelegateTransformer.AbsInstance {
+@SuppressWarnings("unused")
+public class OkHttp3HttpClientTransformer extends AbsDelegateTransformer.AbsInstance {
 
     /**
      * {@inheritDoc}

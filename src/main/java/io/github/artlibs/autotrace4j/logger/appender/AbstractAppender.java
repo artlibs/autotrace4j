@@ -9,7 +9,6 @@ package io.github.artlibs.autotrace4j.logger.appender;
  * All rights Reserved.
  */
 public abstract class AbstractAppender<E> implements Appender<E> {
-
     private volatile boolean start;
 
     /**

@@ -21,6 +21,7 @@ import static net.bytebuddy.matcher.ElementMatchers.named;
  * <p>
  * All rights Reserved.
  */
+@SuppressWarnings("unused")
 public class RocketMqListenerTransformer extends AbsDelegateTransformer.AbsInstance {
     private static final String GUP = "getUserProperty";
 

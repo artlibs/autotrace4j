@@ -1,6 +1,7 @@
 package io.github.artlibs.autotrace4j.logger.appender;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -12,8 +13,8 @@ import java.util.List;
  * All rights Reserved.
  */
 public final class AppenderCombiner<E> extends AbstractAppender<E> {
-
-    private volatile List<Appender<E>> appenderList = new ArrayList<>();
+    private final List<Appender<E>> appenderList = Collections
+            .synchronizedList(new ArrayList<>(8));
 
     /**
      * appender 组合器
@@ -29,9 +30,7 @@ public final class AppenderCombiner<E> extends AbstractAppender<E> {
      */
     public void addAppender(Appender<E> appender) {
         if (appender != null) {
-            List<Appender<E>> newAppenderList = new ArrayList<>(appenderList);
-            newAppenderList.add(appender);
-            appenderList = newAppenderList;
+            appenderList.add(appender);
         }
     }
 

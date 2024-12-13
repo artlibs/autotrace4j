@@ -1,9 +1,10 @@
 package io.github.artlibs.autotrace4j.logger.appender;
 
-import io.github.artlibs.autotrace4j.logger.event.LogEvent;
 import io.github.artlibs.autotrace4j.exception.CreateAppenderException;
+import io.github.artlibs.autotrace4j.logger.Logger;
+import io.github.artlibs.autotrace4j.logger.LoggerFactory;
+import io.github.artlibs.autotrace4j.logger.event.LogEvent;
 import io.github.artlibs.autotrace4j.logger.layout.Layout;
-import io.github.artlibs.autotrace4j.support.ThrowableUtils;
 import io.github.artlibs.autotrace4j.support.Tuple2;
 
 import java.io.IOException;
@@ -44,10 +45,10 @@ import static io.github.artlibs.autotrace4j.support.Constants.*;
  */
 @SuppressWarnings({"resource", "UnusedReturnValue" })
 public final class FileAppender extends AsyncAppender<LogEvent> {
-
     public static final int MIN_FILE_SIZE = 10 * 1024 * 1024;
     private static final int WRITE_BUFFER_SIZE = 1024;
     private static final String FILE_SUFFIX = ".log";
+    private static final Logger logger = LoggerFactory.getLogger(FileAppender.class);
 
     private final Layout<LogEvent> layout;
     private final Path directory;
@@ -68,6 +69,7 @@ public final class FileAppender extends AsyncAppender<LogEvent> {
     private final ThreadLocal<ByteBuffer> logWriteBuffer = ThreadLocal.withInitial(
             () -> ByteBuffer.allocateDirect(WRITE_BUFFER_SIZE));
 
+    @SuppressWarnings("unused")
     public FileAppender(Layout<LogEvent> layout, Path directory) {
         this(layout, directory, DEFAULT_LOG_FILE_RETENTION, DEFAULT_LOG_FILE_SIZE);
     }
@@ -166,7 +168,7 @@ public final class FileAppender extends AsyncAppender<LogEvent> {
                 }
             }
         } catch (Exception e) {
-            System.err.println(ThrowableUtils.throwableToStr(e));
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -176,7 +178,8 @@ public final class FileAppender extends AsyncAppender<LogEvent> {
         while (!isValidLogFile(fileAndChannel = logFile.get(), messageLength)) {
             fileOptionLock.lock();
             try {
-                if (isValidLogFile(fileAndChannel = logFile.get(), messageLength)) {
+                fileAndChannel = logFile.get();
+                if (isValidLogFile(fileAndChannel, messageLength)) {
                     return fileAndChannel;
                 }
                 try {
@@ -191,8 +194,7 @@ public final class FileAppender extends AsyncAppender<LogEvent> {
                         triggerCleanTask(date);
                     }
                 } catch (IOException e) {
-                    System.err.println("[DefaultFileAppender] log file create error.");
-                    System.err.println(ThrowableUtils.throwableToStr(e));
+                    logger.error("log file create error {}", e.getMessage(), e);
                     return null;
                 }
             } finally {
@@ -243,9 +245,8 @@ public final class FileAppender extends AsyncAppender<LogEvent> {
     }
 
     private void cleanExpiredFiles(LocalDateTime triggerDate) throws IOException {
-        System.out.println(
-            "[DefaultFileAppender] start clean expired log files,triggerDate: " + triggerDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
-        );
+        logger.info("Start clean expired log files,triggerDate: {}", triggerDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
+
         // 定时清理过期的日志文件
         fileOptionLock.lock();
         try {
@@ -261,15 +262,14 @@ public final class FileAppender extends AsyncAppender<LogEvent> {
                         if (!dateAndPath.getFirst().isAfter(expiredTime)) {
                             try {
                                 Files.deleteIfExists(dateAndPath.getSecond());
-                                System.out.printf("[DefaultFileAppender] expired log file [%s] deleted.%n"
-                                        , dateAndPath.getSecond().toFile().getName());
+                                logger.info("expired log file {} deleted.", dateAndPath.getSecond().toFile().getName());
                             } catch (IOException e) {
-                                System.err.println("[DefaultFileAppender] delete expired log file failure: " + e.getMessage());
+                                logger.error("delete expired log file failure: {}", e.getMessage(), e);
                             }
                         }
                     });
         } finally {
-            System.out.println("[DefaultFileAppender] clean expired log files finish.");
+            logger.info("clean expired log files finish.");
             fileOptionLock.unlock();
         }
     }
@@ -306,7 +306,7 @@ public final class FileAppender extends AsyncAppender<LogEvent> {
                 try {
                     fileChannel.close();
                 } catch (IOException e) {
-                    System.out.println("[DefaultFileAppender] close log file failed.");
+                    logger.error("close log file failed: {}", e.getMessage(), e);
                 }
             });
     }
@@ -329,8 +329,7 @@ public final class FileAppender extends AsyncAppender<LogEvent> {
             try {
                 fileAppender.cleanExpiredFiles(triggerDate);
             } catch (Exception e) {
-                System.err.println("[DefaultFileAppender] clean expired log files failed.");
-                System.err.println(ThrowableUtils.throwableToStr(e));
+                logger.error("clean expired log files failed: {}", e.getMessage(), e);
             }
         }
 

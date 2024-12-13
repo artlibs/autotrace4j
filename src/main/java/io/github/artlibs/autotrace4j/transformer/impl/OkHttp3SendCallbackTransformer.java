@@ -5,35 +5,26 @@ import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
-import static net.bytebuddy.matcher.ElementMatchers.named;
-import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
+import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
- * Http Servlet 增强转换器
- *
+ * OkHttp Send Callback增强转换器
+ * <p>
  * @author Fury
  * @since 2024-03-30
  * <p>
  * All rights Reserved.
  */
 @SuppressWarnings("unused")
-public class HttpServletTransformer extends AbsDelegateTransformer.AbsServlet {
-
-    /**
-     * {@inheritDoc}
-     */
+public class OkHttp3SendCallbackTransformer extends AbsDelegateTransformer.AbsAnonymousInterface {
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return named("javax.servlet.http.HttpServlet");
+        return not(isAbstract()).and(not(isInterface())).and(
+                hasSuperType(named("okhttp3.Callback")));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected ElementMatcher<? super MethodDescription> methodMatcher() {
-        return named("service")
-            .and(takesArgument(0, named("javax.servlet.http.HttpServletRequest")))
-            .and(takesArgument(1, named("javax.servlet.http.HttpServletResponse")));
+        return named("onResponse").or(named("onFailure"));
     }
 }

@@ -15,16 +15,16 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
  * Spring Kafka 消费增强转换器, 参见类
- * org.springframework.kafka.listener.KafkaMessageListenerContainer:doStart()
- * org.springframework.kafka.listener.KafkaMessageListenerContainer
- *  .ListenerConsumer:run(),invokeListener(), invokeBatchOnMessageWithRecordsOrList() & doInvokeOnMessage()
- * org.apache.kafka.clients.consumer.Consumer:poll()
+ * <code>org.springframework.kafka.listener.KafkaMessageListenerContainer:doStart()</code>
+ * <code>org.springframework.kafka.listener.KafkaMessageListenerContainer.ListenerConsumer:run(),invokeListener(), invokeBatchOnMessageWithRecordsOrList() &amp; doInvokeOnMessage()</code>
+ * <code>org.apache.kafka.clients.consumer.Consumer:poll()</code>
  * <p>
  * @author Fury
  * @since 2024-03-30
  * <p>
  * All rights Reserved.
  */
+@SuppressWarnings("unused")
 public class KafkaSpringConsumerTransformer extends AbsVisitorTransformer {
 
     @Override
@@ -46,7 +46,7 @@ public class KafkaSpringConsumerTransformer extends AbsVisitorTransformer {
 
     /**
      * 消费消息时将消息头的trace信息放入上下文, 或者生成新的上下文
-     * @param recOrRecs ConsumerRecord<K, V> or ConsumerRecords<K, V>
+     * @param recOrRecs ConsumerRecord&lt;K, V&gt; or ConsumerRecords&lt;K, V&gt;
      */
     @Advice.OnMethodEnter
     public static void adviceOnMethodEnter(@Advice.Argument(value = 0) Object recOrRecs) {
@@ -83,6 +83,7 @@ public class KafkaSpringConsumerTransformer extends AbsVisitorTransformer {
      * 方法结束时清空上下文
      */
     @Advice.OnMethodExit
+    @SuppressWarnings("unused")
     public static void adviceOnMethodExit() {
         TraceContext.removeAll();
     }

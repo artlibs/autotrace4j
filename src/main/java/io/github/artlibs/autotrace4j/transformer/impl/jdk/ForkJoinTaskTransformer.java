@@ -6,7 +6,6 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
 import static net.bytebuddy.matcher.ElementMatchers.named;
-import static net.bytebuddy.matcher.ElementMatchers.none;
 
 /**
  * ForkJoinTask增强转换器
@@ -17,6 +16,7 @@ import static net.bytebuddy.matcher.ElementMatchers.none;
  * <p>
  * All rights Reserved.
  */
+@SuppressWarnings("unused")
 public class ForkJoinTaskTransformer extends AbsVisitorTransformer.AbsTask {
 
     /**
