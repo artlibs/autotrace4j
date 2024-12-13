@@ -14,6 +14,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  * <p>
  * All rights Reserved.
  */
+@SuppressWarnings("unused")
 public class LogbackLog4jEventTransformer extends AbsVisitorTransformer.AbsConstructor {
     /**
      * 只往类注入属性

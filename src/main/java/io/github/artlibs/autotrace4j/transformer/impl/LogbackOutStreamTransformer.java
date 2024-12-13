@@ -17,6 +17,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  *
  * All rights Reserved.
  */
+@SuppressWarnings("unused")
 public class LogbackOutStreamTransformer extends AbsVisitorTransformer {
 
     /**

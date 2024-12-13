@@ -20,7 +20,6 @@ import static io.github.artlibs.autotrace4j.support.Constants.*;
  * All rights Reserved.
  */
 public final class DefaultLayout implements Layout<LogEvent> {
-
     public static final String UNDEFINE = "undefine";
 
     @Override

@@ -14,7 +14,6 @@ import static io.github.artlibs.autotrace4j.support.Constants.CAUSED_BY;
  * All rights Reserved.
  */
 public final class ThrowableUtils {
-
     private ThrowableUtils() {}
 
     public static String throwableToStr(Throwable t) {

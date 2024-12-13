@@ -5,35 +5,30 @@ import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
-import static net.bytebuddy.matcher.ElementMatchers.named;
-import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
+import static net.bytebuddy.matcher.ElementMatchers.*;
+import static net.bytebuddy.matcher.ElementMatchers.isAbstract;
 
 /**
- * Http Servlet 增强转换器
- *
+ * RocketMq Send Callback增强转换器
+ * <p>
  * @author Fury
  * @since 2024-03-30
  * <p>
  * All rights Reserved.
  */
 @SuppressWarnings("unused")
-public class HttpServletTransformer extends AbsDelegateTransformer.AbsServlet {
-
-    /**
-     * {@inheritDoc}
-     */
+public class RocketMqSendCallbackTransformer extends AbsDelegateTransformer.AbsAnonymousInterface {
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return named("javax.servlet.http.HttpServlet");
+        return not(isAbstract()).and(not(isInterface())).and(
+                hasSuperType(named("org.apache.rocketmq.client.producer.SendCallback")
+                        .or(named("com.aliyun.openservices.ons.api.SendCallback")))
+        );
+
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected ElementMatcher<? super MethodDescription> methodMatcher() {
-        return named("service")
-            .and(takesArgument(0, named("javax.servlet.http.HttpServletRequest")))
-            .and(takesArgument(1, named("javax.servlet.http.HttpServletResponse")));
+        return named("onSuccess").or(named("onException"));
     }
 }

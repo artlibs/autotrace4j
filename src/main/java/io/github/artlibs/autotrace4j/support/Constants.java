@@ -11,8 +11,12 @@ package io.github.artlibs.autotrace4j.support;
 public final class Constants {
     private Constants(){}
 
+    public static final String DOT = ".";
+    public static final String JAR = "jar";
     public static final String COMMA = ",";
     public static final String EMPTY = "";
+    public static final String SLASH = "/";
+    public static final String DOT_CLASS = ".class";
     public static final String GET_HEADER = "getHeader";
     public static final String SET_HEADER = "setHeader";
     public static final String GET_ATTRIBUTE = "getAttribute";

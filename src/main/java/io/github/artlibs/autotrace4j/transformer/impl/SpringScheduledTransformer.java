@@ -18,6 +18,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  * <p>
  * All rights Reserved.
  */
+@SuppressWarnings("unused")
 public class SpringScheduledTransformer extends AbsDelegateTransformer.AbsInstance {
 
     /**
@@ -25,10 +26,7 @@ public class SpringScheduledTransformer extends AbsDelegateTransformer.AbsInstan
      */
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return bizScopeJunction().and(not(isAnnotation()))
-                .and(not(isInterface()))
-                .and(not(nameContains("$")))
-                .and(declaresMethod(isAnnotatedWith(named("org.springframework.scheduling.annotation.Scheduled"))));
+        return declaresMethod(isAnnotatedWith(named("org.springframework.scheduling.annotation.Scheduled")));
     }
 
     /**

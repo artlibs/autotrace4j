@@ -21,6 +21,7 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
  * @author orangewest
  * @since 2024-07-30
  */
+@SuppressWarnings("unused")
 public class DubboConsumerTransformer extends AbsDelegateTransformer.AbsInstance {
 
     /**

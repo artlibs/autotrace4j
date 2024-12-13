@@ -1,10 +1,10 @@
 package io.github.artlibs.autotrace4j.transformer.impl;
 
-import io.github.artlibs.autotrace4j.context.TraceContext;
 import io.github.artlibs.autotrace4j.context.MethodWrapper;
 import io.github.artlibs.autotrace4j.context.ReflectUtils;
-import io.github.artlibs.autotrace4j.transformer.abs.AbsDelegateTransformer;
+import io.github.artlibs.autotrace4j.context.TraceContext;
 import io.github.artlibs.autotrace4j.support.Constants;
+import io.github.artlibs.autotrace4j.transformer.abs.AbsDelegateTransformer;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
@@ -23,6 +23,7 @@ import static net.bytebuddy.matcher.ElementMatchers.named;
  * <p>
  * All rights Reserved.
  */
+@SuppressWarnings("unused")
 public class ApacheHttpClientTransformer extends AbsDelegateTransformer.AbsInstance {
 
     /**

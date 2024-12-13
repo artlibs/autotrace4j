@@ -11,7 +11,7 @@ import io.github.artlibs.autotrace4j.logger.Logger;
  * All rights Reserved.
  */
 public final class DefaultLogEvent extends AbstractLogEvent {
-
+    @SuppressWarnings("unused")
     public DefaultLogEvent(Level level, String threadName, Long eventTime, Logger logger, String message, Object[] arguments) {
         super(level, threadName, eventTime, logger, message, arguments);
     }

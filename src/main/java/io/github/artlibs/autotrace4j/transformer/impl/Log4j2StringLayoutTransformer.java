@@ -17,6 +17,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  *
  * All rights Reserved.
  */
+@SuppressWarnings("unused")
 public class Log4j2StringLayoutTransformer extends AbsVisitorTransformer {
 
     /**

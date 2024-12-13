@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
+import static io.github.artlibs.autotrace4j.support.Constants.*;
+
 /**
  * 功能：类utils
  *
@@ -32,8 +34,8 @@ public final class ClassUtils {
     /**
      * 注入指定包名下的class到bootstrap
      *
-     * @param instrumentation instrumentation对象
-     * @param packagePrefix   包前缀
+     * @param instrumentation     instrumentation对象
+     * @param packagePrefix       包前缀
      * @throws IOException        IOException
      * @throws URISyntaxException URISyntaxException
      */
@@ -41,17 +43,20 @@ public final class ClassUtils {
         Instrumentation instrumentation, String packagePrefix
     ) throws IOException, URISyntaxException {
         Map<String, byte[]> classes = new HashMap<>();
-        ClassFileLocator classFileLocator = ClassFileLocator.ForClassLoader.of(ClassUtils.class.getClassLoader());
-        walkClassFiles((path, classCanonicalName) -> {
-            try {
-                classes.put(classCanonicalName, classFileLocator.locate(classCanonicalName).resolve());
-            } catch (IOException e) {
-                throw new WalkClassFileException(e);
-            }
-        }, packagePrefix, true);
+        try(ClassFileLocator classFileLocator = ClassFileLocator
+                .ForClassLoader.of(ClassUtils.class.getClassLoader())) {
+            walkClassFiles((path, classCanonicalName) -> {
+                try {
+                    classes.put(classCanonicalName, classFileLocator.locate(classCanonicalName).resolve());
+                } catch (IOException e) {
+                    throw new WalkClassFileException(e);
+                }
+            }, packagePrefix, true);
+        }
         File classInjectTempDir = SystemUtils.getClassInjectTempDir(Constants.INJECT_DIR_BOOTSTRAP);
         ClassInjector
-            .UsingInstrumentation.of(classInjectTempDir, ClassInjector.UsingInstrumentation.Target.BOOTSTRAP, instrumentation)
+            .UsingInstrumentation.of(classInjectTempDir, ClassInjector
+                        .UsingInstrumentation.Target.BOOTSTRAP, instrumentation)
             .injectRaw(classes);
     }
 
@@ -70,13 +75,13 @@ public final class ClassUtils {
     ) throws IOException, URISyntaxException {
         Enumeration<URL> classesEnumeration = ClassUtils.class
             .getClassLoader()
-            .getResources(packagePrefix.replace(".", "/"));
+            .getResources(packagePrefix.replace(DOT, SLASH));
         while (classesEnumeration.hasMoreElements()) {
             URL packageDirUrl = classesEnumeration.nextElement();
             Path packagePath;
             FileSystem zipFileSystem = null;
             try {
-                if (packageDirUrl.getProtocol().equals("jar")) {
+                if (packageDirUrl.getProtocol().equals(JAR)) {
                     zipFileSystem = FileSystems.newFileSystem(packageDirUrl.toURI(), new HashMap<>());
                     String uriStr = packageDirUrl.toURI().toString();
                     packagePath = zipFileSystem.getPath(uriStr.substring(uriStr.indexOf("!") + 1));
@@ -86,9 +91,9 @@ public final class ClassUtils {
                 Files.walkFileTree(packagePath, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        if (file.getFileName().toString().endsWith(".class")){
+                        if (file.getFileName().toString().endsWith(DOT_CLASS)){
                             String separator = file.getFileSystem().getSeparator();
-                            String replaced = file.toString().replace(separator, ".");
+                            String replaced = file.toString().replace(separator, DOT);
                             String classCanonicalName = replaced.substring(replaced.indexOf(packagePrefix)).replaceAll(".class", "");
                             walker.accept(file, classCanonicalName);
                         }
@@ -113,8 +118,9 @@ public final class ClassUtils {
      * @param classFileName   类文件名
      * @return {@link String}
      */
+    @SuppressWarnings("unused")
     private static String buildCanonicalName(String packagePrefixes, String classFileName) {
-        return packagePrefixes + "." + classFileName.replace(".class", "");
+        return packagePrefixes + DOT + classFileName.replace(DOT_CLASS, EMPTY);
     }
 
     /**
@@ -126,18 +132,21 @@ public final class ClassUtils {
      * @return {@link Method} or null if not found
      */
     public static Method getMethod(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
-        Method m = null;
+        Method method = null;
         while (clazz != null) {
             try {
-                m = clazz.getDeclaredMethod(methodName, parameterTypes);
+                method = clazz.getDeclaredMethod(methodName, parameterTypes);
                 break;
-            } catch (NoSuchMethodException ignored) {}
+            } catch (NoSuchMethodException ignored) {
+                // NO Sonar
+            }
             clazz = clazz.getSuperclass();
         }
-        if (m != null) {
-            m.setAccessible(true);
+        if (method != null) {
+            method.setAccessible(true);
         }
-        return m;
+
+        return method;
     }
 
 }

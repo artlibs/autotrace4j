@@ -4,12 +4,10 @@ import io.github.artlibs.autotrace4j.context.TraceContext;
 import io.github.artlibs.autotrace4j.context.jdk.ScheduledTask;
 import io.github.artlibs.autotrace4j.transformer.abs.AbsVisitorTransformer;
 import net.bytebuddy.asm.Advice;
-import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.matcher.ElementMatcher;
 
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.RunnableScheduledFuture;
 
@@ -23,6 +21,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  * <p>
  * All rights Reserved.
  */
+@SuppressWarnings("unused")
 public class SchdThreadPoolTransformer extends AbsVisitorTransformer {
 
     /**

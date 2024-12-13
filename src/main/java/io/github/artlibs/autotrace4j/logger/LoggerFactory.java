@@ -1,13 +1,15 @@
 package io.github.artlibs.autotrace4j.logger;
 
+import io.github.artlibs.autotrace4j.logger.appender.Appender;
 import io.github.artlibs.autotrace4j.logger.appender.AppenderCombiner;
-import io.github.artlibs.autotrace4j.logger.appender.FileAppender;
 import io.github.artlibs.autotrace4j.logger.appender.ConsoleAppender;
+import io.github.artlibs.autotrace4j.logger.appender.FileAppender;
 import io.github.artlibs.autotrace4j.logger.event.Level;
 import io.github.artlibs.autotrace4j.logger.event.LogEvent;
 import io.github.artlibs.autotrace4j.logger.layout.DefaultLayout;
 import io.github.artlibs.autotrace4j.support.SystemUtils;
 
+import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,11 +31,11 @@ import static io.github.artlibs.autotrace4j.support.Constants.*;
 public final class LoggerFactory {
     private LoggerFactory(){}
 
-    private static final ConcurrentHashMap<String, Logger> LOGGER_MAP = new ConcurrentHashMap<>();
-
-    private static final AppenderCombiner<LogEvent> APPENDER_COMBINER;
-
     private static final Level LEVEL;
+    private static final PrintStream SYSTEM_OUT = System.out;
+    private static final PrintStream SYSTEM_ERR = System.err;
+    private static final AppenderCombiner<LogEvent> APPENDER_COMBINER;
+    private static final ConcurrentHashMap<String, Logger> LOGGER_MAP = new ConcurrentHashMap<>();
 
     static {
         // appender set
@@ -91,10 +93,16 @@ public final class LoggerFactory {
     public static Logger getLogger(String name) {
         Logger logger = LOGGER_MAP.get(name);
         if (logger == null) {
-            logger = new Logger(name, APPENDER_COMBINER, LEVEL);
+            Appender<LogEvent> appender = APPENDER_COMBINER;
+            if (name.startsWith(Logger.class.getPackage().getName())) {
+                appender = new ConsoleAppender(new DefaultLayout(), SYSTEM_OUT, SYSTEM_ERR);
+                appender.start();
+            }
+            logger = new DefaultLogger(name, appender, LEVEL);
             Logger preLogger = LOGGER_MAP.putIfAbsent(name, logger);
             logger = preLogger != null ? preLogger : logger;
         }
+
         return logger;
     }
 

@@ -21,6 +21,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  * <p>
  * All rights Reserved.
  */
+@SuppressWarnings("unused")
 public class KafkaProducerTransformer extends AbsVisitorTransformer {
 
     @Override

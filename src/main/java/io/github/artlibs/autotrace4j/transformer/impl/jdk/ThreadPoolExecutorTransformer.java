@@ -22,6 +22,7 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
  *
  * All rights Reserved.
  */
+@SuppressWarnings("unused")
 public class ThreadPoolExecutorTransformer extends AbsVisitorTransformer {
 
     /**

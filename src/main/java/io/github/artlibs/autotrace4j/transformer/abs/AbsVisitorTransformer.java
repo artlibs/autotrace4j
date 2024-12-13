@@ -4,12 +4,9 @@ import io.github.artlibs.autotrace4j.context.TraceContext;
 import io.github.artlibs.autotrace4j.transformer.At4jTransformer;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.method.MethodDescription;
-import net.bytebuddy.description.modifier.Visibility;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
-import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
 import net.bytebuddy.utility.nullability.MaybeNull;
 import net.bytebuddy.utility.nullability.NeverNull;
@@ -132,51 +129,12 @@ public abstract class AbsVisitorTransformer implements At4jTransformer {
                 TypeDescription typeDescription,
                 JavaModule module,
                 ClassLoader classLoader) {
-            return builder
-                    // add field
-                    .defineField(TraceContext.TRACE_KEY, String.class, Visibility.PRIVATE)
-                    .defineField(TraceContext.SPAN_KEY, String.class, Visibility.PRIVATE)
-                    .defineField(TraceContext.PARENT_SPAN_KEY, String.class, Visibility.PRIVATE)
-                    // add getter
-                    .defineMethod(TraceContext.TRACE_KEY_GETTER, String.class, Visibility.PUBLIC)
-                    .intercept(FieldAccessor.ofField(TraceContext.TRACE_KEY))
-                    .defineMethod(TraceContext.SPAN_KEY_GETTER, String.class, Visibility.PUBLIC)
-                    .intercept(FieldAccessor.ofField(TraceContext.SPAN_KEY))
-                    .defineMethod(TraceContext.PARENT_SPAN_KEY_GETTER, String.class, Visibility.PUBLIC)
-                    .intercept(FieldAccessor.ofField(TraceContext.PARENT_SPAN_KEY))
-                    // add setter
-                    .defineMethod(TraceContext.TRACE_KEY_SETTER, void.class, Visibility.PUBLIC)
-                    .withParameters(String.class)
-                    .intercept(FieldAccessor.ofField(TraceContext.TRACE_KEY))
-                    .defineMethod(TraceContext.SPAN_KEY_SETTER, void.class, Visibility.PUBLIC)
-                    .withParameters(String.class)
-                    .intercept(FieldAccessor.ofField(TraceContext.SPAN_KEY))
-                    .defineMethod(TraceContext.PARENT_SPAN_KEY_SETTER, void.class, Visibility.PUBLIC)
-                    .withParameters(String.class)
-                    .intercept(FieldAccessor.ofField(TraceContext.PARENT_SPAN_KEY))
-                    // intercept constructor, any constructor
-                    .constructor(ElementMatchers.any())
-                    .intercept(Advice.to(AbsConstructor.class));
+            return transformTypeWithTrace(builder, typeDescription, module, classLoader);
         }
 
         @Override
         protected MethodMatcherHolder methodMatchers() {
             return ofNone();
-        }
-
-        @Advice.OnMethodExit
-        public static void adviceOnMethodExit(
-                @Advice.FieldValue(value = TraceContext.TRACE_KEY, readOnly = false) String traceId,
-                @Advice.FieldValue(value = TraceContext.SPAN_KEY, readOnly = false) String spanId,
-                @Advice.FieldValue(value = TraceContext.PARENT_SPAN_KEY, readOnly = false) String parentSpanId) {
-            try {
-                // setup defined field on method exit
-                traceId = TraceContext.getTraceId();
-                spanId = TraceContext.getSpanId();
-                parentSpanId = TraceContext.getParentSpanId();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -209,6 +167,7 @@ public abstract class AbsVisitorTransformer implements At4jTransformer {
         }
 
         @Advice.OnMethodExit
+        @SuppressWarnings("unused")
         public static void adviceOnMethodExit() {
             TraceContext.removeAll();
         }

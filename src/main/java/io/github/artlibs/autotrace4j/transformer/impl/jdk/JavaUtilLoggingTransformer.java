@@ -8,7 +8,6 @@ import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.matcher.ElementMatcher;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
-import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 
 /**
  * Java Util Logging 增强转换器
@@ -18,6 +17,7 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
  *
  * All rights Reserved.
  */
+@SuppressWarnings("unused")
 public class JavaUtilLoggingTransformer extends AbsVisitorTransformer {
     private static final String RECORD_CLS = "java.util.logging.LogRecord";
     private static final String FORMATTER_CLS = "java.util.logging.Formatter";

@@ -43,7 +43,7 @@ public class At4jTest {
         // when debug on local,you should open this argument,like this: -DinstallAgent=true
         if (Boolean.parseBoolean(System.getProperty("installAgent"))){
             try {
-                AutoTrace4j.premain("io.github.artlibs.testsupport", ByteBuddyAgent.install());
+                AutoTrace4j.premain("", ByteBuddyAgent.install());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -151,7 +151,6 @@ public class At4jTest {
                 .currentThread().getId()));
     }
 
-    @SuppressWarnings("resource")
     @Test
     void testForkJoinPool() throws InterruptedException, ExecutionException {
         // 01.Prepare

@@ -1,17 +1,15 @@
 package io.github.artlibs.autotrace4j.transformer.impl.jdk;
 
-import io.github.artlibs.autotrace4j.context.TraceContext;
 import io.github.artlibs.autotrace4j.context.MethodWrapper;
 import io.github.artlibs.autotrace4j.context.ReflectUtils;
+import io.github.artlibs.autotrace4j.context.TraceContext;
 import io.github.artlibs.autotrace4j.transformer.abs.AbsVisitorTransformer;
 import net.bytebuddy.asm.Advice;
-import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 
-import java.util.Map;
 import java.util.Objects;
 
 import static net.bytebuddy.matcher.ElementMatchers.named;
@@ -26,6 +24,7 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
  * <p>
  * All rights Reserved.
  */
+@SuppressWarnings("unused")
 public class SunHttpClientTransformer extends AbsVisitorTransformer {
     private static final String SET_IF_NOT_SET = "setIfNotSet";
     private static final String WRITE_REQUESTS = "writeRequests";

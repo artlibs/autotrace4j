@@ -1,6 +1,5 @@
 package io.github.artlibs.autotrace4j.transformer.abs;
 
-import io.github.artlibs.autotrace4j.AutoTrace4j;
 import io.github.artlibs.autotrace4j.context.ReflectUtils;
 import io.github.artlibs.autotrace4j.context.TraceContext;
 import io.github.artlibs.autotrace4j.logger.Logger;
@@ -98,15 +97,6 @@ public abstract class AbsDelegateTransformer<T> implements At4jTransformer {
     }
 
     /**
-     * 获取业务范围判断器
-     * <p>
-     * @return Junction
-     */
-    protected final ElementMatcher.Junction<TypeDescription> bizScopeJunction() {
-        return AutoTrace4j.Transformer.getBizScopeJunction();
-    }
-
-    /**
      * 方法的增强处理
      * <p>
      * @param obj 被增强目标的实例或者类
@@ -166,9 +156,54 @@ public abstract class AbsDelegateTransformer<T> implements At4jTransformer {
          * @return 动态方法结果
          */
         @RuntimeType
+        @SuppressWarnings("unused")
         public final Object intercept(@This Object thiz, @Morph MorphCallable zuper
                 , @AllArguments Object[] args, @Origin Method originMethod) {
             return this.doIntercept(thiz, zuper, args, originMethod);
+        }
+    }
+
+    /**
+     * 为typeMatch匹配的对象注入Trace ID属性,记录当前上下文的Trace信息
+     * 以便于当该属性被传递到另外一个上下文时可以获取到原上下文的Trace信息
+     */
+    public abstract static class AbsConstructor extends AbsInstance {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public DynamicType.Builder<?> transformType(
+                DynamicType.Builder<?> builder,
+                TypeDescription typeDescription,
+                JavaModule module,
+                ClassLoader classLoader) {
+            return transformTypeWithTrace(builder, typeDescription, module, classLoader);
+        }
+    }
+
+    /**
+     * 增强匿名接口类
+     */
+    public abstract static class AbsAnonymousInterface extends AbsConstructor {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void onMethodEnter(Object obj, Object[] allArgs, Method originMethod) throws Exception {
+            String traceId = ReflectUtils.getFieldValue(obj, TraceContext.TRACE_KEY);
+            if (Objects.nonNull(traceId)) {
+                TraceContext.setTraceId(traceId);
+            }
+
+            String spanId = ReflectUtils.getFieldValue(obj, TraceContext.SPAN_KEY);
+            if (Objects.nonNull(spanId)) {
+                TraceContext.setSpanId(spanId);
+            }
+
+            String parentSpanId = ReflectUtils.getFieldValue(obj, TraceContext.PARENT_SPAN_KEY);
+            if (Objects.nonNull(parentSpanId)) {
+                TraceContext.setParentSpanId(parentSpanId);
+            }
         }
     }
 
@@ -186,6 +221,7 @@ public abstract class AbsDelegateTransformer<T> implements At4jTransformer {
          * @return 动态方法结果
          */
         @RuntimeType
+        @SuppressWarnings("unused")
         public final Object intercept(@Origin Class<?> clazz, @Morph MorphCallable zuper
                 , @AllArguments Object[] args, @Origin Method originMethod) {
             return this.doIntercept(clazz, zuper, args, originMethod);

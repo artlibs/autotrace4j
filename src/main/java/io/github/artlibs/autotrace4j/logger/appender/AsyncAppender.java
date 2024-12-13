@@ -1,7 +1,5 @@
 package io.github.artlibs.autotrace4j.logger.appender;
 
-import io.github.artlibs.autotrace4j.support.ThrowableUtils;
-
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -16,7 +14,6 @@ import java.util.concurrent.LinkedBlockingQueue;
  * All rights Reserved.
  */
 public abstract class AsyncAppender<E> extends AbstractAppender<E> {
-
     /** 日志事件队列 */
     private final BlockingQueue<E> queue;
     /**
@@ -37,7 +34,7 @@ public abstract class AsyncAppender<E> extends AbstractAppender<E> {
                         doAppend(event);
                     }
                 } catch (InterruptedException e) {
-                    System.err.println(ThrowableUtils.throwableToStr(e));
+                    e.printStackTrace();
                 }
             }
         });

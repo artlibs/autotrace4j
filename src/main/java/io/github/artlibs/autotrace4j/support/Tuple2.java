@@ -1,7 +1,7 @@
 package io.github.artlibs.autotrace4j.support;
 
 /**
- * 功能：tuple
+ * 功能：tuple 2
  *
  * @author suopovate
  * @author Fury
@@ -9,28 +9,30 @@ package io.github.artlibs.autotrace4j.support;
  * <p>
  * All rights Reserved.
  */
-public final class Tuple2<First, Second> {
-    private First first;
-    private Second second;
+public final class Tuple2<F, S> {
+    private F first;
+    private S second;
 
-    public Tuple2(First first, Second o2) {
+    public Tuple2(F first, S second) {
         this.first = first;
-        this.second = o2;
+        this.second = second;
     }
 
-    public First getFirst() {
+    public F getFirst() {
         return first;
     }
 
-    public Second getSecond() {
+    public S getSecond() {
         return second;
     }
 
-    public void setFirst(First first) {
+    @SuppressWarnings("unused")
+    public void setFirst(F first) {
         this.first = first;
     }
 
-    public void setSecond(Second second) {
+    @SuppressWarnings("unused")
+    public void setSecond(S second) {
         this.second = second;
     }
 

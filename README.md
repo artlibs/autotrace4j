@@ -16,7 +16,7 @@
 ​	`autotrace4j`的使用非常简单，只需从[release](https://github.com/artlibs/autotrace4j/releases)中下载最新的agent jar包，在启动脚本中以agent方式运行：
 
 ```shell
-$ java -javaagent=/dir/to/autotrace4j.jar=com.your-domain.biz1.pkg1,com.your-domain.biz2.pkg2 -Dautotrace4j.log.enable=true  -jar YourJar.jar  # 省略其他无关参数
+$ java -javaagent=/dir/to/autotrace4j.jar -Dautotrace4j.log.enable=true -jar YourJar.jar  # 省略其他无关参数
 ```
 
 -   一般情况下不需要开启autotrace4j内部日志，即***不需要***`-Dautotrace4j.log.enable=true`，如果需要观测到增强过程增强了哪些类，或在调试autotrace4j时有需要，可开启该日志选项，其他选项可使用默认参数：

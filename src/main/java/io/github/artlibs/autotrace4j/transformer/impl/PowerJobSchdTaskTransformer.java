@@ -17,6 +17,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  * @since 2024-07-30
  * <p>
  */
+@SuppressWarnings("unused")
 public class PowerJobSchdTaskTransformer extends AbsDelegateTransformer.AbsInstance {
 
     /**

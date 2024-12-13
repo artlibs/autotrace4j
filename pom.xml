@@ -6,28 +6,49 @@
 
     <groupId>io.github.artlibs</groupId>
     <artifactId>autotrace4j</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
     <packaging>jar</packaging>
 
     <url>https://github.com/artlibs/autotrace4j</url>
     <description>An auto trace agent base on byte-buddy for Java.</description>
 
     <properties>
-        <premain.class>io.github.artlibs.autotrace4j.AutoTrace4j</premain.class>
-        <buddy.shaded.patten>io.github.artlibs.autotrace4j.jar.bytebuddy</buddy.shaded.patten>
-        <junit-jupiter-engine.version>5.8.1</junit-jupiter-engine.version>
+        <!-- core -->
         <bytebuddy.version>1.14.13</bytebuddy.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- testing support -->
+        <slf4j.version>1.7.36</slf4j.version>
+        <fastjson.version>2.0.32</fastjson.version>
+        <okhttp3.version>4.11.0</okhttp3.version>
+        <javax-servlet.version>4.0.1</javax-servlet.version>
+        <javax.annotation.version>1.3.2</javax.annotation.version>
+        <jakarta.annotation.version>2.1.1</jakarta.annotation.version>
+        <apache-httpclient.version>4.5.14</apache-httpclient.version>
+        <spring-context.version>6.1.14</spring-context.version>
+        <junit-jupiter-engine.version>5.8.1</junit-jupiter-engine.version>
+
+        <!-- plugins & maven -->
         <maven-jar.version>2.3.2</maven-jar.version>
         <maven-shade.version>3.3.0</maven-shade.version>
         <exec-maven.version>1.6.0</exec-maven.version>
         <maven-compiler.version>3.12.0</maven-compiler.version>
         <compiler-release.version>8</compiler-release.version>
-        <test-case-package>io.github.artlibs.testsupport</test-case-package>
+        <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
+        <maven-source-plugin.version>2.2.1</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
+        <maven-gpg-plugin.version>1.5</maven-gpg-plugin.version>
+        <central-maven-plugin.version>0.4.0</central-maven-plugin.version>
+
+        <!-- other -->
         <repository.url>git@github.com:artlibs/autotrace4j.git</repository.url>
+        <premain.class>io.github.artlibs.autotrace4j.AutoTrace4j</premain.class>
+        <bytebuddy.shaded>io.github.artlibs.autotrace4j.jar.bytebuddy</bytebuddy.shaded>
     </properties>
 
     <dependencies>
-        <!-- minimal dependencies -->
+        <!-- core -->
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
@@ -41,7 +62,58 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- testing support -->
+        <!-- testing support: for testing transformer -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>${okhttp3.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax-servlet.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>${javax.annotation.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>${jakarta.annotation.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${apache-httpclient.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring-context.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- testing support: basic support -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${fastjson.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -54,57 +126,11 @@
             <version>${junit-jupiter-engine.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>2.0.32</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- for testing transformer -->
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>4.11.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.14</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.36</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>6.0.11</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
-
-    <licenses>
-        <license>
-            <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-            <comments>A business-friendly OSS license</comments>
-        </license>
-    </licenses>
 
     <developers>
         <developer>
-            <id>fury</id>
+            <id>i36lib</id>
             <name>Fury</name>
             <email>i36.lib@gmail.com</email>
             <url>https://github.com/i36lib</url>
@@ -115,46 +141,55 @@
         </developer>
         <developer>
             <id>supervate</id>
-            <name>vate</name>
+            <name>Vate</name>
             <email>806019582@qq.com</email>
             <url>https://github.com/supervate</url>
             <roles>
-                <role>developer</role>
+                <role>Developer</role>
             </roles>
             <timezone>+8</timezone>
         </developer>
         <developer>
-            <id>leo</id>
+            <id>Bedroome</id>
             <name>Leo</name>
             <email>414563035@qq.com</email>
             <url>https://github.com/Bedroome</url>
             <roles>
-                <role>developer</role>
+                <role>Developer</role>
             </roles>
             <timezone>+8</timezone>
         </developer>
         <developer>
             <id>orangewest</id>
-            <name>orangewest</name>
+            <name>JinPeng</name>
             <email>jinpengcn@foxmail.com</email>
             <url>https://github.com/orangewest</url>
             <roles>
-                <role>developer</role>
+                <role>Developer</role>
             </roles>
             <timezone>+8</timezone>
         </developer>
     </developers>
-
-    <issueManagement>
-        <system>github.com</system>
-        <url>https://github.com/artlibs/autotrace4j/issues</url>
-    </issueManagement>
 
     <scm>
         <connection>scm:git:${repository.url}</connection>
         <developerConnection>scm:git:${repository.url}</developerConnection>
         <url>${repository.url}</url>
     </scm>
+
+    <issueManagement>
+        <system>github.com</system>
+        <url>https://github.com/artlibs/autotrace4j/issues</url>
+    </issueManagement>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
 
     <build>
         <finalName>autotrace4j</finalName>
@@ -167,8 +202,8 @@
                     <archive>
                         <index>true</index>
                         <manifestEntries>
-                            <Can-Retransform-Classes>true</Can-Retransform-Classes>
                             <Premain-Class>${premain.class}</Premain-Class>
+                            <Can-Retransform-Classes>true</Can-Retransform-Classes>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -178,9 +213,12 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler.version}</version>
                 <configuration>
+                    <compilerArgs>
+                        <arg>-Xlint:-options</arg>
+                    </compilerArgs>
+                    <encoding>UTF-8</encoding>
                     <!-- Why Java 21 https://www.oracle.com/hk/java/technologies/java-se-support-roadmap.html -->
                     <release>${compiler-release.version}</release>
-                    <encoding>${file.encoding}</encoding>
                 </configuration>
             </plugin>
             <plugin>
@@ -189,8 +227,8 @@
                 <version>${maven-shade.version}</version>
                 <executions>
                     <execution>
-                        <!-- <id> fix: Cannot find 'resource' in
-                        class org.apache.maven.plugins.shade.resource.ManifestResourceTransformer -->
+                        <!-- <id> fix: Cannot find 'resource' in class
+                        org.apache.maven.plugins.shade.resource.ManifestResourceTransformer -->
                         <id>shade-bytebuddy</id>
                         <phase>package</phase>
                         <goals>
@@ -218,7 +256,7 @@
                             <relocations>
                                 <relocation>
                                     <pattern>net.bytebuddy</pattern>
-                                    <shadedPattern>${buddy.shaded.patten}</shadedPattern>
+                                    <shadedPattern>${bytebuddy.shaded}</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>
@@ -249,10 +287,10 @@
                 <!-- https://stackoverflow.com/questions/51382356/maven-does-not-run-beforeeach-methods-while-running -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
+                <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <argLine>
-                        -javaagent:${project.build.directory}${file.separator}${build.finalName}.jar=${test-case-package}
+                        -javaagent:${project.build.directory}${file.separator}${project.build.finalName}.jar
                     </argLine>
                 </configuration>
             </plugin>
@@ -260,7 +298,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
+                <version>${maven-source-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -273,7 +311,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.6.3</version>
+                <version>${maven-javadoc-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -285,11 +323,16 @@
                         </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <!-- 禁用 Javadoc 严格检查 -Xdoclint:none -Xdoclint:all,-syntax,-missing -->
+                    <additionalJOptions>-Xdoclint:-missing</additionalJOptions>
+                    <!-- <source>21</source>-->
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.5</version>
+                <version>${maven-gpg-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
@@ -310,13 +353,15 @@
             <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.4.0</version>
+                <version>${central-maven-plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <publishingServerId>central</publishingServerId>
                     <tokenAuth>true</tokenAuth>
-                    <!--<waitUntil>published</waitUntil>
-                    <waitMaxTime>1800</waitMaxTime>-->
+                    <!--
+                    <waitUntil>published</waitUntil>
+                    <waitMaxTime>1800</waitMaxTime>
+                    -->
                     <autoPublish>true</autoPublish>
                 </configuration>
             </plugin>
