@@ -6,7 +6,6 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
-import static net.bytebuddy.matcher.ElementMatchers.isAbstract;
 
 /**
  * RocketMq Send Callback增强转换器
@@ -20,11 +19,9 @@ import static net.bytebuddy.matcher.ElementMatchers.isAbstract;
 public class RocketMqSendCallbackTransformer extends AbsDelegateTransformer.AbsAnonymousInterface {
     @Override
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return not(isAbstract()).and(not(isInterface())).and(
-                hasSuperType(named("org.apache.rocketmq.client.producer.SendCallback")
-                        .or(named("com.aliyun.openservices.ons.api.SendCallback")))
-        );
-
+        return hasSuperType(named("org.apache.rocketmq.client.producer.SendCallback")
+                .or(named("com.aliyun.openservices.ons.api.SendCallback")))
+                .and(not(isAbstract()).and(not(isInterface())));
     }
 
     @Override

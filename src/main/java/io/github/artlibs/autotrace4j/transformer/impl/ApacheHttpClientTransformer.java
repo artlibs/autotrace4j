@@ -51,7 +51,7 @@ public class ApacheHttpClientTransformer extends AbsDelegateTransformer.AbsInsta
     protected void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
         final String traceId = TraceContext.getTraceId();
         if (Objects.nonNull(traceId)) {
-            MethodWrapper setHeaderMethod = ReflectUtils.getMethodWrapper(allArgs[1]
+            MethodWrapper setHeaderMethod = ReflectUtils.getMethod(allArgs[1]
                     , Constants.SET_HEADER, String.class, String.class);
             setHeaderMethod.invoke(TraceContext.ATO_TRACE_ID, traceId);
             final String spanId = TraceContext.getSpanId();

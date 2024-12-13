@@ -1,8 +1,8 @@
 package io.github.artlibs.autotrace4j.transformer.impl;
 
-import io.github.artlibs.autotrace4j.context.TraceContext;
 import io.github.artlibs.autotrace4j.context.MethodWrapper;
 import io.github.artlibs.autotrace4j.context.ReflectUtils;
+import io.github.artlibs.autotrace4j.context.TraceContext;
 import io.github.artlibs.autotrace4j.transformer.abs.AbsDelegateTransformer;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
@@ -47,7 +47,7 @@ public class RocketMqListenerTransformer extends AbsDelegateTransformer.AbsInsta
      */
     @Override
     protected void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
-        MethodWrapper methodWrapper = ReflectUtils.getMethodWrapper(allArgs[0], GUP, String.class);
+        MethodWrapper methodWrapper = ReflectUtils.getMethod(allArgs[0], GUP, String.class);
 
         String traceId = methodWrapper.invoke(TraceContext.TRACE_KEY);
         String parentSpanId = methodWrapper.invoke(TraceContext.SPAN_KEY);

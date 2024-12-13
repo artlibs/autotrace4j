@@ -1,7 +1,7 @@
 package io.github.artlibs.autotrace4j.transformer.impl;
 
-import io.github.artlibs.autotrace4j.context.TraceContext;
 import io.github.artlibs.autotrace4j.context.ReflectUtils;
+import io.github.artlibs.autotrace4j.context.TraceContext;
 import io.github.artlibs.autotrace4j.transformer.abs.AbsDelegateTransformer;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
@@ -64,7 +64,7 @@ public class RocketMqProducerTransformer extends AbsDelegateTransformer.AbsInsta
      */
     @Override
     protected void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
-        Map<String, String> properties = ReflectUtils.getFieldValue(allArgs[0], "properties", true);
+        Map<String, String> properties = ReflectUtils.getDeclaredFieldValue(allArgs[0], "properties");
         if (Objects.nonNull(properties)) {
             String spanId = properties.get(TraceContext.SPAN_KEY);
             String traceId = properties.get(TraceContext.TRACE_KEY);
