@@ -1,7 +1,7 @@
 package io.github.artlibs.autotrace4j.transformer.impl;
 
-import io.github.artlibs.autotrace4j.context.TraceContext;
 import io.github.artlibs.autotrace4j.context.ReflectUtils;
+import io.github.artlibs.autotrace4j.context.TraceContext;
 import io.github.artlibs.autotrace4j.transformer.abs.AbsDelegateTransformer;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
@@ -50,7 +50,7 @@ public class OkHttp3HttpClientTransformer extends AbsDelegateTransformer.AbsInst
         if (Objects.isNull(traceId) || Objects.isNull(thiz)) {
             return;
         }
-        List<String> namesAndValues = ReflectUtils.getFieldValue(thiz, "namesAndValues", true);
+        List<String> namesAndValues = ReflectUtils.getDeclaredFieldValue(thiz, "namesAndValues");
         if (Objects.nonNull(namesAndValues) && !namesAndValues.contains(TraceContext.ATO_TRACE_ID)) {
             namesAndValues.add(TraceContext.ATO_TRACE_ID);
             namesAndValues.add(traceId);

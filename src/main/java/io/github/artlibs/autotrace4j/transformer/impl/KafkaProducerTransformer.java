@@ -49,12 +49,12 @@ public class KafkaProducerTransformer extends AbsVisitorTransformer {
         if (Objects.isNull(producerRecord) || Objects.isNull(traceId)) {
             return;
         }
-        Object headers = ReflectUtils.getMethodWrapper(producerRecord
+        Object headers = ReflectUtils.getMethod(producerRecord
                         , "headers").invoke();
         if (Objects.isNull(headers)) {
             return;
         }
-        MethodWrapper method = ReflectUtils.getMethodWrapper(headers
+        MethodWrapper method = ReflectUtils.getMethod(headers
                 , "add", String.class, byte[].class);
 
         method.invoke(TraceContext.TRACE_KEY, traceId.getBytes());

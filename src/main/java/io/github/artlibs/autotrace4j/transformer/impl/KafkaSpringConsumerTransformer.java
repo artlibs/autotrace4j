@@ -52,21 +52,21 @@ public class KafkaSpringConsumerTransformer extends AbsVisitorTransformer {
     public static void adviceOnMethodEnter(@Advice.Argument(value = 0) Object recOrRecs) {
         Object consumerRecord = recOrRecs;
         if (Iterable.class.isAssignableFrom(recOrRecs.getClass())) {
-            Iterator<?> iterator = ReflectUtils.getMethodWrapper(recOrRecs
+            Iterator<?> iterator = ReflectUtils.getMethod(recOrRecs
                     , "iterator").invoke();
-            consumerRecord = ReflectUtils.getMethodWrapper(iterator
+            consumerRecord = ReflectUtils.getMethod(iterator
                     , "next").invoke();
         }
-        Object headers = ReflectUtils.getMethodWrapper(consumerRecord
+        Object headers = ReflectUtils.getMethod(consumerRecord
                 , "headers").invoke();
-        MethodWrapper lastHeader = ReflectUtils.getMethodWrapper(headers
+        MethodWrapper lastHeader = ReflectUtils.getMethod(headers
                 , "lastHeader", String.class);
 
         Object traceIdHeader = lastHeader.invoke(TraceContext.TRACE_KEY);
-        byte[] traceIdByte = ReflectUtils.getMethodWrapper(traceIdHeader
+        byte[] traceIdByte = ReflectUtils.getMethod(traceIdHeader
                         , "value").invoke();
         Object spanIdHeader = lastHeader.invoke(TraceContext.SPAN_KEY);
-        byte[] spanIdByte = ReflectUtils.getMethodWrapper(spanIdHeader
+        byte[] spanIdByte = ReflectUtils.getMethod(spanIdHeader
                         , "value").invoke();
 
         if (Objects.isNull(traceIdByte)) {

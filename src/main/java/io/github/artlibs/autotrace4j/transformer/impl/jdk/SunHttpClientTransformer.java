@@ -73,7 +73,7 @@ public class SunHttpClientTransformer extends AbsVisitorTransformer {
         try {
             final String traceId = TraceContext.getTraceId();
             if (Objects.nonNull(traceId)) {
-                MethodWrapper methodWrapper = ReflectUtils.getMethodWrapper(msgHeader
+                MethodWrapper methodWrapper = ReflectUtils.getMethod(msgHeader
                     , SET_IF_NOT_SET, String.class, String.class);
                 methodWrapper.invoke(TraceContext.ATO_TRACE_ID, traceId);
 

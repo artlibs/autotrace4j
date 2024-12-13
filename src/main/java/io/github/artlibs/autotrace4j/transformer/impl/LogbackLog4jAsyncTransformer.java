@@ -52,9 +52,9 @@ public class LogbackLog4jAsyncTransformer extends AbsVisitorTransformer {
     public static void adviceOnMethodEnter(
             @Advice.Argument(value = 0, typing = Assigner.Typing.DYNAMIC
                     , readOnly = false) Object logEvent) {
-        String traceId = ReflectUtils.getMethodWrapper(logEvent, TraceContext.TRACE_KEY_GETTER).invoke();
-        String spanId = ReflectUtils.getMethodWrapper(logEvent, TraceContext.SPAN_KEY_GETTER).invoke();
-        String parentSpanId = ReflectUtils.getMethodWrapper(logEvent, TraceContext.PARENT_SPAN_KEY_GETTER).invoke();
+        String traceId = ReflectUtils.getMethod(logEvent, TraceContext.TRACE_KEY_GETTER).invoke();
+        String spanId = ReflectUtils.getMethod(logEvent, TraceContext.SPAN_KEY_GETTER).invoke();
+        String parentSpanId = ReflectUtils.getMethod(logEvent, TraceContext.PARENT_SPAN_KEY_GETTER).invoke();
 
         // 异步的情况下：上下文没有traceId或者traceId对不上
         String ctxTraceId = TraceContext.getTraceId();

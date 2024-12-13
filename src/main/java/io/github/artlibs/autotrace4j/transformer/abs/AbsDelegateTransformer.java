@@ -189,20 +189,15 @@ public abstract class AbsDelegateTransformer<T> implements At4jTransformer {
          * {@inheritDoc}
          */
         @Override
-        protected void onMethodEnter(Object obj, Object[] allArgs, Method originMethod) throws Exception {
-            String traceId = ReflectUtils.getFieldValue(obj, TraceContext.TRACE_KEY);
+        protected void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
+            String traceId = ReflectUtils.getDeclaredFieldValue(thiz, TraceContext.TRACE_KEY);
             if (Objects.nonNull(traceId)) {
                 TraceContext.setTraceId(traceId);
+                TraceContext.setSpanId(TraceContext.generate());
             }
-
-            String spanId = ReflectUtils.getFieldValue(obj, TraceContext.SPAN_KEY);
+            String spanId = ReflectUtils.getDeclaredFieldValue(thiz, TraceContext.SPAN_KEY);
             if (Objects.nonNull(spanId)) {
-                TraceContext.setSpanId(spanId);
-            }
-
-            String parentSpanId = ReflectUtils.getFieldValue(obj, TraceContext.PARENT_SPAN_KEY);
-            if (Objects.nonNull(parentSpanId)) {
-                TraceContext.setParentSpanId(parentSpanId);
+                TraceContext.setParentSpanId(spanId);
             }
         }
     }
@@ -257,13 +252,13 @@ public abstract class AbsDelegateTransformer<T> implements At4jTransformer {
             if (isHttp) {
                 // first we take it from the req attributes
                 String traceId = ReflectUtils
-                        .getMethodWrapper(allArgs[0], Constants.GET_ATTRIBUTE, String.class)
+                        .getMethod(allArgs[0], Constants.GET_ATTRIBUTE, String.class)
                         .invoke(TraceContext.ATO_TRACE_ID);
                 String parentSpanId = ReflectUtils
-                        .getMethodWrapper(allArgs[0], Constants.GET_ATTRIBUTE, String.class)
+                        .getMethod(allArgs[0], Constants.GET_ATTRIBUTE, String.class)
                         .invoke(TraceContext.ATO_PARENT_SPAN_ID);
                 String spanId = ReflectUtils
-                        .getMethodWrapper(allArgs[0], Constants.GET_ATTRIBUTE, String.class)
+                        .getMethod(allArgs[0], Constants.GET_ATTRIBUTE, String.class)
                         .invoke(TraceContext.ATO_SPAN_ID);
 
                 if (Objects.nonNull(traceId)) {
@@ -272,10 +267,10 @@ public abstract class AbsDelegateTransformer<T> implements At4jTransformer {
                     TraceContext.setSpanId(spanId);
                 } else {
                     traceId = ReflectUtils
-                            .getMethodWrapper(allArgs[0], Constants.GET_HEADER, String.class)
+                            .getMethod(allArgs[0], Constants.GET_HEADER, String.class)
                             .invoke(TraceContext.ATO_TRACE_ID);
                     parentSpanId = ReflectUtils
-                            .getMethodWrapper(allArgs[0], Constants.GET_HEADER, String.class)
+                            .getMethod(allArgs[0], Constants.GET_HEADER, String.class)
                             .invoke(TraceContext.ATO_SPAN_ID);
 
                     if (Objects.isNull(traceId)) {
@@ -288,22 +283,22 @@ public abstract class AbsDelegateTransformer<T> implements At4jTransformer {
                     TraceContext.setParentSpanId(parentSpanId);
 
                     ReflectUtils
-                            .getMethodWrapper(allArgs[0], Constants.SET_ATTRIBUTE, String.class, Object.class)
+                            .getMethod(allArgs[0], Constants.SET_ATTRIBUTE, String.class, Object.class)
                             .invoke(TraceContext.ATO_TRACE_ID, traceId);
                     ReflectUtils
-                            .getMethodWrapper(allArgs[0], Constants.SET_ATTRIBUTE, String.class, Object.class)
+                            .getMethod(allArgs[0], Constants.SET_ATTRIBUTE, String.class, Object.class)
                             .invoke(TraceContext.ATO_PARENT_SPAN_ID, parentSpanId);
                     ReflectUtils
-                            .getMethodWrapper(allArgs[0], Constants.SET_ATTRIBUTE, String.class, Object.class)
+                            .getMethod(allArgs[0], Constants.SET_ATTRIBUTE, String.class, Object.class)
                             .invoke(TraceContext.ATO_SPAN_ID, spanId);
                     ReflectUtils
-                            .getMethodWrapper(allArgs[1], Constants.SET_HEADER, String.class, String.class)
+                            .getMethod(allArgs[1], Constants.SET_HEADER, String.class, String.class)
                             .invoke(TraceContext.ATO_TRACE_ID, traceId);
                     ReflectUtils
-                            .getMethodWrapper(allArgs[1], Constants.SET_HEADER, String.class, String.class)
+                            .getMethod(allArgs[1], Constants.SET_HEADER, String.class, String.class)
                             .invoke(TraceContext.ATO_PARENT_SPAN_ID, parentSpanId);
                     ReflectUtils
-                            .getMethodWrapper(allArgs[1], Constants.SET_HEADER, String.class, String.class)
+                            .getMethod(allArgs[1], Constants.SET_HEADER, String.class, String.class)
                             .invoke(TraceContext.ATO_SPAN_ID, spanId);
                 }
             }

@@ -32,8 +32,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Stream;
 
-import static io.github.artlibs.autotrace4j.context.ReflectUtils.getField;
-import static io.github.artlibs.autotrace4j.context.ReflectUtils.getFieldValue;
+import static io.github.artlibs.autotrace4j.context.ReflectUtils.getDeclaredField;
+import static io.github.artlibs.autotrace4j.context.ReflectUtils.getDeclaredFieldValue;
 import static io.github.artlibs.autotrace4j.logger.event.Level.DEBUG;
 import static io.github.artlibs.autotrace4j.logger.event.Level.INFO;
 import static io.github.artlibs.autotrace4j.support.Constants.*;
@@ -129,7 +129,7 @@ public class LoggerTest {
             // make all level's log
             for (Level level : Level.values()) {
                 ReflectUtils
-                    .getMethodWrapper(logger, level.name().toLowerCase(), String.class, Object[].class)
+                    .getMethod(logger, level.name().toLowerCase(), String.class, Object[].class)
                     .invoke(level.name(), new Object[0]);
             }
             // waiting for log collect,its async write.
@@ -158,7 +158,7 @@ public class LoggerTest {
             // make all level's log
             for (Level level : Level.values()) {
                 ReflectUtils
-                    .getMethodWrapper(logger, level.name().toLowerCase(), String.class, Object[].class)
+                    .getMethod(logger, level.name().toLowerCase(), String.class, Object[].class)
                     .invoke(level.name(), new Object[0]);
             }
             // waiting for log collect,its async write.
@@ -206,7 +206,7 @@ public class LoggerTest {
         printDirectory(cleanExpiredFileDir);
 
         ScheduledFuture<?> future = ReflectUtils
-            .getMethodWrapper(fileAppender, "triggerCleanTask", true, LocalDateTime.class)
+            .getDeclaredMethod(fileAppender, "triggerCleanTask", LocalDateTime.class)
             .invoke(now);
 
         // waiting task finish
@@ -241,7 +241,7 @@ public class LoggerTest {
         System.out.println("before files: ");
         printDirectory(rollingFileDir);
         // 刚好消息跟文件大小相同
-        ReflectUtils.setFieldValue(fileAppender, "logFileSizeBytes", logSize, true);
+        ReflectUtils.setDeclaredFieldValue(fileAppender, "logFileSizeBytes", logSize);
         logger.info(message);
         waitingForAsyncAppend(fileAppender);
         try (Stream<Path> s = Files.list(rollingFileDir)) {
@@ -251,7 +251,7 @@ public class LoggerTest {
         printDirectory(rollingFileDir);
 
         // 消息超过文件大小的情况,直接追加在当前文件后
-        ReflectUtils.setFieldValue(fileAppender, "logFileSizeBytes", logSize - 1, true);
+        ReflectUtils.setDeclaredFieldValue(fileAppender, "logFileSizeBytes", logSize - 1);
         logger.info(message);
         waitingForAsyncAppend(fileAppender);
         try (Stream<Path> s = Files.list(rollingFileDir)) {
@@ -261,7 +261,7 @@ public class LoggerTest {
         printDirectory(rollingFileDir);
 
         // 文件剩余空间不足以填充当前消息 且 消息大小小于文件大小时 roll 到下一个文件
-        ReflectUtils.setFieldValue(fileAppender, "logFileSizeBytes", logSize * 2 + 1, true);
+        ReflectUtils.setDeclaredFieldValue(fileAppender, "logFileSizeBytes", logSize * 2 + 1);
         logger.info(message);
         logger.info(message);
         logger.info(message);
@@ -289,14 +289,14 @@ public class LoggerTest {
         Assertions.assertNotNull(byName);
         Assertions.assertEquals(DEBUG, byName.getLevel());
         Assertions.assertEquals(LoggerTest.class.getCanonicalName(), byName.getName());
-        AppenderCombiner<LogEvent> appenderCombiner = getFieldValue(byName, "appender", true);
+        AppenderCombiner<LogEvent> appenderCombiner = getDeclaredFieldValue(byName, "appender");
         Assertions.assertSame(
-            getFieldValue(LoggerFactory.class, "APPENDER_COMBINER", true),
+                getDeclaredFieldValue(LoggerFactory.class, "APPENDER_COMBINER"),
             appenderCombiner
         );
         boolean fileAppendExists = false;
         boolean consoleAppendExists = false;
-        List<Appender<?>> appenderList = getFieldValue(appenderCombiner, "appenderList", true);
+        List<Appender<?>> appenderList = getDeclaredFieldValue(appenderCombiner, "appenderList");
         Assertions.assertNotNull(appenderList);
         for (Appender<?> appender : appenderList) {
             if (appender instanceof FileAppender) {
@@ -326,10 +326,9 @@ public class LoggerTest {
     }
 
     private static void waitingForLoggerFactoryAsyncAppend() throws IllegalAccessException, InterruptedException {
-        List<Appender<?>> appenders = getFieldValue(
-            getFieldValue(LoggerFactory.class, "APPENDER_COMBINER", true),
-            "appenderList",
-            true
+        List<Appender<?>> appenders = getDeclaredFieldValue(
+                getDeclaredFieldValue(LoggerFactory.class, "APPENDER_COMBINER"),
+            "appenderList"
         );
         boolean allEmpty = false;
         while (!allEmpty) {
@@ -337,7 +336,7 @@ public class LoggerTest {
             Assertions.assertNotNull(appenders);
             for (Appender<?> appender : appenders) {
                 if (appender instanceof AsyncAppender) {
-                    BlockingQueue<?> queue = (BlockingQueue<?>) getField(AsyncAppender.class, "queue", true).get(appender);
+                    BlockingQueue<?> queue = (BlockingQueue<?>) getDeclaredField(AsyncAppender.class, "queue").get(appender);
                     if (queue != null) {
                         allEmpty &= queue.isEmpty();
                     }
@@ -350,7 +349,7 @@ public class LoggerTest {
     }
 
     private static void waitingForAsyncAppend(AsyncAppender<?> asyncAppender) throws IllegalAccessException, InterruptedException {
-        BlockingQueue<?> queue = (BlockingQueue<?>) getField(AsyncAppender.class, "queue", true).get(asyncAppender);
+        BlockingQueue<?> queue = (BlockingQueue<?>) getDeclaredField(AsyncAppender.class, "queue").get(asyncAppender);
         if (queue != null) {
             while (!queue.isEmpty()) {
                 Thread.yield();
@@ -394,7 +393,7 @@ public class LoggerTest {
 
     private static LogEvent buildLogEvent(Logger logger, String message, Object[] args) {
         return ReflectUtils
-            .getMethodWrapper(logger, "buildLogEvent", true, Level.class, String.class, Object[].class)
+            .getDeclaredMethod(logger, "buildLogEvent", Level.class, String.class, Object[].class)
             .invoke(INFO, message, args);
     }
 

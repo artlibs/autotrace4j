@@ -1,8 +1,8 @@
 package io.github.artlibs.autotrace4j.transformer.impl;
 
-import io.github.artlibs.autotrace4j.context.TraceContext;
 import io.github.artlibs.autotrace4j.context.MethodWrapper;
 import io.github.artlibs.autotrace4j.context.ReflectUtils;
+import io.github.artlibs.autotrace4j.context.TraceContext;
 import io.github.artlibs.autotrace4j.transformer.abs.AbsDelegateTransformer;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
@@ -49,7 +49,7 @@ public class DubboProviderTransformer extends AbsDelegateTransformer.AbsInstance
      */
     @Override
     protected void onMethodEnter(Object thiz, Object[] allArgs, Method originMethod) throws Exception {
-        MethodWrapper methodWrapper = ReflectUtils.getMethodWrapper(allArgs[1]
+        MethodWrapper methodWrapper = ReflectUtils.getMethod(allArgs[1]
                 , "getAttachment", String.class);
         final String traceId = methodWrapper.invoke(TraceContext.ATO_TRACE_ID);
         if (Objects.nonNull(traceId)) {
