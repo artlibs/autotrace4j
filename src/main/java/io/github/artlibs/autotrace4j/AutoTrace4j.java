@@ -8,7 +8,9 @@ import io.github.artlibs.autotrace4j.transformer.At4jTransformer;
 import io.github.artlibs.autotrace4j.transformer.TransformListener;
 import io.github.artlibs.autotrace4j.support.ClassUtils;
 import io.github.artlibs.autotrace4j.support.ModuleUtils;
+import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.builder.AgentBuilder;
+import net.bytebuddy.dynamic.scaffold.MethodGraph;
 
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
@@ -109,7 +111,9 @@ public final class AutoTrace4j {
          * @return AgentBuilder 一个 ByteBuddy Agent Builder
          */
         private AgentBuilder newAgentBuilder() {
-            return new AgentBuilder.Default()
+            ByteBuddy byteBuddy = new ByteBuddy()
+                    .with(MethodGraph.Compiler.ForDeclaredMethods.INSTANCE);
+            return new AgentBuilder.Default(byteBuddy)
                     .ignore(nameStartsWith("jdk.jfr.")
                             .or(nameStartsWith("com.intellij.rt."))
                             .or(nameStartsWith(AutoTrace4j.class.getPackage().getName()))
