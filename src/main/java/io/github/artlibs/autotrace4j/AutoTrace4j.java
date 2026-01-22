@@ -111,6 +111,7 @@ public final class AutoTrace4j {
          * @return AgentBuilder 一个 ByteBuddy Agent Builder
          */
         private AgentBuilder newAgentBuilder() {
+            // Work around MethodGraph resolution failures on JDK classes (see #19).
             ByteBuddy byteBuddy = new ByteBuddy()
                     .with(MethodGraph.Compiler.ForDeclaredMethods.INSTANCE);
             return new AgentBuilder.Default(byteBuddy)
